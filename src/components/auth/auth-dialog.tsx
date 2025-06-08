@@ -112,15 +112,15 @@ export function AuthDialog() {
             <form onSubmit={handleSubmitSignIn(onSignInSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="email-signin">Email</Label>
-                <Input id="email-signin" type="email" placeholder="you@example.com" {...registerSignIn("email")} />
+                <Input id="email-signin" type="email" placeholder="you@example.com" {...registerSignIn("email")} className="bg-muted/20 focus-visible:ring-ring" />
                 {errorsSignIn.email && <p className="text-sm text-destructive mt-1">{errorsSignIn.email.message}</p>}
               </div>
               <div>
                 <Label htmlFor="password-signin">Password</Label>
-                <Input id="password-signin" type="password" placeholder="••••••••" {...registerSignIn("password")} />
+                <Input id="password-signin" type="password" placeholder="••••••••" {...registerSignIn("password")} className="bg-muted/20 focus-visible:ring-ring" />
                 {errorsSignIn.password && <p className="text-sm text-destructive mt-1">{errorsSignIn.password.message}</p>}
               </div>
-              <Button type="submit" className="w-full" disabled={isLoadingEmail || isLoadingGoogle}>
+              <Button type="submit" className="w-full bg-primary text-primary-foreground dark:bg-secondary dark:text-secondary-foreground hover:opacity-90" disabled={isLoadingEmail || isLoadingGoogle}>
                 {isLoadingEmail && activeTab === 'signin' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Sign In
               </Button>
@@ -143,20 +143,20 @@ export function AuthDialog() {
             <form onSubmit={handleSubmitSignUp(onSignUpSubmit)} className="space-y-4">
               <div>
                 <Label htmlFor="email-signup">Email</Label>
-                <Input id="email-signup" type="email" placeholder="you@example.com" {...registerSignUp("email")} />
+                <Input id="email-signup" type="email" placeholder="you@example.com" {...registerSignUp("email")} className="bg-muted/20 focus-visible:ring-ring" />
                 {errorsSignUp.email && <p className="text-sm text-destructive mt-1">{errorsSignUp.email.message}</p>}
               </div>
               <div>
                 <Label htmlFor="password-signup">Password</Label>
-                <Input id="password-signup" type="password" placeholder="••••••••" {...registerSignUp("password")} />
+                <Input id="password-signup" type="password" placeholder="••••••••" {...registerSignUp("password")} className="bg-muted/20 focus-visible:ring-ring" />
                 {errorsSignUp.password && <p className="text-sm text-destructive mt-1">{errorsSignUp.password.message}</p>}
               </div>
               <div>
                 <Label htmlFor="confirmPassword-signup">Confirm Password</Label>
-                <Input id="confirmPassword-signup" type="password" placeholder="••••••••" {...registerSignUp("confirmPassword")} />
+                <Input id="confirmPassword-signup" type="password" placeholder="••••••••" {...registerSignUp("confirmPassword")} className="bg-muted/20 focus-visible:ring-ring" />
                 {errorsSignUp.confirmPassword && <p className="text-sm text-destructive mt-1">{errorsSignUp.confirmPassword.message}</p>}
               </div>
-              <Button type="submit" className="w-full" disabled={isLoadingEmail || isLoadingGoogle}>
+              <Button type="submit" className="w-full bg-primary text-primary-foreground dark:bg-secondary dark:text-secondary-foreground hover:opacity-90" disabled={isLoadingEmail || isLoadingGoogle}>
                  {isLoadingEmail && activeTab === 'signup' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Create Account
               </Button>
