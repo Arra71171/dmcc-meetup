@@ -32,20 +32,20 @@ export default function Home() {
         <FaqSection />
       </div>
 
-      <footer className="w-full py-12 mt-16 border-t border-neutral-700 bg-neutral-900 text-gray-300">
+      <footer className="w-full py-12 mt-16 border-t border-border">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="font-lora text-sm text-gray-400">
+          <p className="font-lora text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Delhi Meetei Coordinating Committee (DMCC). All rights reserved.
           </p>
-          <p className="font-lora text-xs text-gray-400 mt-2">
+          <p className="font-lora text-xs text-muted-foreground mt-2">
             Venue: JNU Convention Center, New Delhi | Date: Sunday, June 15, 2025 | Time: 10:00 AM - 6:00 PM
           </p>
-          <div className="mt-4 font-lora text-xs text-gray-400 space-y-1">
-            <p>Contact: <a href="mailto:dmcc.office11@gmail.com" className="hover:underline text-gray-300 hover:text-white">dmcc.office11@gmail.com</a> | Phone: <a href="tel:+919717921812" className="hover:underline text-gray-300 hover:text-white">+91 9717921812</a></p>
+          <div className="mt-4 font-lora text-xs text-muted-foreground space-y-1">
+            <p>Contact: <a href="mailto:dmcc.office11@gmail.com" className="text-accent dark:text-accent hover:underline">dmcc.office11@gmail.com</a> | Phone: <a href="tel:+919717921812" className="text-accent dark:text-accent hover:underline">+91 9717921812</a></p>
             <p>Payment: UPI ID: radheoinam@oksbi (Screenshot upload recommended for verification)</p>
             <p>Response Time: 24-48 hours during business days</p>
           </div>
-          <p className="font-lora text-xs text-gray-400 mt-3">
+          <p className="font-lora text-xs text-muted-foreground mt-3">
             An initiative to foster culture, connection, and collaboration.
           </p>
         </div>

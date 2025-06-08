@@ -22,7 +22,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased bg-background dark:bg-gradient-dark text-foreground">
+      <body className="font-body antialiased bg-gradient-light dark:bg-gradient-dark text-foreground">
         <Header />
         {children}
         <Toaster />

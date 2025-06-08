@@ -23,7 +23,7 @@ const sectionMetrics = [
 
 export function ImpactMetricsSection() {
   return (
-    <section id="impact" className="w-full bg-neutral-900 py-16 md:py-24 text-white">
+    <section id="impact" className="w-full py-16 md:py-24">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl md:text-5xl font-bold font-headline mb-12 md:mb-16 text-left text-gradient-theme">
           A Landmark Gathering
@@ -42,7 +42,7 @@ export function ImpactMetricsSection() {
           </div>
           {/* Right Column: Text, Button, Metrics */}
           <div className="flex flex-col justify-center space-y-6 md:space-y-8">
-            <p className="font-lora text-lg md:text-xl text-gray-300 leading-relaxed">
+            <p className="font-lora text-lg md:text-xl text-foreground/80 leading-relaxed">
               This historic convention marks a pivotal moment for community empowerment and cultural renaissance, uniting the Meetei diaspora in the nation&apos;s capital. It&apos;s a unique opportunity to celebrate our shared identity and forge pathways for a brighter future.
             </p>
             <RainbowBorderButton icon={<Sparkles className="w-5 h-5" />}>
@@ -54,7 +54,7 @@ export function ImpactMetricsSection() {
                   <p className={`text-4xl md:text-5xl font-bold font-headline ${metric.colorClass}`}>
                     {metric.value}
                   </p>
-                  <p className="text-sm font-body text-gray-400 mt-1 uppercase tracking-wider">
+                  <p className="text-sm font-body text-muted-foreground mt-1 uppercase tracking-wider">
                     {metric.label}
                   </p>
                 </div>
