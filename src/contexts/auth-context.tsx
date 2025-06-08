@@ -23,16 +23,25 @@ interface AuthContextType {
   signInWithEmail: (email: string, pass: string) => Promise<User | null>;
   logOut: () => Promise<void>;
   isAuthDialogOpen: boolean;
-  openAuthDialog: () => void;
+  openAuthDialog: (mode?: 'default' | 'adminOnly') => void;
   closeAuthDialog: () => void;
+  isAdminOverrideLoggedIn: boolean;
+  loginAsAdminOverride: (username: string, pass: string) => Promise<boolean>;
+  authDialogMode: 'default' | 'adminOnly';
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Hardcoded admin credentials for prototype
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "&^%$6fsndh^6773hV#%67gd";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loadingAuthState, setLoadingAuthState] = useState(true);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [isAdminOverrideLoggedIn, setIsAdminOverrideLoggedIn] = useState(false);
+  const [authDialogMode, setAuthDialogMode] = useState<'default' | 'adminOnly'>('default');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -44,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithGoogle = async (): Promise<User | null> => {
+    if (isAdminOverrideLoggedIn) setIsAdminOverrideLoggedIn(false); // Log out admin override if signing in as regular user
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
@@ -59,6 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUpWithEmail = async (email: string, pass: string): Promise<User | null> => {
+    if (isAdminOverrideLoggedIn) setIsAdminOverrideLoggedIn(false);
     try {
       const userCredential = await fbCreateUserWithEmailAndPassword(auth, email, pass);
       setCurrentUser(userCredential.user);
@@ -73,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithEmail = async (email: string, pass: string): Promise<User | null> => {
+    if (isAdminOverrideLoggedIn) setIsAdminOverrideLoggedIn(false);
     try {
       const userCredential = await fbSignInWithEmailAndPassword(auth, email, pass);
       setCurrentUser(userCredential.user);
@@ -86,10 +98,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loginAsAdminOverride = async (username: string, pass: string): Promise<boolean> => {
+    if (username === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+      setIsAdminOverrideLoggedIn(true);
+      setCurrentUser(null); // Clear any Firebase user
+      toast({ title: "Admin signed in successfully!", description: "Welcome Admin!" });
+      closeAuthDialog();
+      return true;
+    }
+    toast({ title: "Admin sign-in failed", description: "Invalid credentials.", variant: "destructive" });
+    return false;
+  };
+
   const logOut = async () => {
     try {
-      await fbSignOut(auth);
+      await fbSignOut(auth); // Sign out Firebase user
       setCurrentUser(null);
+      setIsAdminOverrideLoggedIn(false); // Also log out admin override
       toast({ title: "Signed out successfully."});
     } catch (error: any) {
       console.error("Sign Out Error:", error);
@@ -97,8 +122,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const openAuthDialog = () => setIsAuthDialogOpen(true);
-  const closeAuthDialog = () => setIsAuthDialogOpen(false);
+  const openAuthDialog = (mode: 'default' | 'adminOnly' = 'default') => {
+    setAuthDialogMode(mode);
+    setIsAuthDialogOpen(true);
+  };
+  const closeAuthDialog = () => {
+    setIsAuthDialogOpen(false);
+     // Reset to default mode when dialog closes, in case it was opened in adminOnly mode
+    setTimeout(() => setAuthDialogMode('default'), 150);
+  };
+
 
   const value = {
     currentUser,
@@ -110,6 +143,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthDialogOpen,
     openAuthDialog,
     closeAuthDialog,
+    isAdminOverrideLoggedIn,
+    loginAsAdminOverride,
+    authDialogMode,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

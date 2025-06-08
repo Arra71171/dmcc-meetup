@@ -7,7 +7,7 @@ import { Logo } from './logo';
 import { GradientBorderButton } from '@/components/ui/gradient-border-button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, LogOut, LogIn, UserCircle, ChevronDown, LayoutDashboard } from 'lucide-react';
+import { Menu, LogOut, LogIn, UserCircle, ChevronDown, LayoutDashboard, ShieldAlert } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
 import {
   DropdownMenu,
@@ -27,7 +27,7 @@ const navItems = [
 ];
 
 export function Header() {
-  const { currentUser, loadingAuthState, logOut, openAuthDialog } = useAuth();
+  const { currentUser, loadingAuthState, logOut, openAuthDialog, isAdminOverrideLoggedIn } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getInitials = (name?: string | null, email?: string | null) => {
@@ -44,11 +44,15 @@ export function Header() {
     return 'U';
   };
 
+  const effectiveUserDisplay = isAdminOverrideLoggedIn 
+    ? { displayName: "Admin", email: "Administrator", photoURL: null, isOverride: true } 
+    : currentUser;
+
 
   return (
     <header className={cn(
         "sticky top-0 z-50 w-full",
-        "bg-background/80 dark:bg-background/70 backdrop-blur-md", // Light bg, glassmorphism
+        "bg-background/80 dark:bg-background/70 backdrop-blur-md", 
         "border-b border-border/60"
       )}>
       <div className="container flex h-20 max-w-screen-2xl items-center justify-between px-4 md:px-6">
@@ -74,24 +78,26 @@ export function Header() {
 
           {loadingAuthState ? (
             <div className="h-10 w-24 bg-muted/50 animate-pulse rounded-md"></div>
-          ) : currentUser ? (
+          ) : effectiveUserDisplay ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-12 rounded-full px-3 text-foreground hover:text-foreground font-subtitle">
-                   <Avatar className="h-9 w-9 mr-2 border border-border">
-                    <AvatarImage src={currentUser.photoURL || undefined} alt={currentUser.displayName || currentUser.email || 'User'} />
-                    <AvatarFallback>{getInitials(currentUser.displayName, currentUser.email)}</AvatarFallback>
+                   <Avatar className={cn("h-9 w-9 mr-2 border border-border", effectiveUserDisplay.isOverride && "border-destructive")}>
+                    <AvatarImage src={effectiveUserDisplay.photoURL || undefined} alt={effectiveUserDisplay.displayName || effectiveUserDisplay.email || 'User'} />
+                    <AvatarFallback className={cn(effectiveUserDisplay.isOverride && "bg-destructive/20 text-destructive")}>
+                      {effectiveUserDisplay.isOverride ? <ShieldAlert className="h-5 w-5" /> : getInitials(effectiveUserDisplay.displayName, effectiveUserDisplay.email)}
+                    </AvatarFallback>
                   </Avatar>
-                  <span className="truncate max-w-[100px]">{currentUser.displayName || currentUser.email}</span>
+                  <span className="truncate max-w-[100px]">{effectiveUserDisplay.displayName || effectiveUserDisplay.email}</span>
                   <ChevronDown className="ml-1.5 h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal font-body">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{currentUser.displayName || "User"}</p>
+                    <p className="text-sm font-medium leading-none">{effectiveUserDisplay.displayName || "User"}</p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      {currentUser.email}
+                      {effectiveUserDisplay.email}
                     </p>
                   </div>
                 </DropdownMenuLabel>
@@ -103,17 +109,17 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-             <Button variant="ghost" onClick={openAuthDialog} className="font-subtitle text-base text-foreground/80 hover:text-primary dark:hover:text-primary focus:outline-none focus:text-primary hover:bg-primary/10 focus:bg-primary/10 px-4 py-2 rounded-md">
+             <Button variant="ghost" onClick={() => openAuthDialog()} className="font-subtitle text-base text-foreground/80 hover:text-primary dark:hover:text-primary focus:outline-none focus:text-primary hover:bg-primary/10 focus:bg-primary/10 px-4 py-2 rounded-md">
               <LogIn className="mr-2 h-5 w-5" /> Sign In
             </Button>
           )}
           
           <GradientBorderButton 
-            onClick={currentUser ? undefined : openAuthDialog} 
-            asChild={!!currentUser}
+            onClick={effectiveUserDisplay ? undefined : () => openAuthDialog()} 
+            asChild={!!effectiveUserDisplay}
             className="text-sm"
             >
-            {currentUser ? (
+            {effectiveUserDisplay ? (
               <Link href="/#registration-form">Register for the Gathering</Link>
             ) : (
               "Register / Sign In"
@@ -149,16 +155,18 @@ export function Header() {
                   </Link>
                 <div className="pt-6 border-t border-border/40 mt-4">
                   {loadingAuthState && <div className="h-10 bg-muted/50 animate-pulse rounded-md w-full my-2"></div>}
-                  {!loadingAuthState && currentUser && (
+                  {!loadingAuthState && effectiveUserDisplay && (
                     <>
                       <div className="flex items-center space-x-3 px-2 py-2 mb-2 font-body">
-                        <Avatar>
-                          <AvatarImage src={currentUser.photoURL || undefined} />
-                          <AvatarFallback>{getInitials(currentUser.displayName, currentUser.email)}</AvatarFallback>
+                        <Avatar className={cn(effectiveUserDisplay.isOverride && "border-destructive")}>
+                          <AvatarImage src={effectiveUserDisplay.photoURL || undefined} />
+                           <AvatarFallback className={cn(effectiveUserDisplay.isOverride && "bg-destructive/20 text-destructive")}>
+                             {effectiveUserDisplay.isOverride ? <ShieldAlert className="h-5 w-5" /> : getInitials(effectiveUserDisplay.displayName, effectiveUserDisplay.email)}
+                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-sm font-medium">{currentUser.displayName || "User"}</p>
-                          <p className="text-xs text-muted-foreground">{currentUser.email}</p>
+                          <p className="text-sm font-medium">{effectiveUserDisplay.displayName || "User"}</p>
+                          <p className="text-xs text-muted-foreground">{effectiveUserDisplay.email}</p>
                         </div>
                       </div>
                       <Button variant="outline" onClick={() => { logOut(); setMobileMenuOpen(false); }} className="w-full font-subtitle">
@@ -166,17 +174,17 @@ export function Header() {
                       </Button>
                     </>
                   )}
-                  {!loadingAuthState && !currentUser && (
+                  {!loadingAuthState && !effectiveUserDisplay && (
                     <Button variant="outline" onClick={() => { openAuthDialog(); setMobileMenuOpen(false);}} className="w-full font-subtitle">
                       <LogIn className="mr-2 h-4 w-4" /> Sign In / Register
                     </Button>
                   )}
                 </div>
                 <GradientBorderButton 
-                    onClick={() => { if(!currentUser) openAuthDialog(); setMobileMenuOpen(false);}} 
-                    asChild={!!currentUser}
+                    onClick={() => { if(!effectiveUserDisplay) openAuthDialog(); setMobileMenuOpen(false);}} 
+                    asChild={!!effectiveUserDisplay}
                     className="w-full mt-4 text-sm">
-                     {currentUser ? (
+                     {effectiveUserDisplay ? (
                         <Link href="/#registration-form">Register for the Gathering</Link>
                     ) : (
                         "Register / Sign In"

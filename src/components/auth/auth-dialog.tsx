@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react'; 
+import React from 'react';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,6 +25,7 @@ const GoogleIcon = () => (
   </svg>
 );
 
+// Schema for regular email sign-in/sign-up
 const emailSignInSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
@@ -41,6 +42,13 @@ const emailSignUpSchema = z.object({
 });
 type EmailSignUpValues = z.infer<typeof emailSignUpSchema>;
 
+// Schema for admin username/password login
+const adminLoginSchema = z.object({
+  username: z.string().min(1, { message: "Username is required." }),
+  password: z.string().min(1, { message: "Password is required." }),
+});
+type AdminLoginValues = z.infer<typeof adminLoginSchema>;
+
 
 export function AuthDialog() {
   const {
@@ -49,10 +57,13 @@ export function AuthDialog() {
     signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,
+    loginAsAdminOverride,
+    authDialogMode,
   } = useAuth();
   const [activeTab, setActiveTab] = useState<'signin' | 'signup'>('signin');
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
+  const [isLoadingAdmin, setIsLoadingAdmin] = useState(false);
 
   const { register: registerSignIn, handleSubmit: handleSubmitSignIn, formState: { errors: errorsSignIn }, reset: resetSignInForm } = useForm<EmailSignInValues>({
     resolver: zodResolver(emailSignInSchema),
@@ -60,6 +71,10 @@ export function AuthDialog() {
 
   const { register: registerSignUp, handleSubmit: handleSubmitSignUp, formState: { errors: errorsSignUp }, reset: resetSignUpForm } = useForm<EmailSignUpValues>({
     resolver: zodResolver(emailSignUpSchema),
+  });
+
+  const { register: registerAdmin, handleSubmit: handleSubmitAdmin, formState: { errors: errorsAdmin }, reset: resetAdminForm } = useForm<AdminLoginValues>({
+    resolver: zodResolver(adminLoginSchema),
   });
 
   const handleGoogleSignIn = async () => {
@@ -72,22 +87,33 @@ export function AuthDialog() {
     setIsLoadingEmail(true);
     await signInWithEmail(data.email, data.password);
     setIsLoadingEmail(false);
-    if (isAuthDialogOpen) resetSignInForm(); 
+    if (!isAuthDialogOpen) resetSignInForm();
   };
 
   const onSignUpSubmit = async (data: EmailSignUpValues) => {
     setIsLoadingEmail(true);
     await signUpWithEmail(data.email, data.password);
     setIsLoadingEmail(false);
-     if (isAuthDialogOpen) resetSignUpForm();
+    if (!isAuthDialogOpen) resetSignUpForm();
+  };
+
+  const onAdminLoginSubmit = async (data: AdminLoginValues) => {
+    setIsLoadingAdmin(true);
+    await loginAsAdminOverride(data.username, data.password);
+    setIsLoadingAdmin(false);
+    if (!isAuthDialogOpen) resetAdminForm();
   };
 
   React.useEffect(() => {
     if (isAuthDialogOpen) {
       resetSignInForm();
       resetSignUpForm();
+      resetAdminForm();
+      if (authDialogMode === 'adminOnly') {
+        setActiveTab('signin'); // Should not matter as tabs are hidden
+      }
     }
-  }, [isAuthDialogOpen, activeTab, resetSignInForm, resetSignUpForm]);
+  }, [isAuthDialogOpen, activeTab, authDialogMode, resetSignInForm, resetSignUpForm, resetAdminForm]);
 
 
   if (!isAuthDialogOpen) return null;
@@ -97,85 +123,104 @@ export function AuthDialog() {
       <DialogContent className="sm:max-w-md bg-card text-card-foreground rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-headline text-foreground">
-            {activeTab === 'signin' ? 'Sign In' : 'Create Account'}
+            {authDialogMode === 'adminOnly' ? 'Admin Login' : (activeTab === 'signin' ? 'Sign In' : 'Create Account')}
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground font-body">
-            {activeTab === 'signin' ? 'Access your account or sign in with Google.' : 'Create an account to continue.'}
+            {authDialogMode === 'adminOnly' ? 'Enter your admin credentials.' : (activeTab === 'signin' ? 'Access your account or sign in with Google.' : 'Create an account to continue.')}
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'signin' | 'signup')} className="w-full font-body">
-          <TabsList className="grid w-full grid-cols-2 bg-muted/60">
-            <TabsTrigger value="signin" className="font-subtitle">Sign In</TabsTrigger>
-            <TabsTrigger value="signup" className="font-subtitle">Sign Up</TabsTrigger>
-          </TabsList>
-          <TabsContent value="signin" className="space-y-4 pt-4">
-            <form onSubmit={handleSubmitSignIn(onSignInSubmit)} className="space-y-4">
-              <div>
-                <Label htmlFor="email-signin" className="font-subtitle text-card-foreground">Email</Label>
-                <Input id="email-signin" type="email" placeholder="you@example.com" {...registerSignIn("email")} className="bg-background/50 focus-visible:ring-ring" />
-                {errorsSignIn.email && <p className="text-sm text-destructive mt-1">{errorsSignIn.email.message}</p>}
-              </div>
-              <div>
-                <Label htmlFor="password-signin" className="font-subtitle text-card-foreground">Password</Label>
-                <Input id="password-signin" type="password" placeholder="••••••••" {...registerSignIn("password")} className="bg-background/50 focus-visible:ring-ring" />
-                {errorsSignIn.password && <p className="text-sm text-destructive mt-1">{errorsSignIn.password.message}</p>}
-              </div>
-              <GradientBorderButton type="submit" className="w-full" disabled={isLoadingEmail || isLoadingGoogle}>
-                {isLoadingEmail && activeTab === 'signin' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Sign In
-              </GradientBorderButton>
-            </form>
-            <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-              </div>
+        {authDialogMode === 'adminOnly' ? (
+          <form onSubmit={handleSubmitAdmin(onAdminLoginSubmit)} className="space-y-4 pt-4">
+            <div>
+              <Label htmlFor="username-admin" className="font-subtitle text-card-foreground">Username</Label>
+              <Input id="username-admin" type="text" placeholder="admin" {...registerAdmin("username")} className="bg-background/50 focus-visible:ring-ring" />
+              {errorsAdmin.username && <p className="text-sm text-destructive mt-1">{errorsAdmin.username.message}</p>}
             </div>
-            <Button variant="outline" className="w-full font-subtitle text-foreground/80 hover:text-primary border-border hover:border-primary/50" onClick={handleGoogleSignIn} disabled={isLoadingGoogle || isLoadingEmail}>
-              {isLoadingGoogle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
-              Sign in with Google
-            </Button>
-          </TabsContent>
+            <div>
+              <Label htmlFor="password-admin" className="font-subtitle text-card-foreground">Password</Label>
+              <Input id="password-admin" type="password" placeholder="••••••••" {...registerAdmin("password")} className="bg-background/50 focus-visible:ring-ring" />
+              {errorsAdmin.password && <p className="text-sm text-destructive mt-1">{errorsAdmin.password.message}</p>}
+            </div>
+            <GradientBorderButton type="submit" className="w-full" disabled={isLoadingAdmin}>
+              {isLoadingAdmin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Login as Admin
+            </GradientBorderButton>
+          </form>
+        ) : (
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'signin' | 'signup')} className="w-full font-body">
+            <TabsList className="grid w-full grid-cols-2 bg-muted/60">
+              <TabsTrigger value="signin" className="font-subtitle">Sign In</TabsTrigger>
+              <TabsTrigger value="signup" className="font-subtitle">Sign Up</TabsTrigger>
+            </TabsList>
+            <TabsContent value="signin" className="space-y-4 pt-4">
+              <form onSubmit={handleSubmitSignIn(onSignInSubmit)} className="space-y-4">
+                <div>
+                  <Label htmlFor="email-signin" className="font-subtitle text-card-foreground">Email</Label>
+                  <Input id="email-signin" type="email" placeholder="you@example.com" {...registerSignIn("email")} className="bg-background/50 focus-visible:ring-ring" />
+                  {errorsSignIn.email && <p className="text-sm text-destructive mt-1">{errorsSignIn.email.message}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="password-signin" className="font-subtitle text-card-foreground">Password</Label>
+                  <Input id="password-signin" type="password" placeholder="••••••••" {...registerSignIn("password")} className="bg-background/50 focus-visible:ring-ring" />
+                  {errorsSignIn.password && <p className="text-sm text-destructive mt-1">{errorsSignIn.password.message}</p>}
+                </div>
+                <GradientBorderButton type="submit" className="w-full" disabled={isLoadingEmail || isLoadingGoogle}>
+                  {isLoadingEmail && activeTab === 'signin' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Sign In
+                </GradientBorderButton>
+              </form>
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+                </div>
+              </div>
+              <Button variant="outline" className="w-full font-subtitle text-foreground/80 hover:text-primary border-border hover:border-primary/50" onClick={handleGoogleSignIn} disabled={isLoadingGoogle || isLoadingEmail}>
+                {isLoadingGoogle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
+                Sign in with Google
+              </Button>
+            </TabsContent>
 
-          <TabsContent value="signup" className="space-y-4 pt-4">
-            <form onSubmit={handleSubmitSignUp(onSignUpSubmit)} className="space-y-4">
-              <div>
-                <Label htmlFor="email-signup" className="font-subtitle text-card-foreground">Email</Label>
-                <Input id="email-signup" type="email" placeholder="you@example.com" {...registerSignUp("email")} className="bg-background/50 focus-visible:ring-ring" />
-                {errorsSignUp.email && <p className="text-sm text-destructive mt-1">{errorsSignUp.email.message}</p>}
+            <TabsContent value="signup" className="space-y-4 pt-4">
+              <form onSubmit={handleSubmitSignUp(onSignUpSubmit)} className="space-y-4">
+                <div>
+                  <Label htmlFor="email-signup" className="font-subtitle text-card-foreground">Email</Label>
+                  <Input id="email-signup" type="email" placeholder="you@example.com" {...registerSignUp("email")} className="bg-background/50 focus-visible:ring-ring" />
+                  {errorsSignUp.email && <p className="text-sm text-destructive mt-1">{errorsSignUp.email.message}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="password-signup" className="font-subtitle text-card-foreground">Password</Label>
+                  <Input id="password-signup" type="password" placeholder="••••••••" {...registerSignUp("password")} className="bg-background/50 focus-visible:ring-ring" />
+                  {errorsSignUp.password && <p className="text-sm text-destructive mt-1">{errorsSignUp.password.message}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="confirmPassword-signup" className="font-subtitle text-card-foreground">Confirm Password</Label>
+                  <Input id="confirmPassword-signup" type="password" placeholder="••••••••" {...registerSignUp("confirmPassword")} className="bg-background/50 focus-visible:ring-ring" />
+                  {errorsSignUp.confirmPassword && <p className="text-sm text-destructive mt-1">{errorsSignUp.confirmPassword.message}</p>}
+                </div>
+                <GradientBorderButton type="submit" className="w-full" disabled={isLoadingEmail || isLoadingGoogle}>
+                  {isLoadingEmail && activeTab === 'signup' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Create Account
+                </GradientBorderButton>
+              </form>
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">Or sign up with</span>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="password-signup" className="font-subtitle text-card-foreground">Password</Label>
-                <Input id="password-signup" type="password" placeholder="••••••••" {...registerSignUp("password")} className="bg-background/50 focus-visible:ring-ring" />
-                {errorsSignUp.password && <p className="text-sm text-destructive mt-1">{errorsSignUp.password.message}</p>}
-              </div>
-              <div>
-                <Label htmlFor="confirmPassword-signup" className="font-subtitle text-card-foreground">Confirm Password</Label>
-                <Input id="confirmPassword-signup" type="password" placeholder="••••••••" {...registerSignUp("confirmPassword")} className="bg-background/50 focus-visible:ring-ring" />
-                {errorsSignUp.confirmPassword && <p className="text-sm text-destructive mt-1">{errorsSignUp.confirmPassword.message}</p>}
-              </div>
-               <GradientBorderButton type="submit" className="w-full" disabled={isLoadingEmail || isLoadingGoogle}>
-                 {isLoadingEmail && activeTab === 'signup' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Create Account
-              </GradientBorderButton>
-            </form>
-             <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or sign up with</span>
-              </div>
-            </div>
-            <Button variant="outline" className="w-full font-subtitle text-foreground/80 hover:text-primary border-border hover:border-primary/50" onClick={handleGoogleSignIn} disabled={isLoadingGoogle || isLoadingEmail}>
-              {isLoadingGoogle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
-              Sign up with Google
-            </Button>
-          </TabsContent>
-        </Tabs>
+              <Button variant="outline" className="w-full font-subtitle text-foreground/80 hover:text-primary border-border hover:border-primary/50" onClick={handleGoogleSignIn} disabled={isLoadingGoogle || isLoadingEmail}>
+                {isLoadingGoogle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
+                Sign up with Google
+              </Button>
+            </TabsContent>
+          </Tabs>
+        )}
       </DialogContent>
     </Dialog>
   );
