@@ -1,3 +1,4 @@
+
 "use client";
 
 import { GlassCard } from "@/components/ui/glass-card";
@@ -52,7 +53,7 @@ export function TestimonialSliderSection() {
 
   return (
     <section id="testimonials" className="w-full max-w-3xl px-4">
-      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16 text-gradient-theme">
         Words from Our Leadership & Community
       </h2>
       <GlassCard className="relative overflow-hidden p-6 md:p-10 min-h-[280px] md:min-h-[250px] flex flex-col justify-center items-center">

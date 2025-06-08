@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { RainbowBorderButton } from "@/components/ui/rainbow-border-button";
 import { Sparkles, Users, Landmark, UserCheck } from "lucide-react";
@@ -24,7 +25,7 @@ export function ImpactMetricsSection() {
   return (
     <section id="impact" className="w-full bg-neutral-900 py-16 md:py-24 text-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl md:text-5xl font-bold font-headline mb-12 md:mb-16 text-left">
+        <h2 className="text-4xl md:text-5xl font-bold font-headline mb-12 md:mb-16 text-left text-gradient-theme">
           A Landmark Gathering
         </h2>
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">

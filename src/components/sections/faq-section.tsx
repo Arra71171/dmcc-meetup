@@ -1,3 +1,4 @@
+
 import {
   Accordion,
   AccordionContent,
@@ -47,7 +48,7 @@ const faqItems = [
 export function FaqSection() {
   return (
     <section id="faq" className="w-full max-w-3xl px-4">
-      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16 text-gradient-theme">
         Frequently Asked Questions
       </h2>
       <GlassCard className="p-0 md:p-0"> {/* Remove padding from GlassCard as Accordion items have their own */}

@@ -1,3 +1,4 @@
+
 import { GlassCard } from "@/components/ui/glass-card";
 import Image from "next/image";
 
@@ -13,7 +14,7 @@ const galleryImages = [
 export function PastEventsGallerySection() {
   return (
     <section id="gallery" className="w-full max-w-6xl px-4">
-      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16 text-gradient-theme">
         Moments from the Archives
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">

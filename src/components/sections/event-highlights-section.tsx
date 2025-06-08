@@ -1,3 +1,4 @@
+
 import { GlassCard } from "@/components/ui/glass-card";
 import { Lightbulb, Palette, Users2 } from "lucide-react";
 
@@ -22,7 +23,7 @@ const highlights = [
 export function EventHighlightsSection() {
   return (
     <section id="highlights" className="w-full max-w-6xl px-4">
-      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16 text-gradient-theme">
         Comprehensive Program Architecture
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">

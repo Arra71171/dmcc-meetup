@@ -1,3 +1,4 @@
+
 import { CountdownTimer } from "@/components/ui/countdown-timer";
 import { UrgencyMeter } from "@/components/ui/urgency-meter";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -9,7 +10,7 @@ export function CountdownUrgencySection() {
   return (
     <section id="countdown" className="w-full max-w-3xl px-4">
       <GlassCard className="flex flex-col items-center space-y-8 p-6 md:p-10">
-        <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase">
+        <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase text-gradient-theme">
           Don&apos;t Delay - Register Today!
         </h2>
         <p className="text-center font-lora text-lg text-foreground/80 dark:text-foreground/70 -mt-4">

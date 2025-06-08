@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+
+import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import { GlassCard } from "@/components/ui/glass-card";
 import { CheckCircle2 } from "lucide-react";
 
@@ -42,7 +43,7 @@ const tiers = [
 export function RegistrationTiersSection() {
   return (
     <section id="register" className="w-full max-w-6xl px-4">
-      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16 text-gradient-theme">
         Registration Categories & Investment
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
@@ -60,7 +61,9 @@ export function RegistrationTiersSection() {
               ))}
             </ul>
             {tier.disclaimer && <p className="text-xs font-lora text-muted-foreground text-center mt-4 mb-2">{tier.disclaimer}</p>}
-            <Button size="lg" className="w-full mt-auto font-headline">{tier.cta}</Button>
+            <GradientBorderButton className="w-full mt-auto font-headline text-base py-3 px-6">
+              {tier.cta}
+            </GradientBorderButton>
           </GlassCard>
         ))}
       </div>
