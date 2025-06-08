@@ -1,23 +1,23 @@
 
 import Image from "next/image";
 import { RainbowBorderButton } from "@/components/ui/rainbow-border-button";
-import { Sparkles, Users, Landmark, UserCheck } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const sectionMetrics = [
   {
     value: "500+",
     label: "Expected Attendees",
-    colorClass: "text-[hsl(var(--chart-1))]", // Example: Bright Blue/Teal
+    colorClass: "text-[hsl(var(--chart-1))]",
   },
   {
     value: "2000+",
     label: "Years of Cultural Heritage",
-    colorClass: "text-[hsl(var(--chart-3))]", // Example: Bright Green/Lime
+    colorClass: "text-[hsl(var(--chart-3))]",
   },
   {
     value: "140+",
     label: "Pre-registered Participants",
-    colorClass: "text-[hsl(var(--chart-5))]", // Example: Bright Orange/Yellow
+    colorClass: "text-[hsl(var(--chart-5))]",
   },
 ];
 
@@ -29,10 +29,9 @@ export function ImpactMetricsSection() {
           A Landmark Gathering
         </h2>
         <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-          {/* Left Column: Image */}
           <div className="w-full h-full flex items-center justify-center">
             <Image
-              src="https://placehold.co/500x650.png" // Adjusted aspect ratio
+              src="https://placehold.co/500x650.png"
               alt="Community discussion and planning"
               width={500}
               height={650}
@@ -40,9 +39,8 @@ export function ImpactMetricsSection() {
               data-ai-hint="community meeting discussion"
             />
           </div>
-          {/* Right Column: Text, Button, Metrics */}
           <div className="flex flex-col justify-center space-y-6 md:space-y-8">
-            <p className="font-lora text-lg md:text-xl text-foreground/80 leading-relaxed">
+            <p className="font-lora text-lg md:text-xl text-gray-200 dark:text-gray-300 leading-relaxed">
               This historic convention marks a pivotal moment for community empowerment and cultural renaissance, uniting the Meetei diaspora in the nation&apos;s capital. It&apos;s a unique opportunity to celebrate our shared identity and forge pathways for a brighter future.
             </p>
             <RainbowBorderButton icon={<Sparkles className="w-5 h-5" />}>
@@ -54,7 +52,7 @@ export function ImpactMetricsSection() {
                   <p className={`text-4xl md:text-5xl font-bold font-headline ${metric.colorClass}`}>
                     {metric.value}
                   </p>
-                  <p className="text-sm font-body text-muted-foreground mt-1 uppercase tracking-wider">
+                  <p className="text-sm font-body text-gray-400 dark:text-gray-500 mt-1 uppercase tracking-wider">
                     {metric.label}
                   </p>
                 </div>

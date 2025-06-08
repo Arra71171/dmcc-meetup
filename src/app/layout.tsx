@@ -1,7 +1,9 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Header } from '@/components/layout/header';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: "Meetei People's Convention, Delhi 2025 | DMCC",
@@ -22,7 +24,19 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased bg-gradient-light dark:bg-gradient-dark text-foreground">
+      <body className="font-body antialiased text-foreground">
+        <div className="fixed inset-0 -z-10">
+          <Image
+            src="https://placehold.co/1920x1080.png"
+            alt="DMCC Community Event Background"
+            layout="fill"
+            objectFit="cover"
+            quality={80}
+            className="opacity-10 dark:opacity-5"
+            data-ai-hint="abstract community celebration"
+          />
+          <div className="absolute inset-0 bg-black/[.85] dark:bg-black/[.90]" />
+        </div>
         <Header />
         {children}
         <Toaster />

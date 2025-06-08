@@ -24,14 +24,14 @@ export function PastEventsGallerySection() {
               src={image.src}
               alt={image.alt}
               width={600}
-              height={image.src.includes("400x600") ? 600 : 400} // Adjust height based on aspect ratio
+              height={image.src.includes("400x600") ? 600 : 400}
               className="rounded-md object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
               data-ai-hint={image.hint}
             />
           </GlassCard>
         ))}
       </div>
-      <p className="text-center mt-8 font-lora text-lg text-foreground/80 dark:text-foreground/70">
+      <p className="text-center mt-8 font-lora text-lg text-gray-200 dark:text-gray-300">
         Relive the energy and joy from our previous gatherings. We can&apos;t wait to create new memories with you!
       </p>
     </section>
