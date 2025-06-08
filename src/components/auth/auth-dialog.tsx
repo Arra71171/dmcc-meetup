@@ -1,6 +1,7 @@
 
 'use client';
 
+import React from 'react'; // Added this line
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,7 +12,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, UserCircle } from 'lucide-react';
 
 const GoogleIcon = () => (
   <svg viewBox="0 0 48 48" width="18" height="18" className="mr-2">
@@ -70,7 +71,7 @@ export function AuthDialog() {
     setIsLoadingEmail(true);
     await signInWithEmail(data.email, data.password);
     setIsLoadingEmail(false);
-    if (isAuthDialogOpen) resetSignInForm(); // Reset only if dialog is still open (i.e. error occurred)
+    if (isAuthDialogOpen) resetSignInForm(); 
   };
 
   const onSignUpSubmit = async (data: EmailSignUpValues) => {
@@ -80,7 +81,6 @@ export function AuthDialog() {
      if (isAuthDialogOpen) resetSignUpForm();
   };
 
-  // Reset forms when tab changes or dialog closes/opens
   React.useEffect(() => {
     if (isAuthDialogOpen) {
       resetSignInForm();

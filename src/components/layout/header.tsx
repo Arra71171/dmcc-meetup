@@ -2,6 +2,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react'; // Added this line
 import { Logo } from './logo';
 import { GradientBorderButton } from '@/components/ui/gradient-border-button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -97,9 +98,11 @@ export function Header() {
           )}
           
           {currentUser ? (
-             <GradientBorderButton asChild>
-                <Link href="/#registration-form">Secure Your Place</Link>
-            </GradientBorderButton>
+             <Link href="/#registration-form">
+                <GradientBorderButton asChild>
+                    Secure Your Place
+                </GradientBorderButton>
+             </Link>
           ) : (
             <GradientBorderButton onClick={openAuthDialog}>
               Register / Sign In
@@ -152,9 +155,11 @@ export function Header() {
                   )}
                 </div>
                  {currentUser ? (
-                    <GradientBorderButton asChild className="w-full mt-2">
-                        <Link href="/#registration-form" onClick={() => setMobileMenuOpen(false)}>Secure Your Place</Link>
-                    </GradientBorderButton>
+                    <Link href="/#registration-form" onClick={() => setMobileMenuOpen(false)}>
+                        <GradientBorderButton asChild className="w-full mt-2">
+                             Secure Your Place
+                        </GradientBorderButton>
+                    </Link>
                   ) : (
                     <GradientBorderButton onClick={() => {openAuthDialog(); setMobileMenuOpen(false);}} className="w-full mt-2">
                       Register / Sign In
