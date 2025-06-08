@@ -7,7 +7,7 @@ import { Logo } from './logo';
 import { GradientBorderButton } from '@/components/ui/gradient-border-button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, LogOut, LogIn, UserCircle, ChevronDown } from 'lucide-react';
+import { Menu, LogOut, LogIn, UserCircle, ChevronDown, LayoutDashboard } from 'lucide-react'; // Added LayoutDashboard
 import { useAuth } from '@/contexts/auth-context';
 import {
   DropdownMenu,
@@ -60,6 +60,13 @@ export function Header() {
           ))}
         </nav>
         <div className="hidden md:flex items-center space-x-4">
+          <Link href="/admin" passHref>
+            <Button variant="ghost" className="text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md font-semibold">
+              <LayoutDashboard className="mr-2 h-4 w-4" />
+              Admin
+            </Button>
+          </Link>
+
           {loadingAuthState ? (
             <div className="h-10 w-24 bg-muted/50 animate-pulse rounded-md"></div>
           ) : currentUser ? (
@@ -128,6 +135,13 @@ export function Header() {
                     {item.label}
                   </Link>
                 ))}
+                 <Link
+                    href="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-lg font-semibold transition-colors text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md block"
+                  >
+                    <LayoutDashboard className="inline-block mr-2 h-5 w-5" /> Admin
+                  </Link>
                 <div className="pt-6 border-t border-border/40 mt-4">
                   {loadingAuthState && <div className="h-10 bg-muted/50 animate-pulse rounded-md w-full my-2"></div>}
                   {!loadingAuthState && currentUser && (
