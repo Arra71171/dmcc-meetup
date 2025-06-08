@@ -28,7 +28,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { useState, type ChangeEvent } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
-import { Loader2 } from "lucide-react";
+import { Loader2, UserCircle } from "lucide-react";
 
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
