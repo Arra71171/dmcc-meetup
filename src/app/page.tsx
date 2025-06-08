@@ -7,6 +7,7 @@ import { RegistrationFormSection } from "@/components/sections/registration-form
 import { EventDetailsSection } from "@/components/sections/event-details-section";
 import { ClosingRemarksSection } from "@/components/sections/closing-remarks-section";
 import { Separator } from "@/components/ui/separator";
+import { InvitationSection } from "@/components/sections/invitation-section";
 
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
       <ImpactMetricsSection />
       
       <div className="flex flex-col items-center w-full space-y-16 md:space-y-24 lg:space-y-32 py-16 md:py-24 lg:py-32 px-4">
+        <InvitationSection />
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-foreground/10 dark:bg-foreground/5 h-0.5" />
         <EventHighlightsSection />
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-foreground/10 dark:bg-foreground/5 h-0.5" />
