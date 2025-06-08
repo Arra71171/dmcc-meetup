@@ -4,7 +4,11 @@
 import type React from 'react';
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode }
   from 'react';
-import type { RegistrationFormValues } from '@/components/sections/registration-form-section'; // Assuming this type is exported
+// Ensure this path is correct based on your actual file structure.
+// If specific-registration-form.tsx exports RegistrationFormValues, this is fine.
+// If the type is defined elsewhere or re-exported, adjust as needed.
+import type { RegistrationFormValues } from '@/components/forms/specific-registration-form';
+
 
 export interface RegistrationEntry extends RegistrationFormValues {
   id: string;
@@ -58,7 +62,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
 
   // Log current registrations for debugging (client-side only)
   useEffect(() => {
-    // console.log("Current registrations (client-side):", registrations);
+    console.log("Current registrations in context (client-side):", registrations);
   }, [registrations]);
 
 
