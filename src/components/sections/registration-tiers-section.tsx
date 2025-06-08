@@ -1,5 +1,5 @@
 
-import { RainbowBorderButton } from "@/components/ui/rainbow-border-button"; // Changed import
+import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import { GlassCard } from "@/components/ui/glass-card";
 import Link from 'next/link';
 
@@ -42,9 +42,9 @@ export function RegistrationTiersSection() {
               {tier.description}
             </p>
             <Link href="/#registration-form" passHref>
-              <RainbowBorderButton asChild className="w-full mt-auto font-headline text-base py-3 px-6">
+              <GradientBorderButton asChild className="w-full mt-auto font-headline text-base py-3 px-6">
                 {tier.cta}
-              </RainbowBorderButton>
+              </GradientBorderButton>
             </Link>
           </GlassCard>
         ))}

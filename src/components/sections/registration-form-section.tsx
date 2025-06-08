@@ -4,7 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { RainbowBorderButton } from "@/components/ui/rainbow-border-button"; // Changed import
+import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import {
   Form,
   FormControl,
@@ -152,9 +152,9 @@ export function RegistrationFormSection() {
           <p className="text-foreground">
             Please sign in or create an account to complete your registration for the Meetei People's Convention.
           </p>
-          <RainbowBorderButton onClick={openAuthDialog} className="font-headline text-lg py-3 mt-2 w-auto">
+          <GradientBorderButton onClick={openAuthDialog} className="font-headline text-lg py-3 mt-2 w-auto">
             Sign In / Create Account
-          </RainbowBorderButton>
+          </GradientBorderButton>
         </GlassCard>
       )}
       {!loadingAuthState && currentUser && (
@@ -324,14 +324,14 @@ export function RegistrationFormSection() {
               )}
             />
 
-            <RainbowBorderButton 
+            <GradientBorderButton 
               type="submit" 
               className="w-full font-headline text-lg py-3" 
               disabled={isSubmitting}
-              icon={isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
             >
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isSubmitting ? "Submitting..." : "Submit Your Registration"}
-            </RainbowBorderButton>
+            </GradientBorderButton>
           </form>
         </Form>
       </GlassCard>

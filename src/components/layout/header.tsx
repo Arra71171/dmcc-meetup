@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Logo } from './logo';
-import { RainbowBorderButton } from '@/components/ui/rainbow-border-button'; // Changed import
+import { GradientBorderButton } from '@/components/ui/gradient-border-button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu, LogOut, LogIn, UserCircle, ChevronDown, LayoutDashboard } from 'lucide-react';
@@ -105,14 +105,14 @@ export function Header() {
           
           {currentUser ? (
              <Link href="/#registration-form" passHref>
-                <RainbowBorderButton asChild>
+                <GradientBorderButton asChild>
                     Register for the Gathering
-                </RainbowBorderButton>
+                </GradientBorderButton>
              </Link>
           ) : (
-            <RainbowBorderButton onClick={openAuthDialog}>
+            <GradientBorderButton onClick={openAuthDialog}>
               Register / Sign In
-            </RainbowBorderButton>
+            </GradientBorderButton>
           )}
         </div>
         <div className="md:hidden">
@@ -169,14 +169,14 @@ export function Header() {
                 </div>
                  {currentUser ? (
                     <Link href="/#registration-form" onClick={() => setMobileMenuOpen(false)} passHref>
-                        <RainbowBorderButton asChild className="w-full mt-4">
+                        <GradientBorderButton asChild className="w-full mt-4">
                              Register for the Gathering
-                        </RainbowBorderButton>
+                        </GradientBorderButton>
                     </Link>
                   ) : (
-                    <RainbowBorderButton onClick={() => {openAuthDialog(); setMobileMenuOpen(false);}} className="w-full mt-4">
+                    <GradientBorderButton onClick={() => {openAuthDialog(); setMobileMenuOpen(false);}} className="w-full mt-4">
                       Register / Sign In
-                    </RainbowBorderButton>
+                    </GradientBorderButton>
                   )}
               </nav>
             </SheetContent>

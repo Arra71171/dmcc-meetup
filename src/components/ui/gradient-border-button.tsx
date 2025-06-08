@@ -2,10 +2,6 @@
 import type React from 'react';
 import { cn } from '@/lib/utils';
 
-// This component is now deprecated and replaced by RainbowBorderButton.
-// Keeping the file for now to avoid breaking imports if any are missed,
-// but it should ideally be removed once all transitions are confirmed.
-
 interface GradientBorderButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   asChild?: boolean;
