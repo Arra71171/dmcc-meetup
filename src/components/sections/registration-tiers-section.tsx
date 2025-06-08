@@ -58,7 +58,8 @@ export function RegistrationTiersSection() {
             {/* Removed UrgencyMeter and its specific note */}
             <Link href="/#registration-form" passHref className="mt-auto">
               <GradientBorderButton asChild className="w-full text-sm py-3 px-6">
-                <a>{tier.cta}</a>
+                {/* The <a> tag was removed here. GradientBorderButton with asChild will render the anchor from Link */}
+                <span>{tier.cta}</span> 
               </GradientBorderButton>
             </Link>
           </GlassCard>
