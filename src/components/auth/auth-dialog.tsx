@@ -85,6 +85,7 @@ export function AuthDialog() {
 
   const onSignInSubmit = async (data: EmailSignInValues) => {
     setIsLoadingEmail(true);
+    console.log('Attempting to sign in with Email:', data.email, 'Password:', data.password); // Added for debugging
     await signInWithEmail(data.email, data.password);
     setIsLoadingEmail(false);
     if (!isAuthDialogOpen) resetSignInForm();
@@ -225,3 +226,5 @@ export function AuthDialog() {
     </Dialog>
   );
 }
+
+    
