@@ -4,7 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { GradientBorderButton } from "@/components/ui/gradient-border-button";
+import { RainbowBorderButton } from "@/components/ui/rainbow-border-button"; // Changed import
 import {
   Form,
   FormControl,
@@ -28,7 +28,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { useState, type ChangeEvent } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
-import { Loader2 } from "lucide-react"; // UserCircle removed as it's no longer directly used here
+import { Loader2 } from "lucide-react";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
@@ -148,14 +148,13 @@ export function RegistrationFormSection() {
       )}
       {!loadingAuthState && !currentUser && (
         <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px] space-y-6 text-center">
-           {/* UserCircle icon removed as per previous fix request */}
           <h3 className="text-2xl font-semibold text-foreground">Authentication Required</h3>
           <p className="text-foreground">
             Please sign in or create an account to complete your registration for the Meetei People's Convention.
           </p>
-          <GradientBorderButton onClick={openAuthDialog} className="font-headline text-lg py-3 mt-2">
+          <RainbowBorderButton onClick={openAuthDialog} className="font-headline text-lg py-3 mt-2 w-auto">
             Sign In / Create Account
-          </GradientBorderButton>
+          </RainbowBorderButton>
         </GlassCard>
       )}
       {!loadingAuthState && currentUser && (
@@ -325,9 +324,14 @@ export function RegistrationFormSection() {
               )}
             />
 
-            <GradientBorderButton type="submit" className="w-full font-headline text-lg py-3" disabled={isSubmitting}>
-              {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Submitting...</> : "Submit Your Registration"}
-            </GradientBorderButton>
+            <RainbowBorderButton 
+              type="submit" 
+              className="w-full font-headline text-lg py-3" 
+              disabled={isSubmitting}
+              icon={isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
+            >
+              {isSubmitting ? "Submitting..." : "Submit Your Registration"}
+            </RainbowBorderButton>
           </form>
         </Form>
       </GlassCard>

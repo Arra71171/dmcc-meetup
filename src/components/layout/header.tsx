@@ -4,10 +4,10 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Logo } from './logo';
-import { GradientBorderButton } from '@/components/ui/gradient-border-button';
+import { RainbowBorderButton } from '@/components/ui/rainbow-border-button'; // Changed import
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, LogOut, LogIn, UserCircle, ChevronDown, LayoutDashboard } from 'lucide-react'; // Added LayoutDashboard
+import { Menu, LogOut, LogIn, UserCircle, ChevronDown, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
 import {
   DropdownMenu,
@@ -104,15 +104,15 @@ export function Header() {
           )}
           
           {currentUser ? (
-             <Link href="/#registration-form">
-                <GradientBorderButton>
+             <Link href="/#registration-form" passHref>
+                <RainbowBorderButton asChild>
                     Register for the Gathering
-                </GradientBorderButton>
+                </RainbowBorderButton>
              </Link>
           ) : (
-            <GradientBorderButton onClick={openAuthDialog}>
+            <RainbowBorderButton onClick={openAuthDialog}>
               Register / Sign In
-            </GradientBorderButton>
+            </RainbowBorderButton>
           )}
         </div>
         <div className="md:hidden">
@@ -168,15 +168,15 @@ export function Header() {
                   )}
                 </div>
                  {currentUser ? (
-                    <Link href="/#registration-form" onClick={() => setMobileMenuOpen(false)}>
-                        <GradientBorderButton className="w-full mt-4">
+                    <Link href="/#registration-form" onClick={() => setMobileMenuOpen(false)} passHref>
+                        <RainbowBorderButton asChild className="w-full mt-4">
                              Register for the Gathering
-                        </GradientBorderButton>
+                        </RainbowBorderButton>
                     </Link>
                   ) : (
-                    <GradientBorderButton onClick={() => {openAuthDialog(); setMobileMenuOpen(false);}} className="w-full mt-4">
+                    <RainbowBorderButton onClick={() => {openAuthDialog(); setMobileMenuOpen(false);}} className="w-full mt-4">
                       Register / Sign In
-                    </GradientBorderButton>
+                    </RainbowBorderButton>
                   )}
               </nav>
             </SheetContent>

@@ -1,5 +1,5 @@
 
-import { GradientBorderButton } from "@/components/ui/gradient-border-button";
+import { RainbowBorderButton } from "@/components/ui/rainbow-border-button"; // Changed import
 import Link from "next/link";
 
 export function HeroSection() {
@@ -20,13 +20,12 @@ export function HeroSection() {
           Celebrating Our Heritage, Honoring Our Foundation, and Shaping a Brighter Tomorrow
         </p>
         
-        <Link href="/#registration-form">
-          <GradientBorderButton asChild className="mt-10 text-lg px-8 py-4 font-headline">
+        <Link href="/#registration-form" passHref>
+          <RainbowBorderButton asChild className="mt-10 text-lg px-8 py-4 font-headline">
             Join Our Community Gathering
-          </GradientBorderButton>
+          </RainbowBorderButton>
         </Link>
       </div>
     </section>
   );
 }
-
