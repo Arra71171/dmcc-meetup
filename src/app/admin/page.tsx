@@ -29,6 +29,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger, // Import AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import {
   Dialog,
@@ -37,7 +38,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogTrigger,
+  DialogTrigger, // This DialogTrigger is for the edit modal
 } from "@/components/ui/dialog";
 import {
   SidebarProvider,
@@ -45,12 +46,15 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
-  SidebarTrigger,
+  // SidebarTrigger, // This SidebarTrigger is for the main sidebar, aliased to avoid confusion
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarInset,
 } from "@/components/ui/sidebar";
+
+// Alias SidebarTrigger from ui/sidebar to avoid conflict if a local one is needed
+const MainSidebarTrigger = SidebarTrigger;
 
 
 const ITEMS_PER_PAGE = 10;
@@ -249,7 +253,7 @@ export default function AdminDashboardPage() {
           <SidebarHeader>
             <div className="flex items-center gap-2 p-2 justify-between">
                <h2 className={cn("font-headline text-2xl text-gradient-theme group-data-[collapsible=icon]:hidden", "text-glass-shadow")}>DMCC Admin</h2>
-               <SidebarTrigger className="group-data-[collapsible=icon]:hidden" />
+               <MainSidebarTrigger className="group-data-[collapsible=icon]:hidden" />
             </div>
           </SidebarHeader>
           <SidebarContent>
@@ -273,7 +277,7 @@ export default function AdminDashboardPage() {
         <SidebarInset className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto flex flex-col">
           <div className="flex items-center justify-between mb-6">
              <div className="flex items-center">
-                <SidebarTrigger className="md:hidden mr-2" /> 
+                <MainSidebarTrigger className="md:hidden mr-2" /> 
                 <h1 className={cn(
                   "text-3xl md:text-4xl font-headline font-semibold text-gradient-theme",
                   "text-glass-shadow"
@@ -336,11 +340,11 @@ export default function AdminDashboardPage() {
                           <Edit className="h-4 w-4" />
                         </Button>
                         <AlertDialog>
-                          <DialogTrigger asChild>
+                          <AlertDialogTrigger asChild>
                              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
                               <Trash2 className="h-4 w-4" />
                             </Button>
-                          </DialogTrigger>
+                          </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
                               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
