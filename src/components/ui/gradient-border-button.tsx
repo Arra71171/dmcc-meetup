@@ -27,7 +27,7 @@ export function GradientBorderButton({ children, className, asChild = false, ...
       <span className={cn(
         "relative inline-flex h-full w-full cursor-pointer items-center justify-center rounded-md",
         "px-6 py-3 text-sm font-medium",
-        "bg-primary text-primary-foreground dark:bg-primary dark:text-primary-foreground",
+        "bg-primary text-primary-foreground dark:bg-card dark:text-card-foreground",
         "group-hover:opacity-90", // Added hover effect for visual feedback
         "transition-all duration-200"
       )}>

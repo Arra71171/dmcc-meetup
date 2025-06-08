@@ -142,7 +142,7 @@ export function RegistrationFormSection() {
         <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px] space-y-6 text-center">
           <UserCircle className="h-16 w-16 text-accent mb-4" />
           <h3 className="text-2xl font-semibold">Authentication Required</h3>
-          <p className="text-muted-foreground">
+          <p className="text-card-foreground">
             Please sign in or create an account to complete your registration for the Meetei People's Convention.
           </p>
           <GradientBorderButton onClick={openAuthDialog} className="font-headline text-lg py-3 mt-2">
