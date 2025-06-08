@@ -44,7 +44,7 @@ const registrationFormSchema = z.object({
   address: z.string().max(250, {message: "Address must be less than 250 characters."}).optional(),
   paymentScreenshot: z
     .any()
-    .refine((files) => files?.length === 1, "Payment screenshot is required.")
+    .refine((files) => files?.length === 1 , "Payment screenshot is required.")
     .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
     .refine(
       (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
@@ -106,7 +106,13 @@ export function RegistrationFormSection() {
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     setIsSubmitting(false);
-    form.reset();
+    form.reset(); // Reset form fields to defaultValues
+     // Clear the file input manually if react-hook-form doesn't handle it well
+    const fileInput = document.querySelector('input[name="paymentScreenshot"]') as HTMLInputElement | null;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+
     toast({
       title: "Registration Submitted!",
       description: "Your registration details have been received. We will verify and get back to you shortly.",
@@ -119,7 +125,7 @@ export function RegistrationFormSection() {
       <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16 text-gradient-theme">
         Register for the Convention
       </h2>
-      <GlassCard className="p-6 md:p-8">
+      <GlassCard className="p-6 md:p-8 text-card-foreground">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -206,7 +212,7 @@ export function RegistrationFormSection() {
                         min="1"
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-muted-foreground">
                       Total members under Family Pass (e.g., 2 adults, 1 child = 3 members). Base price covers 2 adults + up to 2 children. Additional charges may apply for more.
                     </FormDescription>
                     <FormMessage />
@@ -232,18 +238,19 @@ export function RegistrationFormSection() {
             <FormField
               control={form.control}
               name="paymentScreenshot"
-              render={({ field }) => (
+              render={({ field: { onChange, value, ...rest } }) => ( // Destructure to handle file input correctly
                 <FormItem>
                   <FormLabel>Payment Screenshot (UPI to radheoinam@oksbi)</FormLabel>
                   <FormControl>
                     <Input 
                       type="file" 
                       accept={ACCEPTED_IMAGE_TYPES.join(",")}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => field.onChange(e.target.files)}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.files)} // Pass FileList to react-hook-form
                       className="file:text-foreground file:font-medium file:mr-2"
+                      {...rest} // Pass other field props like name, ref
                     />
                   </FormControl>
-                   <FormDescription>
+                   <FormDescription className="text-muted-foreground">
                     Upload a screenshot of your payment. Max 5MB. Accepted: JPG, PNG, WEBP, PDF.
                   </FormDescription>
                   <FormMessage />
@@ -267,7 +274,7 @@ export function RegistrationFormSection() {
                     <FormLabel htmlFor="terms" className="cursor-pointer">
                       I agree to the terms and conditions of the Meetei People's Convention.
                     </FormLabel>
-                    <FormDescription>
+                    <FormDescription className="text-muted-foreground">
                       By registering, you acknowledge and accept our event policies. Full terms available on request.
                     </FormDescription>
                      <FormMessage />
@@ -285,5 +292,3 @@ export function RegistrationFormSection() {
     </section>
   );
 }
-
-    

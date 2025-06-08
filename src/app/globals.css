@@ -28,7 +28,7 @@ body {
   :root {
     /* Light Mode: Base text is now white for global dark background */
     --background: 260 100% 97%; /* Light Lavender solid fallback - primarily for card backgrounds */
-    --foreground: 0 0% 98%; /* Changed from 0 0% 20% to white */
+    --foreground: 0 0% 98%; /* Global foreground is light due to dark image overlay */
 
     --card: 0 0% 100%; /* White */
     --card-foreground: 0 0% 20%; /* Charcoal Grey - text *on* cards in light mode */
@@ -43,7 +43,7 @@ body {
     --secondary-foreground: 0 0% 9%; /* Default dark text */
 
     --muted: 0 0% 90%; /* Lighter grey for muted backgrounds */
-    --muted-foreground: 0 0% 80%; /* Changed from 0 0% 45% to light gray */
+    --muted-foreground: 0 0% 45%; /* Darker Grey for better contrast on light input backgrounds */
 
     --accent: 0 100% 88%; /* Soft Coral #FFC4C4 for accents */
     --accent-foreground: 0 0% 20%; /* Charcoal Grey text on accent */

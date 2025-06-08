@@ -22,13 +22,13 @@ export function GradientBorderButton({ children, className, asChild = false, ...
       <span className={cn(
         "absolute inset-[-1000%] animate-[spin_2s_linear_infinite]",
         "bg-[conic-gradient(from_90deg_at_50%_50%,hsl(var(--primary))_0%,hsl(var(--accent))_50%,hsl(var(--primary))_100%)]",
-        "dark:bg-[conic-gradient(from_90deg_at_50%_50%,hsl(var(--primary-foreground))_0%,hsl(var(--accent))_50%,hsl(var(--primary-foreground))_100%)]"
+        "dark:bg-[conic-gradient(from_90deg_at_50%_50%,hsl(var(--primary))_0%,hsl(var(--accent))_50%,hsl(var(--primary))_100%)]"
       )} />
       <span className={cn(
         "relative inline-flex h-full w-full cursor-pointer items-center justify-center rounded-md",
         "px-6 py-3 text-sm font-medium",
-        "bg-background text-foreground group-hover:bg-background/80",
-        "dark:bg-neutral-900 dark:text-foreground dark:group-hover:bg-neutral-900/80",
+        "bg-primary text-primary-foreground dark:bg-primary dark:text-primary-foreground",
+        "group-hover:opacity-90", // Added hover effect for visual feedback
         "transition-all duration-200"
       )}>
         {children}
