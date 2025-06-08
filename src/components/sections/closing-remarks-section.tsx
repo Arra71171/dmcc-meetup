@@ -27,7 +27,7 @@ export function ClosingRemarksSection() {
           Get in Touch
         </h2>
         <GlassCard className="p-6 md:p-8">
-          <p className="font-lora text-lg text-foreground/90 dark:text-foreground leading-relaxed mb-6 text-center">
+          <p className="font-lora text-lg text-foreground leading-relaxed mb-6 text-center">
             If you have any questions or need assistance with registration, please feel free to reach out to us:
           </p>
           <div className="space-y-4">
@@ -44,7 +44,7 @@ export function ClosingRemarksSection() {
               </a>
             </div>
           </div>
-          <p className="font-lora text-sm text-muted-foreground mt-6 text-center">
+          <p className="font-lora text-sm text-foreground mt-6 text-center">
             We aim to respond to all inquiries within 24-48 hours during business days. Thank you for your patience as we work to make this event meaningful for everyone.
           </p>
         </GlassCard>
