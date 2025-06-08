@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form"; // Import SubmitHandler
 import * as z from "zod";
 import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import {
@@ -25,9 +25,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { GlassCard } from "@/components/ui/glass-card";
-import { useState, type ChangeEvent } from 'react';
+import { useState, type ChangeEvent, useEffect } from 'react'; // Added useEffect
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
+import { useRegistrations } from "@/contexts/registration-context"; // Import useRegistrations
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -45,14 +46,14 @@ const registrationFormSchema = z.object({
   numberOfFamilyMembers: z.string().optional(),
   address: z.string().max(250, {message: "Address must be less than 250 characters."}).optional(),
   paymentScreenshot: z
-    .any()
+    .custom<FileList | undefined>() // Use custom to handle FileList
     .refine((files) => { 
-      if (!files || files.length === 0) return true;
+      if (!files || files.length === 0) return true; // Optional field
       return files?.[0]?.size <= MAX_FILE_SIZE;
     }, `Max file size is 5MB.`)
     .refine(
       (files) => { 
-        if (!files || files.length === 0) return true;
+        if (!files || files.length === 0) return true; // Optional field
         return ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type);
       },
       ".jpg, .jpeg, .png, .webp and .pdf files are accepted."
@@ -81,7 +82,7 @@ const registrationFormSchema = z.object({
   }
 });
 
-type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
+export type RegistrationFormValues = z.infer<typeof registrationFormSchema>; // Export the type
 
 const defaultValues: Partial<RegistrationFormValues> = {
   fullName: "",
@@ -90,6 +91,7 @@ const defaultValues: Partial<RegistrationFormValues> = {
   address: "",
   numberOfFamilyMembers: "",
   agreeToTerms: false,
+  paymentScreenshot: undefined,
 };
 
 const registrationSteps = [
@@ -104,6 +106,8 @@ const registrationSteps = [
 export function RegistrationFormSection() {
   const { toast } = useToast();
   const { currentUser, loadingAuthState, openAuthDialog } = useAuth();
+  const { addRegistration } = useRegistrations(); // Get addRegistration from context
+  
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationFormSchema),
     defaultValues,
@@ -113,31 +117,50 @@ export function RegistrationFormSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const selectedRegistrationType = form.watch("registrationType");
 
-  async function onSubmit(data: RegistrationFormValues) {
+  // Pre-fill email if user is logged in
+  useEffect(() => {
+    if (currentUser && currentUser.email) {
+      form.setValue("email", currentUser.email, { shouldValidate: true });
+    }
+  }, [currentUser, form]);
+
+  const onSubmit: SubmitHandler<RegistrationFormValues> = async (data) => {
     if (!currentUser) {
       toast({ title: "Authentication Required", description: "Please sign in to submit the form.", variant: "destructive" });
       openAuthDialog();
       return;
     }
     setIsSubmitting(true);
-    console.log("Form data submitted:", data, "by user:", currentUser.uid);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    form.reset(); 
-    const fileInput = document.querySelector('input[name="paymentScreenshot"]') as HTMLInputElement | null;
-    if (fileInput) {
-      fileInput.value = ''; // Clear file input
-    }
+    try {
+      // Simulate API call / processing delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      addRegistration(data); // Add to context
+      
+      toast({
+        title: "Registration Submitted!",
+        description: "Your registration details have been received. We will verify and get back to you shortly.",
+        variant: "default", 
+      });
+      form.reset(); 
+      // Manually clear file input for paymentScreenshot
+      const fileInput = document.querySelector('input[type="file"][name="paymentScreenshot"]') as HTMLInputElement | null;
+      if (fileInput) {
+        fileInput.value = ''; 
+      }
 
-    toast({
-      title: "Registration Submitted!",
-      description: "Your registration details have been received. We will verify and get back to you shortly.",
-      variant: "default", 
-    });
-  }
+    } catch (error) {
+      console.error("Submission Error:", error);
+      toast({
+        title: "Submission Failed",
+        description: "There was an error submitting your registration. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section id="registration-form" className="w-full max-w-3xl px-4 mx-auto">
@@ -197,7 +220,7 @@ export function RegistrationFormSection() {
                 <FormItem>
                   <FormLabel className="font-subtitle text-card-foreground">Email Address</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="your.email@example.com" {...field} defaultValue={currentUser.email || ""} />
+                    <Input type="email" placeholder="your.email@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -255,7 +278,7 @@ export function RegistrationFormSection() {
                         {...field}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => {
                             const value = e.target.value;
-                            field.onChange(value); // Ensure value is passed correctly
+                            field.onChange(value); 
                         }}
                         min="1"
                       />
@@ -323,6 +346,7 @@ export function RegistrationFormSection() {
                       onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.files)} 
                       className="file:text-foreground file:font-subtitle file:uppercase file:text-xs file:tracking-wider file:font-medium file:mr-3"
                       {...rest} 
+                      name="paymentScreenshot" // Ensure name attribute is present for clearing
                     />
                   </FormControl>
                    <FormDescription className="text-muted-foreground">

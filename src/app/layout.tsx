@@ -3,6 +3,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/contexts/auth-context';
+import { RegistrationProvider } from '@/contexts/registration-context'; // Import RegistrationProvider
 import { AuthDialog } from '@/components/auth/auth-dialog';
 import { Header } from '@/components/layout/header';
 import { cn } from '@/lib/utils';
@@ -29,12 +30,14 @@ export default function RootLayout({
         <div className="absolute inset-0 -z-10 bg-pastel-gradient-overlay opacity-50 dark:opacity-30" />
         <div className="relative z-0 flex flex-col min-h-screen">
           <AuthProvider>
-            <Header />
-            <div className="flex-grow">
-              {children}
-            </div>
-            <AuthDialog />
-            <Toaster />
+            <RegistrationProvider> {/* Wrap with RegistrationProvider */}
+              <Header />
+              <div className="flex-grow">
+                {children}
+              </div>
+              <AuthDialog />
+              <Toaster />
+            </RegistrationProvider>
           </AuthProvider>
         </div>
       </body>
