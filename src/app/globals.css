@@ -20,9 +20,9 @@ body {
   background: linear-gradient(to right, hsl(195, 100%, 81%), hsl(256, 100%, 89%), hsl(23, 100%, 88%)); /* Soft Teal -> Lilac -> Peach */
 }
 
-/* Gradient for heading text in light mode - darker variant */
+/* Gradient for heading text in light mode - richer, multi-stop gradient based on user image */
 .text-gradient-heading-light-mode {
-  background: linear-gradient(to right, hsl(195, 70%, 45%), hsl(256, 70%, 50%), hsl(23, 80%, 55%));
+  background: linear-gradient(to right, hsl(180, 60%, 50%), hsl(220, 80%, 55%), hsl(270, 80%, 55%), hsl(320, 80%, 60%), hsl(25, 90%, 55%));
 }
 
 /* Gradient for heading text in dark mode - original light pastel variant */
