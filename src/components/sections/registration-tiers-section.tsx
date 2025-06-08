@@ -41,12 +41,12 @@ const tiers = [
 export function RegistrationTiersSection() {
   const { currentUser, openAuthDialog } = useAuth();
 
-  const handleTierClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const handleTierClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!currentUser) {
       e.preventDefault(); 
       openAuthDialog();
     }
-    // If user is logged in, allow Link's default navigation to #registration-form
+    // If user is logged in, Link's default behavior will navigate to #registration-form
   };
 
   return (
