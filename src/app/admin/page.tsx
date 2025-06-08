@@ -29,7 +29,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger, // Import AlertDialogTrigger
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Dialog,
@@ -38,7 +38,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogTrigger, // This DialogTrigger is for the edit modal
 } from "@/components/ui/dialog";
 import {
   SidebarProvider,
@@ -46,7 +45,7 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
-  // SidebarTrigger, // This SidebarTrigger is for the main sidebar, aliased to avoid confusion
+  SidebarTrigger, // Import SidebarTrigger
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
