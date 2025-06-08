@@ -15,23 +15,24 @@ export function UrgencyMeter({ value: initialValue }: UrgencyMeterProps) {
     setProgress(initialValue);
   }, [initialValue]);
   
-  let urgencyText = "Low Urgency";
+  let urgencyText = "Early Bird"; // Default text
   if (progress > 75) {
-    urgencyText = "High Urgency!";
+    urgencyText = "Filling Fast!";
   } else if (progress > 50) {
-    urgencyText = "Medium Urgency";
+    urgencyText = "Popular!";
+  } else if (progress > 25) {
+    urgencyText = "Good Availability";
   }
+
 
   return (
     <div className="w-full">
       <div className="flex justify-between mb-1">
-        <span className="text-sm font-medium font-body text-primary dark:text-primary-foreground">Registration Closes Soon!</span>
+        <span className="text-sm font-medium font-body text-primary dark:text-primary-foreground">Registration Capacity</span>
         <span className="text-sm font-medium font-body text-accent dark:text-accent-foreground">{urgencyText}</span>
       </div>
       <Progress value={progress} className="w-full h-3 md:h-4" />
-       <p className="text-xs text-muted-foreground mt-1 font-lora">
-        {progress}% of spots are filling up quickly! Don't miss out.
-      </p>
+       {/* This text is now moved to the parent component for more specific messaging */}
     </div>
   );
 }

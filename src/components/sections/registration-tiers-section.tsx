@@ -5,36 +5,35 @@ import { CheckCircle2 } from "lucide-react";
 const tiers = [
   {
     name: "Professional",
-    price: "$199",
+    price: "₹500",
     features: [
-      "Full Access to All Sessions",
-      "Networking Dinner Invitation",
-      "Exclusive Workshop Materials",
-      "Welcome Kit",
+      "Full access to all sessions",
+      "Networking reception",
+      "Cultural performance priority seating",
+      "Conference materials and resources",
     ],
     cta: "Register as Professional",
   },
   {
     name: "Student",
-    price: "$99",
+    price: "₹300",
     features: [
-      "Full Access to All Sessions",
-      "Dedicated Student Workshops",
-      "Digital Resource Pack",
-      "Community Forum Access",
+      "Complete convention access",
+      "Educational resource package",
+      "Mentorship program enrollment",
+      "Career guidance sessions",
     ],
-    disclaimer: "Valid student ID required.",
     cta: "Register as Student",
   },
   {
     name: "Family Pass",
-    price: "$349",
-    description: "(2 Adults + 2 Children)",
+    price: "₹800",
+    description: "(2 Adults + up to 2 Children under 16)",
     features: [
-      "Full Access for 2 Adults",
-      "Access to Kids Zone for 2 Children",
-      "Family-Friendly Activities",
-      "Special Family Welcome Pack",
+      "Full access for 2 adults",
+      "Entry for up to 2 children (under 16)",
+      "Family-friendly programming & workshops",
+      "Community bonding activities",
     ],
     cta: "Get Family Pass",
   },
@@ -44,7 +43,7 @@ export function RegistrationTiersSection() {
   return (
     <section id="register" className="w-full max-w-6xl px-4">
       <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16">
-        Join The Celebration
+        Registration Categories & Investment
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
         {tiers.map((tier) => (

@@ -6,24 +6,24 @@ import { useState, useEffect } from 'react';
 
 const testimonials = [
   {
-    quote: "A landmark event for our community, fostering unity and celebrating our shared heritage like never before.",
-    author: "Dr. Anya Sharma",
-    title: "DMCC Chair",
+    quote: "This convention represents more than a gathering—it's a clarion call for our community to reclaim its rightful place in India's narrative. We are not merely preserving tradition; we are actively shaping the future.",
+    author: "DMCC Leadership",
+    title: "Strategic Vision",
   },
   {
-    quote: "Incredibly insightful sessions and the cultural showcase was simply breathtaking. A must-attend event!",
-    author: "John B.",
-    title: "Past Attendee",
+    quote: "This gathering represents a pivotal moment in our community's journey. We are not just celebrating our past—we are actively constructing a future where Meetei culture thrives in the modern world.",
+    author: "DMCC Organizers",
+    title: "Leadership Commitment",
   },
   {
-    quote: "The networking opportunities were invaluable. I connected with so many inspiring individuals.",
-    author: "Maria L.",
-    title: "Community Leader",
+    quote: "Past DMCC initiatives have consistently strengthened our community bonds and amplified our voice. This convention will be a new peak for us all.",
+    author: "A. Meetei", // Placeholder name
+    title: "Previous Initiative Attendee",
   },
   {
-    quote: "DMCC events always exceed expectations. The energy and passion are palpable.",
-    author: "Samuel K.",
-    title: "Long-time Supporter",
+    quote: "The opportunity to connect with fellow Meeteis in Delhi and discuss our future is invaluable. DMCC is paving the way.",
+    author: "L. Chanu", // Placeholder name
+    title: "Community Enthusiast",
   }
 ];
 
@@ -37,12 +37,23 @@ export function TestimonialSliderSection() {
     return () => clearInterval(interval);
   }, []);
 
+  if (!testimonials || testimonials.length === 0) {
+    return null; // Or some fallback UI
+  }
+  
   const currentTestimonial = testimonials[currentIndex];
+   if (!currentTestimonial) {
+    // This should ideally not happen if testimonials array is not empty
+    // and currentIndex is always kept within bounds.
+    // However, as a safeguard:
+    return <div className="text-center p-4">Loading testimonials...</div>;
+  }
+
 
   return (
     <section id="testimonials" className="w-full max-w-3xl px-4">
       <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16">
-        Voices of Our Community
+        Words from Our Leadership & Community
       </h2>
       <GlassCard className="relative overflow-hidden p-6 md:p-10 min-h-[280px] md:min-h-[250px] flex flex-col justify-center items-center">
         <Quote className="w-12 h-12 text-accent dark:text-accent-foreground absolute top-4 left-4 opacity-30" />
