@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react'; // Added this line
+import { useState } from 'react';
 import { Logo } from './logo';
 import { GradientBorderButton } from '@/components/ui/gradient-border-button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -49,12 +49,12 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Logo />
-        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+        <nav className="hidden md:flex items-center space-x-1 text-sm font-medium">
           {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
+              className="transition-colors text-foreground/70 hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md"
             >
               {item.label}
             </Link>
@@ -92,7 +92,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-             <Button variant="ghost" onClick={openAuthDialog} className="text-foreground/60 hover:text-foreground/80">
+             <Button variant="ghost" onClick={openAuthDialog} className="text-foreground/70 hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent px-3 py-2 rounded-md">
               <LogIn className="mr-2 h-4 w-4" /> Sign In
             </Button>
           )}
@@ -117,19 +117,19 @@ export function Header() {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background">
-              <nav className="flex flex-col space-y-6 mt-8">
+            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background p-4">
+              <nav className="flex flex-col space-y-2 mt-8">
                 {navItems.map((item) => (
                   <Link
                     key={item.label}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-lg font-medium transition-colors hover:text-foreground/80 text-foreground"
+                    className="text-lg font-medium transition-colors text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md block"
                   >
                     {item.label}
                   </Link>
                 ))}
-                <div className="pt-4 border-t border-border">
+                <div className="pt-6 border-t border-border/40 mt-4">
                   {loadingAuthState && <div className="h-10 bg-muted/50 animate-pulse rounded-md w-full my-2"></div>}
                   {!loadingAuthState && currentUser && (
                     <>
@@ -156,12 +156,12 @@ export function Header() {
                 </div>
                  {currentUser ? (
                     <Link href="/#registration-form" onClick={() => setMobileMenuOpen(false)}>
-                        <GradientBorderButton asChild className="w-full mt-2">
+                        <GradientBorderButton asChild className="w-full mt-4">
                              Secure Your Place
                         </GradientBorderButton>
                     </Link>
                   ) : (
-                    <GradientBorderButton onClick={() => {openAuthDialog(); setMobileMenuOpen(false);}} className="w-full mt-2">
+                    <GradientBorderButton onClick={() => {openAuthDialog(); setMobileMenuOpen(false);}} className="w-full mt-4">
                       Register / Sign In
                     </GradientBorderButton>
                   )}
