@@ -9,8 +9,7 @@ interface LogoProps {
 export function Logo({ className }: LogoProps) {
   return (
     <Link href="/" className={cn(
-      "flex items-center justify-center w-16 h-16 rounded-lg",
-      "bg-primary-foreground text-primary dark:text-primary-foreground",
+      "font-headline font-bold text-2xl text-foreground", // Ensures light text on dark header
       className
     )}>
       DMCC
