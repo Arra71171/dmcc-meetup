@@ -4,10 +4,9 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Logo } from './logo';
-// import { GradientBorderButton } from '@/components/ui/gradient-border-button'; // Removed as CTA is gone
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, LogOut, LogIn, UserCircle, ChevronDown, LayoutDashboard, ShieldAlert } from 'lucide-react';
+import { Menu, LogOut, UserCircle, ChevronDown, LayoutDashboard, ShieldAlert } from 'lucide-react'; // Removed LogIn as it's no longer used directly here for a button
 import { useAuth } from '@/contexts/auth-context';
 import {
   DropdownMenu,
@@ -23,7 +22,7 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/#highlights', label: 'Highlights' },
-  { href: '/#registration-form', label: 'Register' }, // This link still makes sense for navigation
+  { href: '/#registration-form', label: 'Register' },
 ];
 
 export function Header() {
@@ -44,15 +43,15 @@ export function Header() {
     return 'U';
   };
 
-  const effectiveUserDisplay = isAdminOverrideLoggedIn 
-    ? { displayName: "Admin", email: "Administrator", photoURL: null, isOverride: true } 
+  const effectiveUserDisplay = isAdminOverrideLoggedIn
+    ? { displayName: "Admin", email: "Administrator", photoURL: null, isOverride: true }
     : currentUser;
 
 
   return (
     <header className={cn(
         "sticky top-0 z-50 w-full",
-        "bg-background/80 dark:bg-background/70 backdrop-blur-md", 
+        "bg-background/80 dark:bg-background/70 backdrop-blur-md",
         "border-b border-border/60"
       )}>
       <div className="container flex h-20 max-w-screen-2xl items-center justify-between px-4 md:px-6">
@@ -109,12 +108,8 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-             <Button variant="ghost" onClick={() => openAuthDialog()} className="font-subtitle text-base text-foreground/80 hover:text-primary dark:hover:text-primary focus:outline-none focus:text-primary hover:bg-primary/10 focus:bg-primary/10 px-4 py-2 rounded-md">
-              <LogIn className="mr-2 h-5 w-5" /> Sign In
-            </Button>
+            null /* "Sign In" button removed for non-authenticated users */
           )}
-          
-          {/* GradientBorderButton CTA removed from Header */}
         </div>
         <div className="md:hidden">
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -165,12 +160,9 @@ export function Header() {
                     </>
                   )}
                   {!loadingAuthState && !effectiveUserDisplay && (
-                    <Button variant="outline" onClick={() => { openAuthDialog(); setMobileMenuOpen(false);}} className="w-full font-subtitle">
-                      <LogIn className="mr-2 h-4 w-4" /> Sign In / Register
-                    </Button>
+                    null /* "Sign In / Register" button removed from mobile menu */
                   )}
                 </div>
-                {/* GradientBorderButton CTA removed from Mobile Menu */}
               </nav>
             </SheetContent>
           </Sheet>
@@ -179,4 +171,3 @@ export function Header() {
     </header>
   );
 }
-
