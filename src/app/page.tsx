@@ -11,10 +11,11 @@ import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center w-full">
+    // Removed flex flex-col items-center from main, sections handle their own centering/width
+    <main className="w-full"> 
       <HeroSection />
       
-      <div className="flex flex-col items-center w-full space-y-16 md:space-y-24 lg:space-y-32 py-16 md:py-24 lg:py-32">
+      <div className="flex flex-col items-center w-full space-y-16 md:space-y-24 lg:space-y-32 py-16 md:py-24 lg:py-32 px-4">
         <ImpactMetricsSection />
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-foreground/10 dark:bg-foreground/5 h-0.5" />
         <EventHighlightsSection />
@@ -30,7 +31,7 @@ export default function Home() {
         <FaqSection />
       </div>
 
-      <footer className="w-full py-12 mt-16 border-t border-foreground/10">
+      <footer className="w-full py-12 mt-16 border-t border-foreground/10 bg-background"> {/* Ensure footer has a background */}
         <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="font-lora text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Delhi Meetei Coordinating Committee (DMCC). All rights reserved.
