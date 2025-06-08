@@ -10,7 +10,7 @@ export function Logo({ className }: LogoProps) {
   return (
     <Link href="/" className={cn(
       "flex items-center justify-center w-16 h-16 rounded-lg",
-      "bg-primary text-primary-foreground dark:bg-card dark:text-card-foreground",
+      "bg-primary-foreground text-primary dark:text-primary-foreground",
       className
     )}>
       DMCC

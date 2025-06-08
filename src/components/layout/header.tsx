@@ -45,7 +45,7 @@ export function Header() {
 
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/80 dark:bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-white/50 dark:supports-[backdrop-filter]:bg-background/50">
+    <header className="sticky top-0 z-50 w-full border-b border-foreground/10 bg-black/[.85] dark:bg-black/[.90] backdrop-blur supports-[backdrop-filter]:bg-black/[.85] dark:supports-[backdrop-filter]:bg-black/[.90]">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Logo />
         <nav className="hidden md:flex items-center space-x-1 text-sm font-semibold">
