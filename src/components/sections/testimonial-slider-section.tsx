@@ -59,10 +59,10 @@ export function TestimonialSliderSection() {
       <GlassCard className="relative overflow-hidden p-6 md:p-10 min-h-[280px] md:min-h-[250px] flex flex-col justify-center items-center">
         <Quote className="w-12 h-12 text-accent dark:text-accent-foreground absolute top-4 left-4 opacity-30" />
         <div className="text-center">
-          <p className="text-xl md:text-2xl font-lora italic text-foreground/90 dark:text-foreground/80 mb-6">
+          <p className="text-xl md:text-2xl font-lora italic text-foreground/90 dark:text-foreground mb-6">
             &ldquo;{currentTestimonial.quote}&rdquo;
           </p>
-          <p className="font-bold font-headline text-lg text-primary dark:text-primary-foreground">
+          <p className="font-bold font-headline text-lg text-foreground">
             {currentTestimonial.author}
           </p>
           <p className="font-body text-sm text-muted-foreground">

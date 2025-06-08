@@ -13,7 +13,7 @@ export function CountdownUrgencySection() {
         <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase text-gradient-theme">
           Don&apos;t Delay - Register Today!
         </h2>
-        <p className="text-center font-lora text-lg text-foreground/80 dark:text-foreground/70 -mt-4">
+        <p className="text-center font-lora text-lg text-foreground/80 dark:text-foreground -mt-4">
           The countdown has begun. Secure your spot for an event that promises to be historic. Limited seats available!
         </p>
         <CountdownTimer targetDate={targetEventDate} />

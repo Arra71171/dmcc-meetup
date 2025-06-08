@@ -33,7 +33,7 @@ export function EventHighlightsSection() {
              {highlight.icon}
             </div>
             <h3 className="text-2xl font-semibold font-headline mb-3">{highlight.title}</h3>
-            <p className="font-lora text-foreground/80 dark:text-foreground/70 leading-relaxed">
+            <p className="font-lora text-foreground/80 dark:text-foreground leading-relaxed">
               {highlight.description}
             </p>
           </GlassCard>

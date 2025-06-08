@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -42,7 +43,7 @@ body {
     --secondary-foreground: 0 0% 9%; /* Default dark text */
 
     --muted: 0 0% 90%; /* Lighter grey for muted backgrounds */
-    --muted-foreground: 0 0% 35%; /* Darker grey for muted text - improved contrast */
+    --muted-foreground: 0 0% 45%; /* Darker grey for muted text - improved contrast */
 
     --accent: 0 100% 88%; /* Soft Coral #FFC4C4 for accents */
     --accent-foreground: 0 0% 20%; /* Charcoal Grey text on accent */
@@ -90,7 +91,7 @@ body {
     --secondary-foreground: 0 0% 98%; /* Default light text */
 
     --muted: 0 0% 20%; /* Darker grey for muted backgrounds */
-    --muted-foreground: 0 0% 75%; /* Lighter grey for muted text - improved contrast */
+    --muted-foreground: 0 0% 80%; /* Lighter grey for muted text - improved contrast */
 
     --accent: 271 56% 50%; /* Cosmic Purple, adjusted lightness for accent */
     --accent-foreground: 0 0% 98%; /* White/Light Grey text on accent */
