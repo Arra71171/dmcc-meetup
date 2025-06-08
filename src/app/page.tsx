@@ -4,9 +4,8 @@ import { ImpactMetricsSection } from "@/components/sections/impact-metrics-secti
 import { EventHighlightsSection } from "@/components/sections/event-highlights-section";
 import { RegistrationTiersSection } from "@/components/sections/registration-tiers-section";
 import { RegistrationFormSection } from "@/components/sections/registration-form-section";
-import { CountdownUrgencySection } from "@/components/sections/countdown-urgency-section";
-import { TestimonialSliderSection } from "@/components/sections/testimonial-slider-section";
-import { FaqSection } from "@/components/sections/faq-section";
+import { EventDetailsSection } from "@/components/sections/event-details-section";
+import { ClosingRemarksSection } from "@/components/sections/closing-remarks-section";
 import { Separator } from "@/components/ui/separator";
 
 
@@ -20,37 +19,25 @@ export default function Home() {
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-foreground/10 dark:bg-foreground/5 h-0.5" />
         <EventHighlightsSection />
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-foreground/10 dark:bg-foreground/5 h-0.5" />
-        <CountdownUrgencySection />
+        <EventDetailsSection />
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-foreground/10 dark:bg-foreground/5 h-0.5" />
         <RegistrationTiersSection />
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-foreground/10 dark:bg-foreground/5 h-0.5" />
         <RegistrationFormSection />
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-foreground/10 dark:bg-foreground/5 h-0.5" />
-        <TestimonialSliderSection />
-        <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-foreground/10 dark:bg-foreground/5 h-0.5" />
-        <FaqSection />
+        <ClosingRemarksSection />
       </div>
 
       <footer className="w-full py-12 mt-16 border-t border-border">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="font-lora text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Delhi Meetei Coordinating Committee (DMCC). All rights reserved.
+            © 2025 Delhi Meetei Coordinating Committee. All rights reserved.
           </p>
-          <p className="font-lora text-xs text-muted-foreground mt-2">
-            Venue: JNU Convention Center, New Delhi | Date: Sunday, June 15, 2025 | Time: 10:00 AM - 6:00 PM
-          </p>
-          <div className="mt-4 font-lora text-xs text-muted-foreground space-y-1">
-            <p>Contact: <a href="mailto:dmcc.office11@gmail.com" className="text-accent dark:text-accent hover:underline">dmcc.office11@gmail.com</a> | Phone: <a href="tel:+919717921812" className="text-accent dark:text-accent hover:underline">+91 9717921812</a></p>
-            <p>Payment: UPI ID: radheoinam@oksbi (Screenshot upload recommended for verification)</p>
-            <p>Response Time: 24-48 hours during business days</p>
-          </div>
           <p className="font-lora text-xs text-muted-foreground mt-3">
-            An initiative to foster culture, connection, and collaboration.
+            Organized with care by the DMCC Team
           </p>
         </div>
       </footer>
     </main>
   );
 }
-
-    

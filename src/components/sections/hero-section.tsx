@@ -8,7 +8,6 @@ export function HeroSection() {
       id="hero"
       className="relative w-full flex flex-col items-center justify-center text-center py-24 md:py-32 lg:py-48 px-4 overflow-hidden min-h-[calc(100vh-4rem)]"
     >
-      {/* Background Image and Overlay are now global in layout.tsx */}
       <div className="relative z-10 max-w-4xl mx-auto">
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase font-headline tracking-tight !leading-tight">
           <span className="block text-gradient-theme">MEETEI PEOPLE&apos;S</span>
@@ -18,10 +17,10 @@ export function HeroSection() {
           </span>
         </h1>
         <p className="mt-4 text-lg md:text-xl font-medium font-body text-gray-200 dark:text-gray-300 max-w-2xl mx-auto">
-          Uniting Heritage, Empowering Future
+          Celebrating Our Heritage, Honoring Our Foundation, and Shaping a Brighter Tomorrow
         </p>
         <p className="mt-6 text-base md:text-lg font-lora text-gray-200 dark:text-gray-300 max-w-3xl mx-auto">
-          Join us for the Meetei People&apos;s Convention, Delhi 2025, a landmark gathering on our 2nd Rising Day. This event, set for June 15, 2025, at JNU Convention Center, celebrates our rich heritage and charts a course for a vibrant future. Be part of a historic moment for community empowerment and cultural renaissance in the nation&apos;s capital.
+          We are pleased to invite you to join us for the inaugural Meetei People&apos;s Convention, Delhi 2025, an event that marks our first step in bringing together the Meetei community in the National Capital Region. This gathering also celebrates the 2nd Rising Day of the Delhi Meetei Coordinating Committee (DMCC), as we reflect on our journey and look ahead with hope.
         </p>
         <Link href="/#registration-form">
           <GradientBorderButton asChild className="mt-10 text-lg px-8 py-4 font-headline">

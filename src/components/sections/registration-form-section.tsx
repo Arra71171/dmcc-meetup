@@ -28,12 +28,10 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { useState, type ChangeEvent } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
-import { Loader2, UserCircle } from "lucide-react";
-
+import { Loader2 } from "lucide-react"; // UserCircle removed as it's no longer directly used here
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
-
 
 const registrationFormSchema = z.object({
   fullName: z.string().min(2, { message: "Full name must be at least 2 characters." }).max(100, { message: "Full name must be less than 100 characters." }),
@@ -46,12 +44,17 @@ const registrationFormSchema = z.object({
   address: z.string().max(250, {message: "Address must be less than 250 characters."}).optional(),
   paymentScreenshot: z
     .any()
-    .refine((files) => files?.length === 1 , "Payment screenshot is required.")
-    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+    .refine((files) => { // Optional screenshot
+      if (!files || files.length === 0) return true;
+      return files?.[0]?.size <= MAX_FILE_SIZE;
+    }, `Max file size is 5MB.`)
     .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+      (files) => { // Optional screenshot
+        if (!files || files.length === 0) return true;
+        return ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type);
+      },
       ".jpg, .jpeg, .png, .webp and .pdf files are accepted."
-    ),
+    ).optional(),
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: "You must agree to the terms and conditions.",
   }),
@@ -65,7 +68,7 @@ const registrationFormSchema = z.object({
       });
     } else {
       const numMembers = parseInt(data.numberOfFamilyMembers, 10);
-      if (isNaN(numMembers) || numMembers < 1 || numMembers > 10) { // Assuming max 10 members for sanity
+      if (isNaN(numMembers) || numMembers < 1 || numMembers > 10) { 
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Please enter a valid number of family members (1-10).",
@@ -87,6 +90,14 @@ const defaultValues: Partial<RegistrationFormValues> = {
   agreeToTerms: false,
 };
 
+const registrationSteps = [
+    "Sign in or create an account",
+    "Fill out the registration form with your details",
+    "Make payment using UPI",
+    "Upload payment screenshot (optional but recommended)",
+    "Submit your registration",
+];
+
 export function RegistrationFormSection() {
   const { toast } = useToast();
   const { currentUser, loadingAuthState, openAuthDialog } = useAuth();
@@ -107,10 +118,7 @@ export function RegistrationFormSection() {
     }
     setIsSubmitting(true);
     console.log("Form data submitted:", data, "by user:", currentUser.uid);
-    // In a real app, you'd send this to a backend or Genkit flow.
-    // For the payment screenshot, you'd handle the File object: data.paymentScreenshot[0]
     
-    // Simulate API call for demonstration
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     setIsSubmitting(false);
@@ -130,7 +138,7 @@ export function RegistrationFormSection() {
   return (
     <section id="registration-form" className="w-full max-w-3xl px-4 mx-auto">
       <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16 text-gradient-theme">
-        Register for the Convention
+        How to Register
       </h2>
       {loadingAuthState && (
         <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px]">
@@ -140,7 +148,7 @@ export function RegistrationFormSection() {
       )}
       {!loadingAuthState && !currentUser && (
         <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px] space-y-6 text-center">
-          <UserCircle className="h-16 w-16 text-accent mb-4" />
+           {/* UserCircle icon removed as per previous fix request */}
           <h3 className="text-2xl font-semibold text-foreground">Authentication Required</h3>
           <p className="text-foreground">
             Please sign in or create an account to complete your registration for the Meetei People's Convention.
@@ -152,6 +160,14 @@ export function RegistrationFormSection() {
       )}
       {!loadingAuthState && currentUser && (
       <GlassCard className="p-6 md:p-8 text-card-foreground">
+        <div className="mb-8 space-y-3">
+            <h4 className="text-xl font-semibold font-headline text-center">Registration Steps:</h4>
+            <ol className="list-decimal list-inside space-y-1 font-lora text-foreground/90">
+                {registrationSteps.map((step, index) => (
+                    <li key={index}>{step}</li>
+                ))}
+            </ol>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -239,7 +255,7 @@ export function RegistrationFormSection() {
                       />
                     </FormControl>
                     <FormDescription className="text-muted-foreground">
-                      Total members under Family Pass (e.g., 2 adults, 1 child = 3 members). Base price covers 2 adults + up to 2 children. Additional charges may apply for more.
+                      Total members under Family Pass (e.g., 2 adults, 1 child = 3). Base price covers 2 adults + up to 2 children.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -266,7 +282,7 @@ export function RegistrationFormSection() {
               name="paymentScreenshot"
               render={({ field: { onChange, value, ...rest } }) => ( 
                 <FormItem>
-                  <FormLabel>Payment Screenshot (UPI to radheoinam@oksbi)</FormLabel>
+                  <FormLabel>Payment Screenshot (UPI to radheoinam@oksbi - Optional but Recommended)</FormLabel>
                   <FormControl>
                     <Input 
                       type="file" 
@@ -277,7 +293,7 @@ export function RegistrationFormSection() {
                     />
                   </FormControl>
                    <FormDescription className="text-muted-foreground">
-                    Upload a screenshot of your payment. Max 5MB. Accepted: JPG, PNG, WEBP, PDF.
+                    UPI ID: radheoinam@oksbi. You can scan the QR code or use the UPI ID directly. We will manually verify all payments and confirm your registration within 24-48 hours.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -301,7 +317,7 @@ export function RegistrationFormSection() {
                       I agree to the terms and conditions of the Meetei People's Convention.
                     </FormLabel>
                     <FormDescription className="text-muted-foreground">
-                      By registering, you acknowledge and accept our event policies. Full terms available on request.
+                      By registering, you acknowledge and accept our event policies.
                     </FormDescription>
                      <FormMessage />
                   </div>
@@ -310,7 +326,7 @@ export function RegistrationFormSection() {
             />
 
             <GradientBorderButton type="submit" className="w-full font-headline text-lg py-3" disabled={isSubmitting}>
-              {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Submitting...</> : "Secure My Spot"}
+              {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Submitting...</> : "Submit Your Registration"}
             </GradientBorderButton>
           </form>
         </Form>

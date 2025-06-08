@@ -9,7 +9,7 @@ import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: "Meetei People's Convention, Delhi 2025 | DMCC",
-  description: "Join the Delhi Meetei Coordinating Committee for the Meetei People's Convention 2025. Celebrating heritage, honoring our foundation, and shaping a brighter tomorrow on June 15, 2025, at JNU Convention Center, New Delhi.",
+  description: "Celebrating Our Heritage, Honoring Our Foundation, and Shaping a Brighter Tomorrow",
 };
 
 export default function RootLayout({
