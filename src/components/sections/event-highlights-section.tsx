@@ -1,28 +1,28 @@
 
 import { GlassCard } from "@/components/ui/glass-card";
-import { MessageSquare, Presentation, Music2, Link as LinkIcon } from "lucide-react";
+import { Target, Drama, MessageSquare, Handshake } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const highlights = [
   {
+    icon: <Target className="w-10 h-10 text-accent" />,
+    title: "Inspiring Leadership Talks",
+    description: "Discover insights into Manipur's evolving social, cultural, and economic landscape through distinguished speakers who are shaping our community's future.",
+  },
+  {
+    icon: <Drama className="w-10 h-10 text-accent" />,
+    title: "Rich Cultural Showcase",
+    description: "Immerse yourself in captivating performances and traditional art forms that beautifully preserve and celebrate our heritage.",
+  },
+  {
     icon: <MessageSquare className="w-10 h-10 text-accent" />,
-    title: "Community Conversations",
-    description: "Open discussions about the experiences, challenges, and aspirations of Meetei families living in Delhi NCR. We invite you to share your stories and learn from others.",
+    title: "Meaningful Community Dialogue",
+    description: "Engage in thoughtful conversations about our collective aspirations and collaborate on solutions for our community's growth.",
   },
   {
-    icon: <Presentation className="w-10 h-10 text-accent" />,
-    title: "Thoughtful Presentations",
-    description: "Speakers from our community will share insights on Manipur's social, cultural, and economic landscape, helping us stay connected to our homeland's developments.",
-  },
-  {
-    icon: <Music2 className="w-10 h-10 text-accent" />,
-    title: "Cultural Expressions",
-    description: "Performances celebrating our artistic traditions, from classical Manipuri dance to folk songs, offering moments of cultural pride and connection.",
-  },
-  {
-    icon: <LinkIcon className="w-10 h-10 text-accent" />,
-    title: "Building Connections",
-    description: "Opportunities to meet fellow community members, from professionals and students to families, creating a network of mutual support and friendship.",
+    icon: <Handshake className="w-10 h-10 text-accent" />,
+    title: "Valuable Networking",
+    description: "Connect with professionals, students, families, and thought leaders who share your passion for community development.",
   },
 ];
 
@@ -33,7 +33,7 @@ export function EventHighlightsSection() {
         "text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-10 md:mb-16 text-gradient-theme tracking-wide",
         "text-glass-shadow"
         )}>
-        What We Hope to Share
+        Why This Event Matters
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
         {highlights.map((highlight) => (

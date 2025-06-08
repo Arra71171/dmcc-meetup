@@ -40,20 +40,20 @@ const registrationFormSchema = z.object({
   fullName: z.string().min(2, { message: "Full name must be at least 2 characters." }).max(100, { message: "Full name must be less than 100 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   phone: z.string().min(10, { message: "Phone number must be at least 10 digits." }).regex(/^(\+\d{1,3}[- ]?)?\d{10}$/, { message: "Invalid phone number format." }),
-  registrationType: z.enum(["professional", "student", "family"], {
+  registrationType: z.enum(["professional", "student", "family", "others"], { // Added "others"
     required_error: "Please select a registration type.",
   }),
   numberOfFamilyMembers: z.string().optional(),
   address: z.string().max(250, {message: "Address must be less than 250 characters."}).optional(),
   paymentScreenshot: z
-    .custom<FileList | undefined>() // Use custom to handle FileList
+    .custom<FileList | undefined>() 
     .refine((files) => { 
-      if (!files || files.length === 0) return true; // Optional field
+      if (!files || files.length === 0) return true; 
       return files?.[0]?.size <= MAX_FILE_SIZE;
     }, `Max file size is 5MB.`)
     .refine(
       (files) => { 
-        if (!files || files.length === 0) return true; // Optional field
+        if (!files || files.length === 0) return true; 
         return ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type);
       },
       ".jpg, .jpeg, .png, .webp and .pdf files are accepted."
@@ -61,6 +61,7 @@ const registrationFormSchema = z.object({
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: "You must agree to the terms and conditions.",
   }),
+  expectations: z.string().max(500, {message: "Expectations must be less than 500 characters."}).optional(), // New field for expectations
 }).superRefine((data, ctx) => {
   if (data.registrationType === "family") {
     if (!data.numberOfFamilyMembers || data.numberOfFamilyMembers.trim() === "") {
@@ -82,7 +83,7 @@ const registrationFormSchema = z.object({
   }
 });
 
-export type RegistrationFormValues = z.infer<typeof registrationFormSchema>; // Export the type
+export type RegistrationFormValues = z.infer<typeof registrationFormSchema>; 
 
 const defaultValues: Partial<RegistrationFormValues> = {
   fullName: "",
@@ -92,21 +93,23 @@ const defaultValues: Partial<RegistrationFormValues> = {
   numberOfFamilyMembers: "",
   agreeToTerms: false,
   paymentScreenshot: undefined,
+  expectations: "",
 };
 
 const registrationSteps = [
-    "Sign in or create an account (if not already).",
-    "Fill out the registration form with your details.",
+    "Secure login for data protection.",
+    "Complete your profile with accurate details.",
+    "Select your appropriate registration category.",
+    "Share your expectations for the event (optional).",
     "Make payment using UPI to: radheoinam@oksbi",
     "Optionally, upload a screenshot of your payment confirmation.",
-    "Submit your registration.",
-    "Await manual verification and confirmation (within 24-48 hours)."
+    "Submit your registration and await manual verification (within 24-48 hours)."
 ];
 
 export function RegistrationFormSection() {
   const { toast } = useToast();
   const { currentUser, loadingAuthState, openAuthDialog } = useAuth();
-  const { addRegistration } = useRegistrations(); // Get addRegistration from context
+  const { addRegistration } = useRegistrations(); 
   
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationFormSchema),
@@ -117,10 +120,12 @@ export function RegistrationFormSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const selectedRegistrationType = form.watch("registrationType");
 
-  // Pre-fill email if user is logged in
   useEffect(() => {
     if (currentUser && currentUser.email) {
       form.setValue("email", currentUser.email, { shouldValidate: true });
+    }
+    if (currentUser && currentUser.displayName) {
+      form.setValue("fullName", currentUser.displayName, {shouldValidate: true});
     }
   }, [currentUser, form]);
 
@@ -133,10 +138,8 @@ export function RegistrationFormSection() {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call / processing delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      addRegistration(data); // Add to context
+      addRegistration(data); 
       
       toast({
         title: "Registration Submitted!",
@@ -144,7 +147,6 @@ export function RegistrationFormSection() {
         variant: "default", 
       });
       form.reset(); 
-      // Manually clear file input for paymentScreenshot
       const fileInput = document.querySelector('input[type="file"][name="paymentScreenshot"]') as HTMLInputElement | null;
       if (fileInput) {
         fileInput.value = ''; 
@@ -168,7 +170,7 @@ export function RegistrationFormSection() {
         "text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-10 md:mb-16 text-gradient-theme tracking-wide",
         "text-glass-shadow"
         )}>
-        How to Register
+        Simple Registration Process
       </h2>
       {loadingAuthState && (
         <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px]">
@@ -190,7 +192,6 @@ export function RegistrationFormSection() {
       {!loadingAuthState && currentUser && (
       <GlassCard className="p-6 md:p-8 text-card-foreground">
         <div className="mb-8 space-y-4">
-            <h4 className={cn("text-xl font-subtitle font-medium text-center text-card-foreground", "text-glass-shadow")}>Registration Steps:</h4>
             <ol className="list-decimal list-inside space-y-1.5 font-body text-sm text-card-foreground/80 leading-relaxed">
                 {registrationSteps.map((step, index) => (
                     <li key={index}>{step}</li>
@@ -204,7 +205,7 @@ export function RegistrationFormSection() {
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-subtitle text-card-foreground">Full Name</FormLabel>
+                  <FormLabel className="font-subtitle text-card-foreground">Full Name (Profile)</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your full name" {...field} />
                   </FormControl>
@@ -246,17 +247,18 @@ export function RegistrationFormSection() {
               name="registrationType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-subtitle text-card-foreground">Registration Type</FormLabel>
+                  <FormLabel className="font-subtitle text-card-foreground">Registration Category</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className="font-body">
-                        <SelectValue placeholder="Select your registration type" />
+                        <SelectValue placeholder="Select your registration category" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="font-body">
-                      <SelectItem value="professional">Professional (₹500)</SelectItem>
-                      <SelectItem value="student">Student (₹300)</SelectItem>
-                      <SelectItem value="family">Family Pass (₹800)</SelectItem>
+                      <SelectItem value="student">Student (₹100)</SelectItem>
+                      <SelectItem value="professional">Professional (₹299)</SelectItem>
+                      <SelectItem value="family">Family Pass (₹499)</SelectItem>
+                      <SelectItem value="others">Others (₹100)</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -284,7 +286,7 @@ export function RegistrationFormSection() {
                       />
                     </FormControl>
                     <FormDescription className="text-muted-foreground">
-                      Total members under Family Pass (e.g., 2 adults, 1 child = 3). Base price covers 2 adults + up to 2 children.
+                      Total members under Family Pass.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -306,6 +308,20 @@ export function RegistrationFormSection() {
               )}
             />
             
+            <FormField
+              control={form.control}
+              name="expectations"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-subtitle text-card-foreground">What are your expectations for this event? (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Share any thoughts or what you hope to gain..." className="resize-none" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormItem>
               <FormLabel className="font-subtitle text-card-foreground">Payment Details (UPI)</FormLabel>
               <div className="p-4 rounded-md border border-border bg-background/30 dark:bg-background/50 space-y-3">
@@ -346,7 +362,7 @@ export function RegistrationFormSection() {
                       onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.files)} 
                       className="file:text-foreground file:font-subtitle file:uppercase file:text-xs file:tracking-wider file:font-medium file:mr-3"
                       {...rest} 
-                      name="paymentScreenshot" // Ensure name attribute is present for clearing
+                      name="paymentScreenshot" 
                     />
                   </FormControl>
                    <FormDescription className="text-muted-foreground">
@@ -374,7 +390,8 @@ export function RegistrationFormSection() {
                       I agree to the terms and conditions of the Meetei People's Convention.
                     </FormLabel>
                     <FormDescription className="text-muted-foreground text-xs">
-                      By registering, you acknowledge and accept our event policies.
+                      By registering, you acknowledge and accept our event policies. <br/>
+                      Your information is encrypted and never shared with third parties.
                     </FormDescription>
                      <FormMessage />
                   </div>

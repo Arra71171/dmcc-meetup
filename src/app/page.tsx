@@ -1,6 +1,6 @@
 
 import { HeroSection } from "@/components/sections/hero-section";
-import { ImpactMetricsSection } from "@/components/sections/impact-metrics-section";
+import { ImpactMetricsSection } from "@/components/sections/impact-metrics-section"; // Renamed in thought process, but keeping filename for now
 import { EventHighlightsSection } from "@/components/sections/event-highlights-section";
 import { RegistrationTiersSection } from "@/components/sections/registration-tiers-section";
 import { RegistrationFormSection } from "@/components/sections/registration-form-section";
@@ -15,10 +15,12 @@ export default function Home() {
   return (
     <main className="w-full"> 
       <HeroSection />
-      <ImpactMetricsSection />
       
       <div className="flex flex-col items-center w-full space-y-16 md:space-y-24 lg:space-y-32 py-16 md:py-24 lg:py-32 px-4">
         <InvitationSection />
+        <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
+        {/* This is now the "About DMCC" section due to content change */}
+        <ImpactMetricsSection /> 
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
         <EventHighlightsSection />
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
@@ -35,10 +37,10 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <GlassCard className="max-w-3xl mx-auto p-6 md:p-8 text-center">
             <p className="font-body text-sm text-card-foreground/80">
-              © 2025 Delhi Meetei Coordinating Committee. All rights reserved.
+              © 2025 Delhi Meetei Co-ordinating Committee. All rights reserved.
             </p>
             <p className="font-body text-xs text-muted-foreground mt-3">
-              Organized with care by the DMCC Team
+              Crafted with care by Meetei Club South X
             </p>
           </GlassCard>
         </div>

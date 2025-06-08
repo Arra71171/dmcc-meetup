@@ -18,7 +18,7 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative w-full flex flex-col items-center justify-center text-center pt-10 md:pt-12 lg:pt-16 pb-12 md:pb-16 lg:pb-20 px-4 overflow-hidden min-h-[calc(100vh-5rem)]" // Adjusted min-h & padding
+      className="relative w-full flex flex-col items-center justify-center text-center pt-10 md:pt-12 lg:pt-16 pb-12 md:pb-16 lg:pb-20 px-4 overflow-hidden min-h-[calc(100vh-5rem)]"
     >
       <div className="relative z-10 max-w-4xl mx-auto">
         <motion.h1
@@ -31,8 +31,8 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.2 }}
           variants={fadeInVariants}
         >
-          <span className="block text-gradient-theme">MEETEI PEOPLE&apos;S</span>
-          <span className="block text-gradient-theme">CONVENTION, DELHI 2025</span>
+          <span className="block text-gradient-theme">Meetei People&apos;s Convention</span>
+          <span className="block text-gradient-theme">Delhi 2025</span>
           <span className={cn(
             "block text-2xl md:text-3xl font-subtitle font-medium text-foreground/70 mt-4 normal-case tracking-normal",
             "text-glass-shadow"
@@ -44,10 +44,19 @@ export function HeroSection() {
           className="mt-6 text-lg md:text-xl font-body text-foreground/80 max-w-2xl mx-auto leading-relaxed"
           initial="hidden"
           animate="visible"
-          transition={{ duration: 0.6, delay: 0.4 }} // Staggered delay
+          transition={{ duration: 0.6, delay: 0.4 }}
           variants={fadeInVariants}
         >
-          Celebrating Our Heritage, Honoring Our Foundation, and Shaping a Brighter Tomorrow
+          Celebrating Heritage • Building Unity • Shaping Tomorrow
+        </motion.p>
+        <motion.p
+          className="mt-4 text-base md:text-lg font-body text-foreground/70 max-w-xl mx-auto"
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.6, delay: 0.5 }}
+          variants={fadeInVariants}
+        >
+          Sunday, June 15th, 2025 | JNU Convention Center, New Delhi <br /> 10:00 AM - 6:00 PM
         </motion.p>
         
         <motion.div
@@ -55,11 +64,11 @@ export function HeroSection() {
           animate="visible"
           transition={{ duration: 0.6, delay: 0.6 }}
           variants={fadeInVariants}
-          className="mt-8" // Apply margin here to the motion div
+          className="mt-8"
         >
           <Link href="/#registration-form">
             <GradientBorderButton className="text-base px-8 py-4">
-              Join Our Community Gathering
+              Join Our Vibrant Community Celebration
             </GradientBorderButton>
           </Link>
         </motion.div>
