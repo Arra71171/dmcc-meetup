@@ -1,3 +1,4 @@
+
 import type React from 'react';
 import { cn } from '@/lib/utils';
 
@@ -27,7 +28,7 @@ export function GradientBorderButton({ children, className, asChild = false, ...
         "relative inline-flex h-full w-full cursor-pointer items-center justify-center rounded-md",
         "px-6 py-3 text-sm font-medium",
         "bg-background text-foreground group-hover:bg-background/80",
-        "dark:bg-neutral-900 dark:text-primary-foreground dark:group-hover:bg-neutral-900/80", 
+        "dark:bg-neutral-900 dark:text-foreground dark:group-hover:bg-neutral-900/80",
         "transition-all duration-200"
       )}>
         {children}

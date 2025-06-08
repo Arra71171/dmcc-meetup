@@ -20,18 +20,18 @@ body {
 }
 
 .dark .text-gradient-theme {
-   @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(var(--primary-foreground))] via-[hsl(var(--accent))] to-[hsl(var(--primary-foreground))];
+   @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(var(--foreground))] via-[hsl(var(--accent))] to-[hsl(var(--foreground))];
 }
 
 
 @layer base {
   :root {
-    /* Light Mode: Soft Coral (#FFC4C4) to Lavender Mist (#E0C3FC) gradient. Accents: Charcoal Grey (#333333) */
-    --background: 260 100% 97%; /* Light Lavender solid fallback */
-    --foreground: 0 0% 20%; /* Charcoal Grey #333333 */
+    /* Light Mode: Base text is now white for global dark background */
+    --background: 260 100% 97%; /* Light Lavender solid fallback - primarily for card backgrounds */
+    --foreground: 0 0% 98%; /* Changed from 0 0% 20% to white */
 
     --card: 0 0% 100%; /* White */
-    --card-foreground: 0 0% 20%; /* Charcoal Grey */
+    --card-foreground: 0 0% 20%; /* Charcoal Grey - text *on* cards in light mode */
 
     --popover: 0 0% 100%; /* White */
     --popover-foreground: 0 0% 20%; /* Charcoal Grey */
@@ -43,7 +43,7 @@ body {
     --secondary-foreground: 0 0% 9%; /* Default dark text */
 
     --muted: 0 0% 90%; /* Lighter grey for muted backgrounds */
-    --muted-foreground: 0 0% 45%; /* Darker grey for muted text - improved contrast */
+    --muted-foreground: 0 0% 80%; /* Changed from 0 0% 45% to light gray */
 
     --accent: 0 100% 88%; /* Soft Coral #FFC4C4 for accents */
     --accent-foreground: 0 0% 20%; /* Charcoal Grey text on accent */
@@ -127,6 +127,6 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    /* Gradients applied via .bg-gradient-light/dark in RootLayout */
+    /* Gradients applied via .bg-gradient-light/dark in RootLayout if used, currently background image overlay is global */
   }
 }

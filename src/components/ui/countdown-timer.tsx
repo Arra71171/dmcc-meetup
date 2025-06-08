@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -48,7 +49,7 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
   return (
     <div className="grid grid-flow-col gap-3 md:gap-5 text-center auto-cols-max">
       {Object.entries(timeLeft).map(([interval, value]) => (
-        <div key={interval} className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content bg-primary/10 dark:bg-secondary/20 rounded-lg shadow-md">
+        <div key={interval} className="flex flex-col p-2 bg-primary/10 dark:bg-secondary/20 rounded-lg shadow-md text-foreground">
           <span className="font-mono text-3xl md:text-5xl font-headline">
             {String(value).padStart(2, '0')}
           </span>
