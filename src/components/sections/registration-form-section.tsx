@@ -141,7 +141,7 @@ export function RegistrationFormSection() {
       {!loadingAuthState && !currentUser && (
         <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px] space-y-6 text-center">
           <UserCircle className="h-16 w-16 text-accent mb-4" />
-          <h3 className="text-2xl font-semibold text-card-foreground">Authentication Required</h3>
+          <h3 className="text-2xl font-semibold text-foreground">Authentication Required</h3>
           <p className="text-foreground">
             Please sign in or create an account to complete your registration for the Meetei People's Convention.
           </p>
@@ -319,4 +319,3 @@ export function RegistrationFormSection() {
     </section>
   );
 }
-
