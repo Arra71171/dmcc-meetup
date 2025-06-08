@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Logo } from './logo';
 import { GradientBorderButton } from '@/components/ui/gradient-border-button';
-import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
@@ -9,7 +8,7 @@ import { Menu } from 'lucide-react';
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/#highlights', label: 'Highlights' },
-  { href: '/#register', label: 'Register' },
+  { href: '/#registration-form', label: 'Register' }, // Updated href
   { href: '/#faq', label: 'FAQ' },
 ];
 
@@ -30,9 +29,11 @@ export function Header() {
           ))}
         </nav>
         <div className="hidden md:block">
-          <GradientBorderButton>
-            Secure Your Place
-          </GradientBorderButton>
+          <Link href="/#registration-form" passHref legacyBehavior>
+            <GradientBorderButton asChild>
+              <a>Secure Your Place</a>
+            </GradientBorderButton>
+          </Link>
         </div>
         <div className="md:hidden">
           <Sheet>
@@ -42,7 +43,7 @@ export function Header() {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background">
               <nav className="flex flex-col space-y-6 mt-8">
                 {navItems.map((item) => (
                   <Link
@@ -53,9 +54,11 @@ export function Header() {
                     {item.label}
                   </Link>
                 ))}
-                <GradientBorderButton className="w-full">
-                  Secure Your Place
-                </GradientBorderButton>
+                <Link href="/#registration-form" passHref legacyBehavior>
+                  <GradientBorderButton asChild className="w-full">
+                    <a>Secure Your Place</a>
+                  </GradientBorderButton>
+                </Link>
               </nav>
             </SheetContent>
           </Sheet>
