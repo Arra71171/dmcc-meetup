@@ -69,7 +69,7 @@ export function HeroSection() {
           animate="visible"
           transition={{ duration: 0.6, delay: 0.8 }}
           variants={fadeInVariants}
-          className="mt-12 md:mt-16"
+          className="mt-12 md:mt-16 flex justify-center"
         >
           <CountdownTimer targetDate={eventDate} />
         </motion.div>
