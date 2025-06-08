@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Logo } from './logo';
-import { GradientBorderButton } from '@/components/ui/gradient-border-button';
+// import { GradientBorderButton } from '@/components/ui/gradient-border-button'; // Removed as CTA is gone
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu, LogOut, LogIn, UserCircle, ChevronDown, LayoutDashboard, ShieldAlert } from 'lucide-react';
@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/#highlights', label: 'Highlights' },
-  { href: '/#registration-form', label: 'Register' },
+  { href: '/#registration-form', label: 'Register' }, // This link still makes sense for navigation
 ];
 
 export function Header() {
@@ -114,17 +114,7 @@ export function Header() {
             </Button>
           )}
           
-          <GradientBorderButton 
-            onClick={effectiveUserDisplay ? undefined : () => openAuthDialog()} 
-            asChild={!!effectiveUserDisplay}
-            className="text-sm"
-            >
-            {effectiveUserDisplay ? (
-              <Link href="/#registration-form">Register for the Gathering</Link>
-            ) : (
-              "Register / Sign In"
-            )}
-          </GradientBorderButton>
+          {/* GradientBorderButton CTA removed from Header */}
         </div>
         <div className="md:hidden">
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -180,16 +170,7 @@ export function Header() {
                     </Button>
                   )}
                 </div>
-                <GradientBorderButton 
-                    onClick={() => { if(!effectiveUserDisplay) openAuthDialog(); setMobileMenuOpen(false);}} 
-                    asChild={!!effectiveUserDisplay}
-                    className="w-full mt-4 text-sm">
-                     {effectiveUserDisplay ? (
-                        <Link href="/#registration-form">Register for the Gathering</Link>
-                    ) : (
-                        "Register / Sign In"
-                    )}
-                </GradientBorderButton>
+                {/* GradientBorderButton CTA removed from Mobile Menu */}
               </nav>
             </SheetContent>
           </Sheet>
@@ -198,3 +179,4 @@ export function Header() {
     </header>
   );
 }
+

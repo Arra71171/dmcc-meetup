@@ -2,8 +2,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { GradientBorderButton } from "@/components/ui/gradient-border-button";
-import Link from "next/link";
 import { cn } from '@/lib/utils';
 import Image from "next/image";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -69,21 +67,10 @@ export function HeroSection() {
             Sunday, June 15th, 2025 | JNU Convention Center, New Delhi <br /> 10:00 AM - 6:00 PM
           </motion.p>
           
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.6, delay: 0.6 }}
-            variants={fadeInVariants}
-            className="mt-8"
-          >
-            <Link href="/#registration-form">
-              <GradientBorderButton className="text-base px-8 py-4">
-                Join Our Vibrant Community Celebration
-              </GradientBorderButton>
-            </Link>
-          </motion.div>
+          {/* Registration CTA Button Removed from Hero */}
         </GlassCard>
       </div>
     </section>
   );
 }
+
