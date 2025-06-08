@@ -1,8 +1,9 @@
 
+'use client'; // Convert to client component
+
 import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import { GlassCard } from "@/components/ui/glass-card";
-// import { UrgencyMeter } from "@/components/ui/urgency-meter"; // Removed UrgencyMeter
-import Link from 'next/link';
+import { useAuth } from '@/contexts/auth-context'; // Import useAuth
 import { cn } from "@/lib/utils";
 
 const tiers = [
@@ -11,28 +12,42 @@ const tiers = [
     price: "₹100",
     description: "Students with valid ID",
     cta: "Register as Student",
+    value: "student", // Added value for potential future use
   },
   {
     name: "Professionals",
     price: "₹299",
     description: "Working professionals and general attendees",
     cta: "Register as Professional",
+    value: "professional",
   },
   {
     name: "Families",
     price: "₹499",
-    description: "Two adults and children under 16",
+    description: "Two adults and children under 16", // Kept description as per previous state
     cta: "Get Family Pass",
+    value: "family",
   },
   {
     name: "Others",
     price: "₹100",
     description: "For other attendees not covered above",
     cta: "Register Now",
+    value: "others",
   },
 ];
 
 export function RegistrationTiersSection() {
+  const { currentUser, openAuthDialog } = useAuth();
+
+  const handleTierClick = () => { // Removed tierValue parameter as it's not used for pre-selection yet
+    if (!currentUser) {
+      openAuthDialog();
+    } else {
+      document.getElementById('registration-form')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="register" className="w-full max-w-6xl px-4">
       <h2 className={cn(
@@ -42,7 +57,7 @@ export function RegistrationTiersSection() {
         Event Registration
       </h2>
       <p className={cn(
-        "text-lg font-body text-center mb-6 text-foreground/80",
+        "text-lg font-body text-center mb-10 md:mb-12 text-foreground/80", // Increased bottom margin
         "text-glass-shadow"
         )}>
         We believe in making this event accessible to everyone while maintaining quality.
@@ -55,13 +70,12 @@ export function RegistrationTiersSection() {
             <p className="font-body text-card-foreground/80 text-center mb-6 text-sm leading-relaxed">
               {tier.description}
             </p>
-            {/* Removed UrgencyMeter and its specific note */}
-            <Link href="/#registration-form" passHref className="mt-auto">
-              <GradientBorderButton asChild className="w-full text-sm py-3 px-6">
-                {/* The <a> tag was removed here. GradientBorderButton with asChild will render the anchor from Link */}
-                <span>{tier.cta}</span> 
-              </GradientBorderButton>
-            </Link>
+            <GradientBorderButton
+              onClick={handleTierClick} // Use new handler
+              className="w-full text-sm py-3 px-6 mt-auto" // Added mt-auto here
+            >
+              <span>{tier.cta}</span>
+            </GradientBorderButton>
           </GlassCard>
         ))}
       </div>
