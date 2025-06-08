@@ -162,7 +162,7 @@ export default function AdminDashboardPage() {
   };
   
   const RegistrationEditForm = ({ initialData, onSubmit, onCancel }: {
-    initialData: RegistrationEntry; // For editing, initialData is required
+    initialData: RegistrationEntry;
     onSubmit: (data: Partial<Omit<RegistrationEntry, 'id'|'submittedAt'|'paymentScreenshot'>>) => void;
     onCancel: () => void;
   }) => {
@@ -244,7 +244,7 @@ export default function AdminDashboardPage() {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <main className="flex min-h-[calc(100vh-5rem)] bg-background">
+      <main className="flex min-h-[calc(100svh-5rem)] bg-background"> {/* Use 100svh */}
         <Sidebar collapsible="icon" className="border-r">
           <SidebarHeader>
             <div className="flex items-center gap-2 p-2 justify-between">
@@ -270,7 +270,7 @@ export default function AdminDashboardPage() {
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+        <SidebarInset className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto flex flex-col"> {/* Ensure SidebarInset is flex-col */}
           <div className="flex items-center justify-between mb-6">
              <div className="flex items-center">
                 <SidebarTrigger className="md:hidden mr-2" /> 
@@ -307,7 +307,7 @@ export default function AdminDashboardPage() {
             </Button>
           </div>
 
-          <GlassCard className="overflow-hidden">
+          <GlassCard className="overflow-hidden flex-grow"> {/* Add flex-grow here */}
             <Table>
               <TableHeader>
                 <TableRow>
