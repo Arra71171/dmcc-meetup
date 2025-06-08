@@ -20,11 +20,17 @@ export function HeroSection() {
           Celebrating Our Heritage, Honoring Our Foundation, and Shaping a Brighter Tomorrow
         </p>
         <p className="mt-6 text-base md:text-lg font-lora text-gray-200 dark:text-gray-300 max-w-3xl mx-auto">
+          An Invitation to Connect
+        </p>
+        <p className="mt-2 text-base md:text-lg font-lora text-gray-200 dark:text-gray-300 max-w-3xl mx-auto">
           We are pleased to invite you to join us for the inaugural Meetei People&apos;s Convention, Delhi 2025, an event that marks our first step in bringing together the Meetei community in the National Capital Region. This gathering also celebrates the 2nd Rising Day of the Delhi Meetei Coordinating Committee (DMCC), as we reflect on our journey and look ahead with hope.
+        </p>
+         <p className="mt-2 text-base md:text-lg font-lora text-gray-200 dark:text-gray-300 max-w-3xl mx-auto">
+          As we organize this convention for the first time, we do so with genuine enthusiasm to create a meaningful space where our community can come together, share experiences, and strengthen the bonds that connect us to our roots and to each other. We recognize that this is our beginning, and we are committed to learning and growing together through this experience.
         </p>
         <Link href="/#registration-form">
           <GradientBorderButton asChild className="mt-10 text-lg px-8 py-4 font-headline">
-            SECURE YOUR PLACE IN HISTORY
+            Join Our Community Gathering
           </GradientBorderButton>
         </Link>
       </div>

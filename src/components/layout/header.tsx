@@ -23,7 +23,6 @@ const navItems = [
   { href: '/', label: 'Home' },
   { href: '/#highlights', label: 'Highlights' },
   { href: '/#registration-form', label: 'Register' },
-  { href: '/#faq', label: 'FAQ' },
 ];
 
 export function Header() {
@@ -49,7 +48,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Logo />
-        <nav className="hidden md:flex items-center space-x-1 text-sm font-semibold"> {/* Changed font-medium to font-semibold */}
+        <nav className="hidden md:flex items-center space-x-1 text-sm font-semibold">
           {navItems.map((item) => (
             <Link
               key={item.label}
@@ -66,7 +65,7 @@ export function Header() {
           ) : currentUser ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 rounded-full px-3 text-foreground hover:text-foreground font-semibold"> {/* Added font-semibold */}
+                <Button variant="ghost" className="relative h-10 rounded-full px-3 text-foreground hover:text-foreground font-semibold">
                    <Avatar className="h-8 w-8 mr-2">
                     <AvatarImage src={currentUser.photoURL || undefined} alt={currentUser.displayName || currentUser.email || 'User'} />
                     <AvatarFallback>{getInitials(currentUser.displayName, currentUser.email)}</AvatarFallback>
@@ -92,7 +91,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-             <Button variant="ghost" onClick={openAuthDialog} className="text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent px-3 py-2 rounded-md font-semibold"> {/* Added font-semibold */}
+             <Button variant="ghost" onClick={openAuthDialog} className="text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md font-semibold">
               <LogIn className="mr-2 h-4 w-4" /> Sign In
             </Button>
           )}
@@ -100,7 +99,7 @@ export function Header() {
           {currentUser ? (
              <Link href="/#registration-form">
                 <GradientBorderButton>
-                    Secure Your Place
+                    Register for the Gathering
                 </GradientBorderButton>
              </Link>
           ) : (
@@ -124,7 +123,7 @@ export function Header() {
                     key={item.label}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-lg font-semibold transition-colors text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md block" /* Changed font-medium to font-semibold */
+                    className="text-lg font-semibold transition-colors text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md block"
                   >
                     {item.label}
                   </Link>
@@ -143,13 +142,13 @@ export function Header() {
                           <p className="text-xs text-muted-foreground">{currentUser.email}</p>
                         </div>
                       </div>
-                      <Button variant="outline" onClick={() => { logOut(); setMobileMenuOpen(false); }} className="w-full font-semibold"> {/* Added font-semibold */}
+                      <Button variant="outline" onClick={() => { logOut(); setMobileMenuOpen(false); }} className="w-full font-semibold">
                         <LogOut className="mr-2 h-4 w-4" /> Sign Out
                       </Button>
                     </>
                   )}
                   {!loadingAuthState && !currentUser && (
-                    <Button variant="outline" onClick={() => { openAuthDialog(); setMobileMenuOpen(false);}} className="w-full font-semibold"> {/* Added font-semibold */}
+                    <Button variant="outline" onClick={() => { openAuthDialog(); setMobileMenuOpen(false);}} className="w-full font-semibold">
                       <LogIn className="mr-2 h-4 w-4" /> Sign In / Register
                     </Button>
                   )}
@@ -157,7 +156,7 @@ export function Header() {
                  {currentUser ? (
                     <Link href="/#registration-form" onClick={() => setMobileMenuOpen(false)}>
                         <GradientBorderButton className="w-full mt-4">
-                             Secure Your Place
+                             Register for the Gathering
                         </GradientBorderButton>
                     </Link>
                   ) : (
