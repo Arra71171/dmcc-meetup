@@ -10,7 +10,7 @@ export function Logo({ className }: LogoProps) {
   return (
     <Link href="/" className={cn(
       "flex items-center justify-center w-16 h-16 rounded-full", // Increased size
-      "bg-gradient-dark text-primary-foreground", // Applied dark gradient and ensured light text
+      "bg-background text-primary dark:text-primary-foreground", // Applied theme background and adaptive text color
       "font-headline font-bold text-lg",
       className
     )}>
