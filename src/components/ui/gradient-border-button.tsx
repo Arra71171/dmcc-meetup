@@ -22,7 +22,7 @@ export function GradientBorderButton({ children, className, asChild = false, ...
       {...props}
     >
       {/* Accent Gradient Background */}
-      <span className="absolute inset-0 bg-accent-gradient opacity-80 group-hover:opacity-100 transition-opacity duration-200" />
+      <span className="absolute inset-0 bg-accent-gradient group-hover:opacity-90 transition-opacity duration-200" />
       
       {/* Glass Effect Overlay - subtle */}
       <span className="absolute inset-0 bg-white/10 dark:bg-black/10 backdrop-blur-[3px]" /> 
