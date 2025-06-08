@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Logo } from './logo';
 import { GradientBorderButton } from '@/components/ui/gradient-border-button';
@@ -8,7 +9,7 @@ import { Menu } from 'lucide-react';
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/#highlights', label: 'Highlights' },
-  { href: '/#registration-form', label: 'Register' }, // Updated href
+  { href: '/#registration-form', label: 'Register' },
   { href: '/#faq', label: 'FAQ' },
 ];
 
@@ -29,9 +30,9 @@ export function Header() {
           ))}
         </nav>
         <div className="hidden md:block">
-          <Link href="/#registration-form" passHref legacyBehavior>
+          <Link href="/#registration-form">
             <GradientBorderButton asChild>
-              <a>Secure Your Place</a>
+              Secure Your Place
             </GradientBorderButton>
           </Link>
         </div>
@@ -54,9 +55,9 @@ export function Header() {
                     {item.label}
                   </Link>
                 ))}
-                <Link href="/#registration-form" passHref legacyBehavior>
+                <Link href="/#registration-form">
                   <GradientBorderButton asChild className="w-full">
-                    <a>Secure Your Place</a>
+                    Secure Your Place
                   </GradientBorderButton>
                 </Link>
               </nav>

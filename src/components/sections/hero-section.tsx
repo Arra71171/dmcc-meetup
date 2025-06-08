@@ -23,9 +23,9 @@ export function HeroSection() {
         <p className="mt-6 text-base md:text-lg font-lora text-gray-200 dark:text-gray-300 max-w-3xl mx-auto">
           Join us for the Meetei People&apos;s Convention, Delhi 2025, a landmark gathering on our 2nd Rising Day. This event, set for June 15, 2025, at JNU Convention Center, celebrates our rich heritage and charts a course for a vibrant future. Be part of a historic moment for community empowerment and cultural renaissance in the nation&apos;s capital.
         </p>
-        <Link href="/#registration-form" passHref legacyBehavior>
+        <Link href="/#registration-form">
           <GradientBorderButton asChild className="mt-10 text-lg px-8 py-4 font-headline">
-            <a>SECURE YOUR PLACE IN HISTORY</a>
+            SECURE YOUR PLACE IN HISTORY
           </GradientBorderButton>
         </Link>
       </div>

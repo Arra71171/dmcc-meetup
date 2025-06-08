@@ -62,9 +62,9 @@ export function RegistrationTiersSection() {
               ))}
             </ul>
             {tier.disclaimer && <p className="text-xs font-lora text-muted-foreground text-center mt-4 mb-2">{tier.disclaimer}</p>}
-            <Link href="/#registration-form" passHref legacyBehavior>
+            <Link href="/#registration-form">
               <GradientBorderButton asChild className="w-full mt-auto font-headline text-base py-3 px-6">
-                <a>{tier.cta}</a>
+                {tier.cta}
               </GradientBorderButton>
             </Link>
           </GlassCard>
