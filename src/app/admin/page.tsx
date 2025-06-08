@@ -4,7 +4,7 @@
 import React, { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { GlassCard } from "@/components/ui/glass-card";
-import { ShieldCheck, LogIn, Loader2, UserCog, Users, Edit, Trash2, PlusCircle, Search, Download } from "lucide-react";
+import { ShieldCheck, LogIn, Loader2, UserCog, Users, Edit, Trash2, PlusCircle, Search, Download, LogOut as LogOutIcon } from "lucide-react"; // Renamed LogOut to LogOutIcon to avoid conflict
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
 import { useRegistrations, type RegistrationEntry } from '@/contexts/registration-context';
@@ -53,23 +53,33 @@ import {
   SidebarInset,
   useSidebar
 } from "@/components/ui/sidebar"; // Ensure this path is correct
-
-// Placeholder for RegistrationForm component (to be created or adapted)
-// For now, we'll use a simplified form inside the dialog.
-// import { RegistrationFormAdmin } from './registration-form-admin';
+import type { RegistrationFormValues } from '@/components/sections/registration-form-section';
 
 
 const ITEMS_PER_PAGE = 10;
 
 export default function AdminDashboardPage() {
   const { currentUser, loadingAuthState, openAuthDialog, isAdminOverrideLoggedIn, logOut } = useAuth();
-  const { registrations, deleteRegistration, updateRegistration, addRegistration: addRegistrationViaContext } = useRegistrations(); // Renamed for clarity
+  const { registrations, deleteRegistration, updateRegistration, addRegistration: addRegistrationViaContext } = useRegistrations();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRegistration, setEditingRegistration] = useState<RegistrationEntry | null>(null);
+
+  const filteredRegistrations = useMemo(() => {
+    return registrations.filter(reg =>
+      reg.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reg.email.toLowerCase().includes(searchTerm.toLowerCase())
+    ).sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()); // Sort by most recent
+  }, [registrations, searchTerm]);
+
+  const totalPages = Math.ceil(filteredRegistrations.length / ITEMS_PER_PAGE);
+  const paginatedRegistrations = filteredRegistrations.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   // --- Authentication Gate ---
   if (loadingAuthState) {
@@ -128,19 +138,6 @@ export default function AdminDashboardPage() {
   }
   // --- End Authentication Gate ---
 
-  const filteredRegistrations = useMemo(() => {
-    return registrations.filter(reg =>
-      reg.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reg.email.toLowerCase().includes(searchTerm.toLowerCase())
-    ).sort((a, b) => b.submittedAt.getTime() - a.submittedAt.getTime()); // Sort by most recent
-  }, [registrations, searchTerm]);
-
-  const totalPages = Math.ceil(filteredRegistrations.length / ITEMS_PER_PAGE);
-  const paginatedRegistrations = filteredRegistrations.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
   const handleExportCSV = () => {
     const headers = "ID,Full Name,Email,Phone,Registration Type,Family Members,Address,Screenshot,Submitted At\n";
     const csvContent = filteredRegistrations.map(reg =>
@@ -170,8 +167,6 @@ export default function AdminDashboardPage() {
     }
   };
   
-  // Simplified form for Create/Edit Dialog
-  // In a real app, this would be a more robust component, possibly reusing RegistrationFormSection's logic
   const RegistrationEditForm = ({ initialData, onSubmit, onCancel }: {
     initialData?: Partial<RegistrationEntry>;
     onSubmit: (data: Partial<Omit<RegistrationEntry, 'id'|'submittedAt'>>) => void;
@@ -193,7 +188,6 @@ export default function AdminDashboardPage() {
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
-      // Basic validation could be added here
       onSubmit(formData);
     };
 
@@ -213,7 +207,7 @@ export default function AdminDashboardPage() {
         </div>
          <div>
           <Label htmlFor="registrationType">Registration Type</Label>
-          <select name="registrationType" id="registrationType" value={formData.registrationType} onChange={handleChange} className="w-full p-2 border rounded-md bg-input">
+          <select name="registrationType" id="registrationType" value={formData.registrationType} onChange={handleChange} className="w-full p-2 border rounded-md bg-input text-sm">
             <option value="professional">Professional</option>
             <option value="student">Student</option>
             <option value="family">Family</option>
@@ -222,7 +216,7 @@ export default function AdminDashboardPage() {
         {formData.registrationType === 'family' && (
           <div>
             <Label htmlFor="numberOfFamilyMembers">Number of Family Members</Label>
-            <Input id="numberOfFamilyMembers" name="numberOfFamilyMembers" type="number" value={formData.numberOfFamilyMembers} onChange={handleChange} />
+            <Input id="numberOfFamilyMembers" name="numberOfFamilyMembers" type="number" value={String(formData.numberOfFamilyMembers)} onChange={handleChange} />
           </div>
         )}
         <div>
@@ -238,7 +232,6 @@ export default function AdminDashboardPage() {
   };
 
 
-  // User is admin, show dashboard
   return (
     <SidebarProvider defaultOpen={true}>
       <main className="flex min-h-[calc(100vh-5rem)] bg-background">
@@ -261,7 +254,7 @@ export default function AdminDashboardPage() {
           </SidebarContent>
           <SidebarFooter className="mt-auto group-data-[collapsible=icon]:p-0">
              <Button variant="ghost" onClick={logOut} className="w-full justify-start p-2 group-data-[collapsible=icon]:justify-center">
-                <LogOut className="mr-2 group-data-[collapsible=icon]:mr-0" />
+                <LogOutIcon className="mr-2 group-data-[collapsible=icon]:mr-0" />
                 <span className="group-data-[collapsible=icon]:hidden">Logout</span>
              </Button>
           </SidebarFooter>
@@ -270,7 +263,7 @@ export default function AdminDashboardPage() {
         <SidebarInset className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
           <div className="flex items-center justify-between mb-6">
              <div className="flex items-center">
-                <SidebarTrigger className="md:hidden mr-2" /> {/* Mobile trigger */}
+                <SidebarTrigger className="md:hidden mr-2" /> 
                 <h1 className={cn(
                   "text-3xl md:text-4xl font-headline font-semibold text-gradient-theme",
                   "text-glass-shadow"
@@ -395,7 +388,6 @@ export default function AdminDashboardPage() {
         </SidebarInset>
       </main>
 
-      {/* Create Registration Dialog */}
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <DialogContent>
           <DialogHeader>
@@ -406,13 +398,10 @@ export default function AdminDashboardPage() {
           </DialogHeader>
           <RegistrationEditForm 
             onSubmit={(data) => {
-                // Need to cast data as RegistrationFormValues for addRegistrationViaContext
-                const formData = data as unknown as import('@/components/sections/registration-form-section').RegistrationFormValues;
-                // Add agreeToTerms as it's required by RegistrationFormValues but not in this simplified form
-                const completeFormData: import('@/components/sections/registration-form-section').RegistrationFormValues = {
-                    ...formData,
-                    agreeToTerms: true, // Default to true for admin creation
-                    paymentScreenshot: undefined, // Not handled in this simplified form
+                const completeFormData: RegistrationFormValues = {
+                    ...(data as Omit<RegistrationFormValues, 'agreeToTerms' | 'paymentScreenshot'>),
+                    agreeToTerms: true, 
+                    paymentScreenshot: undefined, 
                 };
                 addRegistrationViaContext(completeFormData);
                 setIsCreateModalOpen(false);
@@ -422,7 +411,6 @@ export default function AdminDashboardPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Registration Dialog */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent>
           <DialogHeader>
@@ -451,11 +439,9 @@ export default function AdminDashboardPage() {
   );
 }
 
-// Need Label component for the simplified form
 const Label = ({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) => (
   <label htmlFor={htmlFor} className="block text-sm font-medium text-card-foreground mb-1 font-subtitle">{children}</label>
 );
-// Need Textarea for the simplified form
 const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(
   ({ className, ...props }, ref) => (
     <textarea
