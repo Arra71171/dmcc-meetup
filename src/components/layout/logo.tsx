@@ -9,9 +9,8 @@ interface LogoProps {
 export function Logo({ className }: LogoProps) {
   return (
     <Link href="/" className={cn(
-      "flex items-center justify-center w-14 h-14 rounded-full", // Increased size
-      "bg-primary text-primary-foreground",
-      "dark:bg-primary dark:text-primary-foreground",
+      "flex items-center justify-center w-16 h-16 rounded-full", // Increased size
+      "bg-gradient-dark text-primary-foreground", // Applied dark gradient and ensured light text
       "font-headline font-bold text-lg",
       className
     )}>
