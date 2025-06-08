@@ -27,6 +27,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { GlassCard } from "@/components/ui/glass-card";
 import { useState, type ChangeEvent } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/auth-context";
+import { Loader2 } from "lucide-react";
 
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -87,6 +89,7 @@ const defaultValues: Partial<RegistrationFormValues> = {
 
 export function RegistrationFormSection() {
   const { toast } = useToast();
+  const { currentUser, loadingAuthState, openAuthDialog } = useAuth();
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationFormSchema),
     defaultValues,
@@ -97,8 +100,13 @@ export function RegistrationFormSection() {
   const selectedRegistrationType = form.watch("registrationType");
 
   async function onSubmit(data: RegistrationFormValues) {
+    if (!currentUser) {
+      toast({ title: "Authentication Required", description: "Please sign in to submit the form.", variant: "destructive" });
+      openAuthDialog();
+      return;
+    }
     setIsSubmitting(true);
-    console.log("Form data submitted:", data);
+    console.log("Form data submitted:", data, "by user:", currentUser.uid);
     // In a real app, you'd send this to a backend or Genkit flow.
     // For the payment screenshot, you'd handle the File object: data.paymentScreenshot[0]
     
@@ -106,8 +114,7 @@ export function RegistrationFormSection() {
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     setIsSubmitting(false);
-    form.reset(); // Reset form fields to defaultValues
-     // Clear the file input manually if react-hook-form doesn't handle it well
+    form.reset(); 
     const fileInput = document.querySelector('input[name="paymentScreenshot"]') as HTMLInputElement | null;
     if (fileInput) {
       fileInput.value = '';
@@ -125,6 +132,25 @@ export function RegistrationFormSection() {
       <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16 text-gradient-theme">
         Register for the Convention
       </h2>
+      {loadingAuthState && (
+        <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px]">
+          <Loader2 className="h-12 w-12 animate-spin text-accent" />
+          <p className="mt-4 text-lg font-medium">Verifying your status...</p>
+        </GlassCard>
+      )}
+      {!loadingAuthState && !currentUser && (
+        <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px] space-y-6 text-center">
+          <UserCircle className="h-16 w-16 text-accent mb-4" />
+          <h3 className="text-2xl font-semibold">Authentication Required</h3>
+          <p className="text-muted-foreground">
+            Please sign in or create an account to complete your registration for the Meetei People's Convention.
+          </p>
+          <GradientBorderButton onClick={openAuthDialog} className="font-headline text-lg py-3 mt-2">
+            Sign In / Create Account
+          </GradientBorderButton>
+        </GlassCard>
+      )}
+      {!loadingAuthState && currentUser && (
       <GlassCard className="p-6 md:p-8 text-card-foreground">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -149,7 +175,7 @@ export function RegistrationFormSection() {
                 <FormItem>
                   <FormLabel>Email Address</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="your.email@example.com" {...field} />
+                    <Input type="email" placeholder="your.email@example.com" {...field} defaultValue={currentUser.email || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -238,16 +264,16 @@ export function RegistrationFormSection() {
             <FormField
               control={form.control}
               name="paymentScreenshot"
-              render={({ field: { onChange, value, ...rest } }) => ( // Destructure to handle file input correctly
+              render={({ field: { onChange, value, ...rest } }) => ( 
                 <FormItem>
                   <FormLabel>Payment Screenshot (UPI to radheoinam@oksbi)</FormLabel>
                   <FormControl>
                     <Input 
                       type="file" 
                       accept={ACCEPTED_IMAGE_TYPES.join(",")}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.files)} // Pass FileList to react-hook-form
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.files)} 
                       className="file:text-foreground file:font-medium file:mr-2"
-                      {...rest} // Pass other field props like name, ref
+                      {...rest} 
                     />
                   </FormControl>
                    <FormDescription className="text-muted-foreground">
@@ -284,11 +310,12 @@ export function RegistrationFormSection() {
             />
 
             <GradientBorderButton type="submit" className="w-full font-headline text-lg py-3" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Secure My Spot"}
+              {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Submitting...</> : "Secure My Spot"}
             </GradientBorderButton>
           </form>
         </Form>
       </GlassCard>
+      )}
     </section>
   );
 }

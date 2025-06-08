@@ -2,6 +2,8 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from '@/contexts/auth-context';
+import { AuthDialog } from '@/components/auth/auth-dialog';
 import { Header } from '@/components/layout/header';
 import Image from 'next/image';
 
@@ -37,9 +39,12 @@ export default function RootLayout({
           />
           <div className="absolute inset-0 bg-black/[.85] dark:bg-black/[.90]" />
         </div>
-        <Header />
-        {children}
-        <Toaster />
+        <AuthProvider>
+          <Header />
+          {children}
+          <AuthDialog />
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );
