@@ -12,7 +12,7 @@ export function ImpactMetricsSection() {
             <div className="rounded-2xl overflow-hidden shadow-2xl">
               <Image
                 src="https://placehold.co/500x650.png"
-                alt="Meetei cultural heritage"
+                alt="Stylized representation of Meetei cultural elements"
                 width={500}
                 height={650}
                 className="object-cover"

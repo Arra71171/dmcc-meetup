@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import Link from "next/link";
 import { cn } from '@/lib/utils';
+import { CountdownTimer } from '@/components/ui/countdown-timer';
 
 const fadeInVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -12,10 +13,12 @@ const fadeInVariants = {
 };
 
 export function HeroSection() {
+  const eventDate = new Date('2025-06-15T10:00:00'); // June 15th, 2025, 10:00 AM
+
   return (
     <section
       id="hero"
-      className="relative w-full flex flex-col items-center justify-center text-center pt-10 md:pt-12 lg:pt-16 pb-20 md:pb-24 lg:pb-32 px-4 overflow-hidden min-h-[calc(100vh-5rem)]" // Adjusted min-h for new header height
+      className="relative w-full flex flex-col items-center justify-center text-center pt-10 md:pt-12 lg:pt-16 pb-12 md:pb-16 lg:pb-20 px-4 overflow-hidden min-h-[calc(100vh-5rem)]" // Adjusted min-h & padding
     >
       <div className="relative z-10 max-w-4xl mx-auto">
         <motion.h1
@@ -50,15 +53,25 @@ export function HeroSection() {
         <motion.div
           initial="hidden"
           animate="visible"
-          transition={{ duration: 0.6, delay: 0.6 }} // Further staggered delay
+          transition={{ duration: 0.6, delay: 0.6 }}
           variants={fadeInVariants}
-          className="mt-10" // Apply margin here to the motion div
+          className="mt-8" // Apply margin here to the motion div
         >
           <Link href="/#registration-form">
             <GradientBorderButton className="text-base px-8 py-4">
               Join Our Community Gathering
             </GradientBorderButton>
           </Link>
+        </motion.div>
+
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.6, delay: 0.8 }}
+          variants={fadeInVariants}
+          className="mt-12 md:mt-16"
+        >
+          <CountdownTimer targetDate={eventDate} />
         </motion.div>
       </div>
     </section>

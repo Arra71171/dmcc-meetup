@@ -1,6 +1,7 @@
 
 import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import { GlassCard } from "@/components/ui/glass-card";
+import { UrgencyMeter } from "@/components/ui/urgency-meter";
 import Link from 'next/link';
 import { cn } from "@/lib/utils";
 
@@ -10,18 +11,24 @@ const tiers = [
     price: "₹500",
     description: "Working professionals and general attendees",
     cta: "Register as Professional",
+    urgency: 60,
+    urgencyNote: "Spots are filling steadily!"
   },
   {
     name: "Student",
     price: "₹300",
     description: "Students with valid ID",
     cta: "Register as Student",
+    urgency: 40,
+    urgencyNote: "Good availability for students."
   },
   {
     name: "Family",
     price: "₹800",
     description: "Two adults and children under 16",
     cta: "Get Family Pass",
+    urgency: 75,
+    urgencyNote: "Family passes are popular!"
   },
 ];
 
@@ -45,11 +52,15 @@ export function RegistrationTiersSection() {
           <GlassCard key={tier.name} className="flex flex-col p-6 md:p-8 h-full">
             <h3 className={cn("text-2xl md:text-3xl font-subtitle font-medium text-center text-card-foreground", "text-glass-shadow")}>{tier.name}</h3>
              <p className="text-4xl md:text-5xl font-headline font-semibold text-center my-4 text-accent">{tier.price}</p>
-            <p className="font-body text-card-foreground/80 text-center mb-6 flex-grow text-sm leading-relaxed">
+            <p className="font-body text-card-foreground/80 text-center mb-6 text-sm leading-relaxed">
               {tier.description}
             </p>
-            <Link href="/#registration-form" passHref>
-              <GradientBorderButton asChild className="w-full mt-auto text-sm py-3 px-6">
+            <div className="my-4">
+              <UrgencyMeter value={tier.urgency} />
+              <p className="text-xs text-center mt-2 font-body text-muted-foreground">{tier.urgencyNote}</p>
+            </div>
+            <Link href="/#registration-form" passHref className="mt-auto">
+              <GradientBorderButton asChild className="w-full text-sm py-3 px-6">
                 {tier.cta}
               </GradientBorderButton>
             </Link>

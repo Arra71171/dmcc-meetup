@@ -30,6 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
@@ -92,11 +93,12 @@ const defaultValues: Partial<RegistrationFormValues> = {
 };
 
 const registrationSteps = [
-    "Sign in or create an account",
-    "Fill out the registration form with your details",
-    "Make payment using UPI",
-    "Upload payment screenshot (optional but recommended)",
-    "Submit your registration",
+    "Sign in or create an account (if not already).",
+    "Fill out the registration form with your details.",
+    "Make payment using UPI to: radheoinam@oksbi",
+    "Optionally, upload a screenshot of your payment confirmation.",
+    "Submit your registration.",
+    "Await manual verification and confirmation (within 24-48 hours)."
 ];
 
 export function RegistrationFormSection() {
@@ -120,13 +122,14 @@ export function RegistrationFormSection() {
     setIsSubmitting(true);
     console.log("Form data submitted:", data, "by user:", currentUser.uid);
     
+    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     setIsSubmitting(false);
     form.reset(); 
     const fileInput = document.querySelector('input[name="paymentScreenshot"]') as HTMLInputElement | null;
     if (fileInput) {
-      fileInput.value = '';
+      fileInput.value = ''; // Clear file input
     }
 
     toast({
@@ -163,9 +166,9 @@ export function RegistrationFormSection() {
       )}
       {!loadingAuthState && currentUser && (
       <GlassCard className="p-6 md:p-8 text-card-foreground">
-        <div className="mb-8 space-y-3">
+        <div className="mb-8 space-y-4">
             <h4 className={cn("text-xl font-subtitle font-medium text-center text-card-foreground", "text-glass-shadow")}>Registration Steps:</h4>
-            <ol className="list-decimal list-inside space-y-1 font-body text-sm text-card-foreground/80">
+            <ol className="list-decimal list-inside space-y-1.5 font-body text-sm text-card-foreground/80 leading-relaxed">
                 {registrationSteps.map((step, index) => (
                     <li key={index}>{step}</li>
                 ))}
@@ -252,7 +255,7 @@ export function RegistrationFormSection() {
                         {...field}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => {
                             const value = e.target.value;
-                            field.onChange(value);
+                            field.onChange(value); // Ensure value is passed correctly
                         }}
                         min="1"
                       />
@@ -280,12 +283,39 @@ export function RegistrationFormSection() {
               )}
             />
             
+            <FormItem>
+              <FormLabel className="font-subtitle text-card-foreground">Payment Details (UPI)</FormLabel>
+              <div className="p-4 rounded-md border border-border bg-background/30 dark:bg-background/50 space-y-3">
+                <p className="font-body text-card-foreground/90">
+                  Please make your payment to the following UPI ID:
+                </p>
+                <p className="font-mono text-lg font-semibold text-accent p-2 bg-muted/50 rounded-md inline-block">
+                  radheoinam@oksbi
+                </p>
+                <div className="flex flex-col sm:flex-row items-center gap-4 mt-2">
+                  <div className="w-32 h-32 relative border border-border rounded-md overflow-hidden bg-muted/30 flex items-center justify-center">
+                    <Image
+                      src="https://placehold.co/128x128.png"
+                      alt="UPI QR Code Placeholder"
+                      width={128}
+                      height={128}
+                      data-ai-hint="QR code payment"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground font-body flex-1">
+                    You can scan the QR code with your UPI app or use the UPI ID directly. 
+                    We will manually verify all payments and confirm your registration within 24-48 hours.
+                  </p>
+                </div>
+              </div>
+            </FormItem>
+
             <FormField
               control={form.control}
               name="paymentScreenshot"
               render={({ field: { onChange, value, ...rest } }) => ( 
                 <FormItem>
-                  <FormLabel className="font-subtitle text-card-foreground">Payment Screenshot (UPI to radheoinam@oksbi - Optional but Recommended)</FormLabel>
+                  <FormLabel className="font-subtitle text-card-foreground">Upload Payment Screenshot (Optional but Recommended)</FormLabel>
                   <FormControl>
                     <Input 
                       type="file" 
@@ -296,7 +326,7 @@ export function RegistrationFormSection() {
                     />
                   </FormControl>
                    <FormDescription className="text-muted-foreground">
-                    UPI ID: radheoinam@oksbi. You can scan the QR code or use the UPI ID directly. We will manually verify all payments and confirm your registration within 24-48 hours.
+                    Attaching a screenshot helps expedite the verification process.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
