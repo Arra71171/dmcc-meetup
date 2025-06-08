@@ -18,11 +18,10 @@ export function HeroSection() {
       className="relative w-full flex flex-col items-center justify-center text-center py-20 md:py-28 lg:py-32 px-4 overflow-hidden min-h-[calc(100vh-5rem)]"
     >
       <Image
-        src="https://placehold.co/1920x1080/EAEAEA/EAEAEA.png"
+        src="https://placehold.co/1920x1080/EAEAEA/EAEAEA.png" 
         alt="Abstract background for DMCC Convention hero section"
-        layout="fill"
-        objectFit="cover"
-        className="-z-20 opacity-25 dark:opacity-15"
+        fill={true}
+        className="-z-20 opacity-25 dark:opacity-15 object-cover"
         data-ai-hint="abstract gradient purple orange"
         priority
       />
@@ -67,9 +66,9 @@ export function HeroSection() {
             Sunday, June 15th, 2025 | JNU Convention Center, New Delhi <br /> 10:00 AM - 6:00 PM
           </motion.p>
           
-          {/* Registration CTA Button Removed from Hero */}
         </GlassCard>
       </div>
     </section>
   );
 }
+    

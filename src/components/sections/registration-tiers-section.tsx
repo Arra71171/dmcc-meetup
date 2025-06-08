@@ -1,10 +1,11 @@
 
-'use client'; // Convert to client component
+'use client'; 
 
 import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import { GlassCard } from "@/components/ui/glass-card";
-import { useAuth } from '@/contexts/auth-context'; // Import useAuth
+import { useAuth } from '@/contexts/auth-context'; 
 import { cn } from "@/lib/utils";
+import Link from 'next/link'; 
 
 const tiers = [
   {
@@ -12,7 +13,7 @@ const tiers = [
     price: "₹100",
     description: "Students with valid ID",
     cta: "Register as Student",
-    value: "student", // Added value for potential future use
+    value: "student", 
   },
   {
     name: "Professionals",
@@ -24,7 +25,7 @@ const tiers = [
   {
     name: "Families",
     price: "₹499",
-    description: "Two adults and children under 16", // Kept description as per previous state
+    description: "Two adults and children under 16", 
     cta: "Get Family Pass",
     value: "family",
   },
@@ -40,12 +41,12 @@ const tiers = [
 export function RegistrationTiersSection() {
   const { currentUser, openAuthDialog } = useAuth();
 
-  const handleTierClick = () => { // Removed tierValue parameter as it's not used for pre-selection yet
+  const handleTierClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     if (!currentUser) {
+      e.preventDefault(); 
       openAuthDialog();
-    } else {
-      document.getElementById('registration-form')?.scrollIntoView({ behavior: 'smooth' });
     }
+    // If user is logged in, allow Link's default navigation to #registration-form
   };
 
   return (
@@ -57,7 +58,7 @@ export function RegistrationTiersSection() {
         Event Registration
       </h2>
       <p className={cn(
-        "text-lg font-body text-center mb-10 md:mb-12 text-foreground/80", // Increased bottom margin
+        "text-lg font-body text-center mb-10 md:mb-12 text-foreground/80", 
         "text-glass-shadow"
         )}>
         We believe in making this event accessible to everyone while maintaining quality.
@@ -70,12 +71,19 @@ export function RegistrationTiersSection() {
             <p className="font-body text-card-foreground/80 text-center mb-6 text-sm leading-relaxed">
               {tier.description}
             </p>
-            <GradientBorderButton
-              onClick={handleTierClick} // Use new handler
-              className="w-full text-sm py-3 px-6 mt-auto" // Added mt-auto here
+            <Link 
+              href="/#registration-form" 
+              passHref 
+              className="mt-auto"
+              onClick={handleTierClick} 
             >
-              <span>{tier.cta}</span>
-            </GradientBorderButton>
+              <GradientBorderButton
+                asChild 
+                className="w-full text-sm py-3 px-6" 
+              >
+                <span>{tier.cta}</span> 
+              </GradientBorderButton>
+            </Link>
           </GlassCard>
         ))}
       </div>
@@ -88,3 +96,4 @@ export function RegistrationTiersSection() {
     </section>
   );
 }
+    
