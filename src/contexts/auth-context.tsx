@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Email Sign-Up Error:", error);
       let description = error.message;
       if (error.code === 'auth/email-already-in-use') {
-        description = "This email is already in use. Please try signing in or use a different email.";
+        description = "This email is already registered. Please try signing in or use a different email.";
       }
       toast({ title: "Sign-up failed", description, variant: "destructive" });
       return null;
@@ -99,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Email Sign-In Error:", error);
       let description = error.message;
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        description = "Invalid email or password. Please double-check your credentials. If you're new, please sign up first.";
+        description = "Sign-in failed: Invalid email or password. Please ensure your credentials are correct. If you are a new user, you must 'Sign Up' first to create an account.";
       }
       toast({ title: "Sign-in failed", description, variant: "destructive" });
       return null;
