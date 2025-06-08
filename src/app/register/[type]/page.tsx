@@ -9,6 +9,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { Loader2, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast'; // Added standard import
 
 const validTypes: RegistrationType[] = ["student", "professional", "family", "others"];
 
@@ -27,6 +28,7 @@ const typeToPriceMap: Record<RegistrationType, string> = {
 };
 
 export default function SpecificRegistrationPage() {
+  const { toast } = useToast(); // Moved toast initialization here
   const params = useParams();
   const router = useRouter();
   const { currentUser, loadingAuthState, openAuthDialog } = useAuth();
@@ -59,7 +61,7 @@ export default function SpecificRegistrationPage() {
       openAuthDialog(); // Open auth dialog
       router.push('/'); // Redirect to home after a brief moment or upon dialog close
     }
-  }, [loadingAuthState, currentUser, isValidType, router, openAuthDialog]);
+  }, [loadingAuthState, currentUser, isValidType, router, openAuthDialog, toast]);
 
 
   if (loadingAuthState) {
@@ -131,10 +133,6 @@ export default function SpecificRegistrationPage() {
     );
   }
   
-  // Add a local import for useToast
-  const { toast } = (typeof window !== 'undefined' ? require('@/hooks/use-toast') : { toast: () => {} });
-
-
   return (
     <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center">
       <div className="w-full max-w-3xl">
