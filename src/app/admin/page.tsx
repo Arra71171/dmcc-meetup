@@ -4,7 +4,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { format } from 'date-fns';
 import { GlassCard } from "@/components/ui/glass-card";
-import { ShieldCheck, LogIn, Loader2, UserCog, Users, Edit, Trash2, Search, Download, LogOut as LogOutIcon } from "lucide-react";
+import { ShieldCheck, LogIn, Loader2, UserCog, Users, Edit, Trash2, Search, Download, LogOut as LogOutIcon, MessageSquareText, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
 import { useRegistrations, type RegistrationEntry } from '@/contexts/registration-context';
@@ -45,15 +45,13 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
-  SidebarTrigger,
+  SidebarTrigger as MainSidebarTrigger, // Aliased to avoid conflict
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarInset,
 } from "@/components/ui/sidebar";
-
-// Alias SidebarTrigger from ui/sidebar to avoid conflict if a local one is needed
-const MainSidebarTrigger = SidebarTrigger;
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 const ITEMS_PER_PAGE = 10;
@@ -141,7 +139,7 @@ export default function AdminDashboardPage() {
   }
 
   const handleExportCSV = () => {
-    const headers = "ID,Full Name,Email,Phone,Registration Type,Family Members,Address,Payment Screenshot Filename,Submitted At\n";
+    const headers = "ID,Full Name,Email,Phone,Registration Type,Family Members,Address,Expectations,Payment Screenshot Filename,Submitted At\n";
     const csvContent = filteredRegistrations.map(reg =>
       [
         reg.id,
@@ -151,6 +149,7 @@ export default function AdminDashboardPage() {
         reg.registrationType,
         reg.registrationType === 'family' ? reg.numberOfFamilyMembers || 'N/A' : 'N/A',
         `"${(reg.address || 'N/A').replace(/"/g, '""')}"`,
+        `"${(reg.expectations || 'N/A').replace(/"/g, '""')}"`,
         reg.paymentScreenshotFilename || 'N/A',
         format(new Date(reg.submittedAt), 'yyyy-MM-dd HH:mm:ss')
       ].join(',')
@@ -181,6 +180,7 @@ export default function AdminDashboardPage() {
       registrationType: initialData.registrationType || 'professional',
       numberOfFamilyMembers: initialData.numberOfFamilyMembers || '',
       address: initialData.address || '',
+      expectations: initialData.expectations || '',
     });
   
     useEffect(() => {
@@ -191,6 +191,7 @@ export default function AdminDashboardPage() {
         registrationType: initialData.registrationType || 'professional',
         numberOfFamilyMembers: initialData.numberOfFamilyMembers || '',
         address: initialData.address || '',
+        expectations: initialData.expectations || '',
       });
     }, [initialData]);
 
@@ -241,6 +242,10 @@ export default function AdminDashboardPage() {
         <div>
           <Label htmlFor="edit-address">Address</Label>
           <Textarea id="edit-address" name="address" value={formData.address || ''} onChange={handleChange} />
+        </div>
+        <div>
+          <Label htmlFor="edit-expectations">Expectations</Label>
+          <Textarea id="edit-expectations" name="expectations" value={formData.expectations || ''} onChange={handleChange} />
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
@@ -314,69 +319,106 @@ export default function AdminDashboardPage() {
               Export CSV
             </Button>
           </div>
-
-          <GlassCard className="overflow-hidden flex-grow">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="font-subtitle">Full Name</TableHead>
-                  <TableHead className="font-subtitle hidden md:table-cell">Email</TableHead>
-                  <TableHead className="font-subtitle hidden lg:table-cell">Phone</TableHead>
-                  <TableHead className="font-subtitle">Type</TableHead>
-                  <TableHead className="font-subtitle hidden lg:table-cell">Submitted</TableHead>
-                  <TableHead className="font-subtitle text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedRegistrations.length > 0 ? (
-                  paginatedRegistrations.map((reg) => (
-                    <TableRow key={reg.id}>
-                      <TableCell className="font-body font-medium">{reg.fullName}</TableCell>
-                      <TableCell className="font-body hidden md:table-cell">{reg.email}</TableCell>
-                      <TableCell className="font-body hidden lg:table-cell">{reg.phone}</TableCell>
-                      <TableCell className="font-body">
-                        {reg.registrationType}
-                        {reg.registrationType === 'family' && ` (${reg.numberOfFamilyMembers || 'N/A'} members)`}
-                      </TableCell>
-                      <TableCell className="font-body hidden lg:table-cell">{format(new Date(reg.submittedAt), 'PPp')}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" className="mr-2" onClick={() => { setEditingRegistration(reg); setIsEditModalOpen(true); }}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                             <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the registration for {reg.fullName}.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => deleteRegistration(reg.id)} className="bg-destructive hover:bg-destructive/90">
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+          <TooltipProvider>
+            <GlassCard className="overflow-hidden flex-grow">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="font-subtitle">Full Name</TableHead>
+                    <TableHead className="font-subtitle hidden md:table-cell">Email</TableHead>
+                    <TableHead className="font-subtitle hidden lg:table-cell">Phone</TableHead>
+                    <TableHead className="font-subtitle">Type</TableHead>
+                    <TableHead className="font-subtitle hidden xl:table-cell">Address</TableHead>
+                    <TableHead className="font-subtitle hidden xl:table-cell">Expectations</TableHead>
+                    <TableHead className="font-subtitle hidden lg:table-cell">Submitted</TableHead>
+                    <TableHead className="font-subtitle text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedRegistrations.length > 0 ? (
+                    paginatedRegistrations.map((reg) => (
+                      <TableRow key={reg.id}>
+                        <TableCell className="font-body font-medium">{reg.fullName}</TableCell>
+                        <TableCell className="font-body hidden md:table-cell">{reg.email}</TableCell>
+                        <TableCell className="font-body hidden lg:table-cell">{reg.phone}</TableCell>
+                        <TableCell className="font-body">
+                          {reg.registrationType}
+                          {reg.registrationType === 'family' && ` (${reg.numberOfFamilyMembers || 'N/A'} members)`}
+                        </TableCell>
+                        <TableCell className="font-body hidden xl:table-cell">
+                          {reg.address ? (
+                             <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="max-w-xs truncate cursor-pointer">
+                                  <Home className="inline-block mr-1 h-4 w-4 text-muted-foreground" />
+                                  {reg.address}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" align="start" className="max-w-sm">
+                                <p className="text-sm whitespace-pre-wrap">{reg.address}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="font-body hidden xl:table-cell">
+                          {reg.expectations ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="max-w-xs truncate cursor-pointer">
+                                  <MessageSquareText className="inline-block mr-1 h-4 w-4 text-muted-foreground" />
+                                  {reg.expectations}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" align="start" className="max-w-sm">
+                                <p className="text-sm whitespace-pre-wrap">{reg.expectations}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            <span className="text-muted-foreground">N/A</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="font-body hidden lg:table-cell">{format(new Date(reg.submittedAt), 'PPp')}</TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="icon" className="mr-2" onClick={() => { setEditingRegistration(reg); setIsEditModalOpen(true); }}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                               <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will permanently delete the registration for {reg.fullName}.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => deleteRegistration(reg.id)} className="bg-destructive hover:bg-destructive/90">
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center font-body py-8">
+                        No registrations found.
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center font-body py-8">
-                      No registrations found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </GlassCard>
+                  )}
+                </TableBody>
+              </Table>
+            </GlassCard>
+          </TooltipProvider>
 
           {totalPages > 1 && (
             <div className="mt-6 flex justify-center items-center space-x-2 font-body">
@@ -428,3 +470,5 @@ export default function AdminDashboardPage() {
     </SidebarProvider>
   );
 }
+
+    
