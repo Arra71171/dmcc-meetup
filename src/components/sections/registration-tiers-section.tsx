@@ -5,7 +5,7 @@ import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import { GlassCard } from "@/components/ui/glass-card";
 import { useAuth } from '@/contexts/auth-context'; 
 import { cn } from "@/lib/utils";
-import Link from 'next/link'; 
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 const tiers = [
   {
@@ -40,13 +40,14 @@ const tiers = [
 
 export function RegistrationTiersSection() {
   const { currentUser, openAuthDialog } = useAuth();
+  const router = useRouter(); // Initialize router
 
-  const handleTierClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleTierClick = (tierValue: string) => {
     if (!currentUser) {
-      e.preventDefault(); 
       openAuthDialog();
+    } else {
+      router.push(`/register/${tierValue}`); // Navigate to specific form page
     }
-    // If user is logged in, Link's default behavior will navigate to #registration-form
   };
 
   return (
@@ -71,19 +72,12 @@ export function RegistrationTiersSection() {
             <p className="font-body text-card-foreground/80 text-center mb-6 text-sm leading-relaxed">
               {tier.description}
             </p>
-            <Link 
-              href="/#registration-form" 
-              passHref 
-              className="mt-auto"
-              onClick={handleTierClick} 
+            <GradientBorderButton
+              onClick={() => handleTierClick(tier.value)} 
+              className="w-full text-sm py-3 px-6 mt-auto" 
             >
-              <GradientBorderButton
-                asChild 
-                className="w-full text-sm py-3 px-6" 
-              >
-                <span>{tier.cta}</span> 
-              </GradientBorderButton>
-            </Link>
+              <span>{tier.cta}</span> 
+            </GradientBorderButton>
           </GlassCard>
         ))}
       </div>

@@ -3,7 +3,7 @@ import { HeroSection } from "@/components/sections/hero-section";
 import { ImpactMetricsSection } from "@/components/sections/impact-metrics-section"; // Renamed in thought process, but keeping filename for now
 import { EventHighlightsSection } from "@/components/sections/event-highlights-section";
 import { RegistrationTiersSection } from "@/components/sections/registration-tiers-section";
-import { RegistrationFormSection } from "@/components/sections/registration-form-section";
+// import { RegistrationFormSection } from "@/components/sections/registration-form-section"; // Removed
 import { EventDetailsSection } from "@/components/sections/event-details-section";
 import { ClosingRemarksSection } from "@/components/sections/closing-remarks-section";
 import { Separator } from "@/components/ui/separator";
@@ -27,8 +27,7 @@ export default function Home() {
         <EventDetailsSection />
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
         <RegistrationTiersSection />
-        <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
-        <RegistrationFormSection />
+        {/* Separator and RegistrationFormSection removed */}
         <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
         <ClosingRemarksSection />
       </div>
