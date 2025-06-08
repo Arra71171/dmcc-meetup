@@ -1,6 +1,7 @@
 
 import { GlassCard } from "@/components/ui/glass-card";
 import { MessageSquare, Presentation, Music2, Link as LinkIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const highlights = [
   {
@@ -28,7 +29,10 @@ const highlights = [
 export function EventHighlightsSection() {
   return (
     <section id="highlights" className="w-full max-w-6xl px-4">
-      <h2 className="text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-10 md:mb-16 text-gradient-theme tracking-wide">
+      <h2 className={cn(
+        "text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-10 md:mb-16 text-gradient-theme tracking-wide",
+        "text-glass-shadow"
+        )}>
         What We Hope to Share
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
@@ -37,7 +41,7 @@ export function EventHighlightsSection() {
             <div className="p-4 rounded-full bg-accent/10 mb-6">
              {highlight.icon}
             </div>
-            <h3 className="text-2xl font-subtitle font-medium mb-3 text-card-foreground">{highlight.title}</h3>
+            <h3 className={cn("text-2xl font-subtitle font-medium mb-3 text-card-foreground", "text-glass-shadow")}>{highlight.title}</h3>
             <p className="font-body text-card-foreground/80 leading-relaxed text-sm">
               {highlight.description}
             </p>

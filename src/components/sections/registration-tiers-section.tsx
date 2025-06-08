@@ -2,6 +2,7 @@
 import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import { GlassCard } from "@/components/ui/glass-card";
 import Link from 'next/link';
+import { cn } from "@/lib/utils";
 
 const tiers = [
   {
@@ -27,16 +28,22 @@ const tiers = [
 export function RegistrationTiersSection() {
   return (
     <section id="register" className="w-full max-w-6xl px-4">
-      <h2 className="text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-4 text-gradient-theme tracking-wide">
+      <h2 className={cn(
+        "text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-4 text-gradient-theme tracking-wide",
+        "text-glass-shadow"
+        )}>
         Registration Information
       </h2>
-      <h3 className="text-2xl font-subtitle font-medium text-center mb-10 md:mb-12 text-foreground/80">
+      <h3 className={cn(
+        "text-2xl font-subtitle font-medium text-center mb-10 md:mb-12 text-foreground/80",
+        "text-glass-shadow"
+        )}>
         Registration Categories
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
         {tiers.map((tier) => (
           <GlassCard key={tier.name} className="flex flex-col p-6 md:p-8 h-full">
-            <h3 className="text-2xl md:text-3xl font-subtitle font-medium text-center text-card-foreground">{tier.name}</h3>
+            <h3 className={cn("text-2xl md:text-3xl font-subtitle font-medium text-center text-card-foreground", "text-glass-shadow")}>{tier.name}</h3>
              <p className="text-4xl md:text-5xl font-headline font-semibold text-center my-4 text-accent">{tier.price}</p>
             <p className="font-body text-card-foreground/80 text-center mb-6 flex-grow text-sm leading-relaxed">
               {tier.description}

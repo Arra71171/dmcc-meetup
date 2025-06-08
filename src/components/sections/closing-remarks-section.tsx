@@ -1,12 +1,16 @@
 
 import { GlassCard } from "@/components/ui/glass-card";
 import { Mail, Phone } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function ClosingRemarksSection() {
   return (
     <section id="closing-remarks" className="w-full max-w-3xl px-4 space-y-12">
       <div>
-        <h2 className="text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-8 text-gradient-theme tracking-wide">
+        <h2 className={cn(
+          "text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-8 text-gradient-theme tracking-wide",
+          "text-glass-shadow"
+          )}>
           We Hope You&apos;ll Join Us
         </h2>
         <GlassCard className="p-6 md:p-8 text-center">
@@ -23,7 +27,10 @@ export function ClosingRemarksSection() {
       </div>
 
       <div>
-        <h2 className="text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-8 text-gradient-theme tracking-wide">
+        <h2 className={cn(
+          "text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-8 text-gradient-theme tracking-wide",
+          "text-glass-shadow"
+          )}>
           For Registration Support or Inquiries
         </h2>
         <GlassCard className="p-6 md:p-8">

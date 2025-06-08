@@ -29,6 +29,7 @@ import { useState, type ChangeEvent } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
@@ -137,7 +138,10 @@ export function RegistrationFormSection() {
 
   return (
     <section id="registration-form" className="w-full max-w-3xl px-4 mx-auto">
-      <h2 className="text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-10 md:mb-16 text-gradient-theme tracking-wide">
+      <h2 className={cn(
+        "text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-10 md:mb-16 text-gradient-theme tracking-wide",
+        "text-glass-shadow"
+        )}>
         How to Register
       </h2>
       {loadingAuthState && (
@@ -148,7 +152,7 @@ export function RegistrationFormSection() {
       )}
       {!loadingAuthState && !currentUser && (
         <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px] space-y-6 text-center">
-          <h3 className="text-2xl font-subtitle font-medium text-card-foreground">Authentication Required</h3>
+          <h3 className={cn("text-2xl font-subtitle font-medium text-card-foreground", "text-glass-shadow")}>Authentication Required</h3>
           <p className="text-card-foreground/80 font-body">
             Please sign in or create an account to complete your registration for the Meetei People's Convention.
           </p>
@@ -160,7 +164,7 @@ export function RegistrationFormSection() {
       {!loadingAuthState && currentUser && (
       <GlassCard className="p-6 md:p-8 text-card-foreground">
         <div className="mb-8 space-y-3">
-            <h4 className="text-xl font-subtitle font-medium text-center text-card-foreground">Registration Steps:</h4>
+            <h4 className={cn("text-xl font-subtitle font-medium text-center text-card-foreground", "text-glass-shadow")}>Registration Steps:</h4>
             <ol className="list-decimal list-inside space-y-1 font-body text-sm text-card-foreground/80">
                 {registrationSteps.map((step, index) => (
                     <li key={index}>{step}</li>

@@ -1,6 +1,7 @@
 
 import { GlassCard } from "@/components/ui/glass-card";
 import { ShieldCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function AdminDashboardPage() {
   return (
@@ -8,7 +9,10 @@ export default function AdminDashboardPage() {
       <GlassCard className="w-full max-w-3xl p-6 md:p-8">
         <div className="flex flex-col items-center text-center mb-8">
           <ShieldCheck className="w-16 h-16 text-accent mb-4" />
-          <h1 className="text-3xl md:text-4xl font-headline font-semibold text-gradient-theme tracking-wide">
+          <h1 className={cn(
+            "text-3xl md:text-4xl font-headline font-semibold text-gradient-theme tracking-wide",
+            "text-glass-shadow"
+            )}>
             Admin Dashboard
           </h1>
         </div>

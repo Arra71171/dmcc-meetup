@@ -1,6 +1,7 @@
 
 import Image from "next/image";
 import { GlassCard } from "@/components/ui/glass-card";
+import { cn } from "@/lib/utils";
 
 export function ImpactMetricsSection() {
   return (
@@ -21,7 +22,10 @@ export function ImpactMetricsSection() {
           </div>
           <div className="flex flex-col justify-center">
             <GlassCard>
-              <h2 className="text-4xl md:text-5xl font-headline font-semibold text-left text-gradient-theme mb-6 tracking-tight">
+              <h2 className={cn(
+                "text-4xl md:text-5xl font-headline font-semibold text-left text-gradient-theme mb-6 tracking-tight",
+                "text-glass-shadow"
+                )}>
                 Understanding Our Heritage
               </h2>
               <p className="font-body text-lg text-card-foreground/90 leading-relaxed mb-4">

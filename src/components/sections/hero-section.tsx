@@ -4,6 +4,7 @@
 import { motion } from 'framer-motion';
 import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import Link from "next/link";
+import { cn } from '@/lib/utils';
 
 const fadeInVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -18,7 +19,10 @@ export function HeroSection() {
     >
       <div className="relative z-10 max-w-4xl mx-auto">
         <motion.h1
-          className="text-5xl sm:text-6xl md:text-7xl font-headline font-semibold tracking-tight !leading-tight uppercase"
+          className={cn(
+            "text-5xl sm:text-6xl md:text-7xl font-headline font-semibold tracking-tight !leading-tight uppercase",
+            "text-glass-shadow"
+          )}
           initial="hidden"
           animate="visible"
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -26,7 +30,10 @@ export function HeroSection() {
         >
           <span className="block text-gradient-theme">MEETEI PEOPLE&apos;S</span>
           <span className="block text-gradient-theme">CONVENTION, DELHI 2025</span>
-          <span className="block text-2xl md:text-3xl font-subtitle font-medium text-foreground/70 mt-4 normal-case tracking-normal">
+          <span className={cn(
+            "block text-2xl md:text-3xl font-subtitle font-medium text-foreground/70 mt-4 normal-case tracking-normal",
+            "text-glass-shadow"
+            )}>
             Cum 2nd Rising Day of DMCC
           </span>
         </motion.h1>
