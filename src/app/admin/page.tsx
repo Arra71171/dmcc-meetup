@@ -1,15 +1,14 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { format } from 'date-fns';
 import { GlassCard } from "@/components/ui/glass-card";
-import { ShieldCheck, LogIn, Loader2, UserCog, Users, Edit, Trash2, PlusCircle, Search, Download, LogOut as LogOutIcon } from "lucide-react"; // Renamed LogOut to LogOutIcon to avoid conflict
+import { ShieldCheck, LogIn, Loader2, UserCog, Users, Edit, Trash2, Search, Download, LogOut as LogOutIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
 import { useRegistrations, type RegistrationEntry } from '@/contexts/registration-context';
 import { Button } from "@/components/ui/button";
-import { GradientBorderButton } from '@/components/ui/gradient-border-button';
 import {
   Table,
   TableBody,
@@ -19,6 +18,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,9 +38,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose
 } from "@/components/ui/dialog";
-// Sidebar components from shadcn/ui (assuming they are available as per project structure)
 import {
   SidebarProvider,
   Sidebar,
@@ -51,20 +50,17 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarInset,
-  useSidebar
-} from "@/components/ui/sidebar"; // Ensure this path is correct
-import type { RegistrationFormValues } from '@/components/sections/registration-form-section';
+} from "@/components/ui/sidebar";
 
 
 const ITEMS_PER_PAGE = 10;
 
 export default function AdminDashboardPage() {
   const { currentUser, loadingAuthState, openAuthDialog, isAdminOverrideLoggedIn, logOut } = useAuth();
-  const { registrations, deleteRegistration, updateRegistration, addRegistration: addRegistrationViaContext } = useRegistrations();
+  const { registrations, deleteRegistration, updateRegistration } = useRegistrations();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingRegistration, setEditingRegistration] = useState<RegistrationEntry | null>(null);
 
@@ -72,7 +68,7 @@ export default function AdminDashboardPage() {
     return registrations.filter(reg =>
       reg.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       reg.email.toLowerCase().includes(searchTerm.toLowerCase())
-    ).sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()); // Sort by most recent
+    ).sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
   }, [registrations, searchTerm]);
 
   const totalPages = Math.ceil(filteredRegistrations.length / ITEMS_PER_PAGE);
@@ -81,7 +77,6 @@ export default function AdminDashboardPage() {
     currentPage * ITEMS_PER_PAGE
   );
 
-  // --- Authentication Gate ---
   if (loadingAuthState) {
     return (
       <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
@@ -136,10 +131,9 @@ export default function AdminDashboardPage() {
       </main>
     );
   }
-  // --- End Authentication Gate ---
 
   const handleExportCSV = () => {
-    const headers = "ID,Full Name,Email,Phone,Registration Type,Family Members,Address,Screenshot,Submitted At\n";
+    const headers = "ID,Full Name,Email,Phone,Registration Type,Family Members,Address,Payment Screenshot Filename,Submitted At\n";
     const csvContent = filteredRegistrations.map(reg =>
       [
         reg.id,
@@ -149,7 +143,7 @@ export default function AdminDashboardPage() {
         reg.registrationType,
         reg.registrationType === 'family' ? reg.numberOfFamilyMembers || 'N/A' : 'N/A',
         `"${(reg.address || 'N/A').replace(/"/g, '""')}"`,
-        reg.paymentScreenshotFilename || 'No',
+        reg.paymentScreenshotFilename || 'N/A',
         format(new Date(reg.submittedAt), 'yyyy-MM-dd HH:mm:ss')
       ].join(',')
     ).join('\n');
@@ -168,46 +162,63 @@ export default function AdminDashboardPage() {
   };
   
   const RegistrationEditForm = ({ initialData, onSubmit, onCancel }: {
-    initialData?: Partial<RegistrationEntry>;
-    onSubmit: (data: Partial<Omit<RegistrationEntry, 'id'|'submittedAt'>>) => void;
+    initialData: RegistrationEntry; // For editing, initialData is required
+    onSubmit: (data: Partial<Omit<RegistrationEntry, 'id'|'submittedAt'|'paymentScreenshot'>>) => void;
     onCancel: () => void;
   }) => {
     const [formData, setFormData] = useState({
-      fullName: initialData?.fullName || '',
-      email: initialData?.email || '',
-      phone: initialData?.phone || '',
-      registrationType: initialData?.registrationType || 'professional',
-      numberOfFamilyMembers: initialData?.numberOfFamilyMembers || '',
-      address: initialData?.address || '',
+      fullName: initialData.fullName || '',
+      email: initialData.email || '',
+      phone: initialData.phone || '',
+      registrationType: initialData.registrationType || 'professional',
+      numberOfFamilyMembers: initialData.numberOfFamilyMembers || '',
+      address: initialData.address || '',
     });
+  
+    useEffect(() => {
+      setFormData({
+        fullName: initialData.fullName || '',
+        email: initialData.email || '',
+        phone: initialData.phone || '',
+        registrationType: initialData.registrationType || 'professional',
+        numberOfFamilyMembers: initialData.numberOfFamilyMembers || '',
+        address: initialData.address || '',
+      });
+    }, [initialData]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData(prev => ({ ...prev, [name]: name === "numberOfFamilyMembers" && value !== "" ? parseInt(value, 10) : value }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
-      onSubmit(formData);
+      const dataToSubmit: Partial<Omit<RegistrationEntry, 'id'|'submittedAt'|'paymentScreenshot'>> = {
+        ...formData,
+        numberOfFamilyMembers: formData.registrationType === 'family' 
+            ? (formData.numberOfFamilyMembers ? String(formData.numberOfFamilyMembers) : undefined) 
+            : undefined,
+      };
+      onSubmit(dataToSubmit);
     };
 
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label htmlFor="fullName">Full Name</Label>
-          <Input id="fullName" name="fullName" value={formData.fullName} onChange={handleChange} required />
+          <Label htmlFor="edit-fullName">Full Name</Label>
+          <Input id="edit-fullName" name="fullName" value={formData.fullName} onChange={handleChange} required />
         </div>
         <div>
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+          <Label htmlFor="edit-email">Email</Label>
+          <Input id="edit-email" name="email" type="email" value={formData.email} onChange={handleChange} required />
         </div>
         <div>
-          <Label htmlFor="phone">Phone</Label>
-          <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} required />
+          <Label htmlFor="edit-phone">Phone</Label>
+          <Input id="edit-phone" name="phone" value={formData.phone} onChange={handleChange} required />
         </div>
          <div>
-          <Label htmlFor="registrationType">Registration Type</Label>
-          <select name="registrationType" id="registrationType" value={formData.registrationType} onChange={handleChange} className="w-full p-2 border rounded-md bg-input text-sm">
+          <Label htmlFor="edit-registrationType">Registration Type</Label>
+          <select name="registrationType" id="edit-registrationType" value={formData.registrationType} onChange={handleChange} className="w-full p-2 border rounded-md bg-input text-sm">
             <option value="professional">Professional</option>
             <option value="student">Student</option>
             <option value="family">Family</option>
@@ -215,13 +226,13 @@ export default function AdminDashboardPage() {
         </div>
         {formData.registrationType === 'family' && (
           <div>
-            <Label htmlFor="numberOfFamilyMembers">Number of Family Members</Label>
-            <Input id="numberOfFamilyMembers" name="numberOfFamilyMembers" type="number" value={String(formData.numberOfFamilyMembers)} onChange={handleChange} />
+            <Label htmlFor="edit-numberOfFamilyMembers">Number of Family Members</Label>
+            <Input id="edit-numberOfFamilyMembers" name="numberOfFamilyMembers" type="number" value={String(formData.numberOfFamilyMembers)} onChange={handleChange} min="1"/>
           </div>
         )}
         <div>
-          <Label htmlFor="address">Address</Label>
-          <Textarea id="address" name="address" value={formData.address} onChange={handleChange} />
+          <Label htmlFor="edit-address">Address</Label>
+          <Textarea id="edit-address" name="address" value={formData.address || ''} onChange={handleChange} />
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
@@ -230,7 +241,6 @@ export default function AdminDashboardPage() {
       </form>
     );
   };
-
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -276,7 +286,7 @@ export default function AdminDashboardPage() {
           <GlassCard className="p-4 md:p-6 mb-6">
             <p className="font-body text-sm text-card-foreground/80">
               Client-side data prototype: Registrations are stored in memory and will be lost on page refresh.
-              A full backend is required for persistent storage.
+              A full backend is required for persistent storage and to capture data from the public registration form.
             </p>
           </GlassCard>
 
@@ -291,10 +301,6 @@ export default function AdminDashboardPage() {
                 className="pl-10 w-full"
               />
             </div>
-            <GradientBorderButton onClick={() => { setEditingRegistration(null); setIsCreateModalOpen(true);}} className="text-sm">
-              <PlusCircle className="mr-2 h-5 w-5" />
-              Add Registration
-            </GradientBorderButton>
             <Button variant="outline" onClick={handleExportCSV} className="text-sm">
               <Download className="mr-2 h-5 w-5" />
               Export CSV
@@ -388,29 +394,6 @@ export default function AdminDashboardPage() {
         </SidebarInset>
       </main>
 
-      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Registration</DialogTitle>
-            <DialogDescription>
-              Manually enter registration details.
-            </DialogDescription>
-          </DialogHeader>
-          <RegistrationEditForm 
-            onSubmit={(data) => {
-                const completeFormData: RegistrationFormValues = {
-                    ...(data as Omit<RegistrationFormValues, 'agreeToTerms' | 'paymentScreenshot'>),
-                    agreeToTerms: true, 
-                    paymentScreenshot: undefined, 
-                };
-                addRegistrationViaContext(completeFormData);
-                setIsCreateModalOpen(false);
-            }}
-            onCancel={() => setIsCreateModalOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent>
           <DialogHeader>
@@ -438,17 +421,3 @@ export default function AdminDashboardPage() {
     </SidebarProvider>
   );
 }
-
-const Label = ({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) => (
-  <label htmlFor={htmlFor} className="block text-sm font-medium text-card-foreground mb-1 font-subtitle">{children}</label>
-);
-const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(
-  ({ className, ...props }, ref) => (
-    <textarea
-      ref={ref}
-      className={cn("w-full p-2 border rounded-md bg-input text-sm min-h-[80px]", className)}
-      {...props}
-    />
-  )
-);
-Textarea.displayName = "Textarea";
