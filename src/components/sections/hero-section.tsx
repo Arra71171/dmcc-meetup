@@ -13,20 +13,20 @@ export function HeroSection() {
         layout="fill"
         objectFit="cover"
         quality={80}
-        className="opacity-15 dark:opacity-10" // Increased opacity
+        className="opacity-10 dark:opacity-5" // Reduced opacity
         data-ai-hint="abstract community celebration"
       />
-      <div className="absolute inset-0 bg-black/70 dark:bg-black/80 z-0" /> {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/[.85] dark:bg-black/[.90] z-0" /> {/* Darker overlay */}
       
       <div className="relative z-10 max-w-4xl mx-auto"> {/* Increased max-width */}
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase font-headline tracking-tight !leading-tight">
           <span className="block text-gradient-theme">MEETEI PEOPLE&apos;S</span>
           <span className="block text-gradient-theme">CONVENTION, DELHI 2025</span>
         </h1>
-        <p className="mt-6 text-lg md:text-xl font-medium font-body text-foreground/90 dark:text-foreground/80 max-w-2xl mx-auto"> {/* Increased contrast */}
+        <p className="mt-6 text-lg md:text-xl font-medium font-body text-gray-200 dark:text-gray-300 max-w-2xl mx-auto"> {/* Explicitly lighter text */}
           Uniting Heritage, Empowering Future
         </p>
-        <p className="mt-8 text-base md:text-lg font-lora text-foreground/80 dark:text-foreground/70 max-w-3xl mx-auto"> {/* Increased contrast */}
+        <p className="mt-8 text-base md:text-lg font-lora text-gray-200 dark:text-gray-300 max-w-3xl mx-auto"> {/* Explicitly lighter text */}
           Join us for the Meetei People&apos;s Convention, Delhi 2025, a landmark gathering on our 2nd Rising Day. This event, set for June 15, 2025, at JNU Convention Center, celebrates our rich heritage and charts a course for a vibrant future. Be part of a historic moment for community empowerment and cultural renaissance in the nation&apos;s capital.
         </p>
         <GradientBorderButton className="mt-10 text-lg px-8 py-4 font-headline">
