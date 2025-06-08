@@ -6,7 +6,7 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative w-full flex flex-col items-center justify-center text-center py-24 md:py-32 lg:py-48 px-4 overflow-hidden min-h-[calc(100vh-4rem)]"
+      className="relative w-full flex flex-col items-center justify-center text-center pt-10 md:pt-12 lg:pt-16 pb-20 md:pb-24 lg:pb-32 px-4 overflow-hidden min-h-[calc(100vh-4rem)]"
     >
       <div className="relative z-10 max-w-4xl mx-auto">
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold uppercase font-headline tracking-tight !leading-tight">
