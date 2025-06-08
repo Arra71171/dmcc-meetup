@@ -15,12 +15,28 @@ body {
   background: linear-gradient(135deg, hsl(240, 20%, 20%) 0%, hsl(195, 20%, 20%) 100%); /* Darker Lavender to Darker Pale Blue */
 }
 
-.bg-accent-gradient {
+/* Specific gradient for button backgrounds - always the light pastel one */
+.bg-accent-gradient-button {
   background: linear-gradient(to right, hsl(195, 100%, 81%), hsl(256, 100%, 89%), hsl(23, 100%, 88%)); /* Soft Teal -> Lilac -> Peach */
 }
 
+/* Gradient for heading text in light mode - darker variant */
+.text-gradient-heading-light-mode {
+  background: linear-gradient(to right, hsl(195, 70%, 45%), hsl(256, 70%, 50%), hsl(23, 80%, 55%));
+}
+
+/* Gradient for heading text in dark mode - original light pastel variant */
+.text-gradient-heading-dark-mode {
+  background: linear-gradient(to right, hsl(195, 100%, 81%), hsl(256, 100%, 89%), hsl(23, 100%, 88%));
+}
+
 .text-gradient-theme {
-  @apply bg-clip-text text-transparent bg-accent-gradient;
+  @apply bg-clip-text text-transparent;
+  @apply text-gradient-heading-light-mode;
+}
+
+.dark .text-gradient-theme {
+  @apply text-gradient-heading-dark-mode;
 }
 
 

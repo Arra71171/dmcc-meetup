@@ -21,8 +21,8 @@ export function GradientBorderButton({ children, className, asChild = false, ...
       )}
       {...props}
     >
-      {/* Accent Gradient Background */}
-      <span className="absolute inset-0 bg-accent-gradient group-hover:opacity-90 transition-opacity duration-200" />
+      {/* Accent Gradient Background - specific for buttons */}
+      <span className="absolute inset-0 bg-accent-gradient-button group-hover:opacity-90 transition-opacity duration-200" />
       
       {/* Glass Effect Overlay - subtle */}
       <span className="absolute inset-0 bg-white/10 dark:bg-black/10 backdrop-blur-[3px]" /> 
@@ -31,7 +31,7 @@ export function GradientBorderButton({ children, className, asChild = false, ...
       <span className={cn(
         "relative inline-flex items-center justify-center h-full w-full",
         "px-6 py-3", 
-        "text-primary-foreground" // White text
+        "text-card-foreground" // Changed from text-primary-foreground for better contrast
       )}>
         {children}
       </span>
