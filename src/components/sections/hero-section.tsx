@@ -18,7 +18,7 @@ export function HeroSection() {
       className="relative w-full flex flex-col items-center justify-center text-center py-20 md:py-28 lg:py-32 px-4 overflow-hidden min-h-[calc(100vh-5rem)]"
     >
       <Image
-        src="https://placehold.co/1920x1080.png"
+        src="https://placehold.co/1920x1080/EAEAEA/EAEAEA.png"
         alt="Abstract background for DMCC Convention hero section"
         layout="fill"
         objectFit="cover"
@@ -73,4 +73,3 @@ export function HeroSection() {
     </section>
   );
 }
-
