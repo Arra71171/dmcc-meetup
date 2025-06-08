@@ -29,7 +29,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Dialog,
@@ -38,6 +37,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   SidebarProvider,
@@ -227,7 +227,7 @@ export default function AdminDashboardPage() {
         {formData.registrationType === 'family' && (
           <div>
             <Label htmlFor="edit-numberOfFamilyMembers">Number of Family Members</Label>
-            <Input id="edit-numberOfFamilyMembers" name="numberOfFamilyMembers" type="number" value={String(formData.numberOfFamilyMembers)} onChange={handleChange} min="1"/>
+            <Input id="edit-numberOfFamilyMembers" name="numberOfFamilyMembers" type="number" value={String(formData.numberOfFamilyMembers)} onChange={handleChange} min="1" className="text-sm"/>
           </div>
         )}
         <div>
@@ -244,7 +244,7 @@ export default function AdminDashboardPage() {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <main className="flex min-h-[calc(100svh-5rem)] bg-background"> {/* Use 100svh */}
+      <main className="flex h-full bg-background">
         <Sidebar collapsible="icon" className="border-r">
           <SidebarHeader>
             <div className="flex items-center gap-2 p-2 justify-between">
@@ -270,7 +270,7 @@ export default function AdminDashboardPage() {
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto flex flex-col"> {/* Ensure SidebarInset is flex-col */}
+        <SidebarInset className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto flex flex-col">
           <div className="flex items-center justify-between mb-6">
              <div className="flex items-center">
                 <SidebarTrigger className="md:hidden mr-2" /> 
@@ -307,7 +307,7 @@ export default function AdminDashboardPage() {
             </Button>
           </div>
 
-          <GlassCard className="overflow-hidden flex-grow"> {/* Add flex-grow here */}
+          <GlassCard className="overflow-hidden flex-grow">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -336,11 +336,11 @@ export default function AdminDashboardPage() {
                           <Edit className="h-4 w-4" />
                         </Button>
                         <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                          <DialogTrigger asChild>
+                             <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
                               <Trash2 className="h-4 w-4" />
                             </Button>
-                          </AlertDialogTrigger>
+                          </DialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
                               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -417,7 +417,6 @@ export default function AdminDashboardPage() {
           )}
         </DialogContent>
       </Dialog>
-
     </SidebarProvider>
   );
 }
