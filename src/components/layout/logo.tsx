@@ -9,9 +9,9 @@ interface LogoProps {
 export function Logo({ className }: LogoProps) {
   return (
     <Link href="/" className={cn(
-      "flex items-center justify-center w-12 h-12 rounded-full",
-      "bg-primary text-primary-foreground", // Light mode: Dark BG, Light text
-      "dark:bg-primary dark:text-primary-foreground", // Dark mode: Light BG, Dark text
+      "flex items-center justify-center w-14 h-14 rounded-full", // Increased size
+      "bg-primary text-primary-foreground",
+      "dark:bg-primary dark:text-primary-foreground",
       "font-headline font-bold text-lg",
       className
     )}>
