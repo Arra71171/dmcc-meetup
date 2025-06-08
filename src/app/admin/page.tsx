@@ -45,7 +45,7 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
-  SidebarTrigger, // Import SidebarTrigger
+  SidebarTrigger,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -61,6 +61,11 @@ const ITEMS_PER_PAGE = 10;
 export default function AdminDashboardPage() {
   const { currentUser, loadingAuthState, openAuthDialog, isAdminOverrideLoggedIn, logOut } = useAuth();
   const { registrations, deleteRegistration, updateRegistration } = useRegistrations();
+
+  // Log registrations received by the AdminDashboardPage
+  useEffect(() => {
+    console.log("AdminDashboardPage received registrations:", registrations);
+  }, [registrations]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
