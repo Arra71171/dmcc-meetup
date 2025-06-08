@@ -44,12 +44,12 @@ const registrationFormSchema = z.object({
   address: z.string().max(250, {message: "Address must be less than 250 characters."}).optional(),
   paymentScreenshot: z
     .any()
-    .refine((files) => { // Optional screenshot
+    .refine((files) => { 
       if (!files || files.length === 0) return true;
       return files?.[0]?.size <= MAX_FILE_SIZE;
     }, `Max file size is 5MB.`)
     .refine(
-      (files) => { // Optional screenshot
+      (files) => { 
         if (!files || files.length === 0) return true;
         return ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type);
       },
@@ -137,22 +137,22 @@ export function RegistrationFormSection() {
 
   return (
     <section id="registration-form" className="w-full max-w-3xl px-4 mx-auto">
-      <h2 className="text-3xl md:text-4xl font-bold text-center font-headline uppercase mb-10 md:mb-16 text-gradient-theme">
+      <h2 className="text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-10 md:mb-16 text-gradient-theme tracking-wide">
         How to Register
       </h2>
       {loadingAuthState && (
         <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px]">
           <Loader2 className="h-12 w-12 animate-spin text-accent" />
-          <p className="mt-4 text-lg font-medium">Verifying your status...</p>
+          <p className="mt-4 text-lg font-subtitle text-card-foreground">Verifying your status...</p>
         </GlassCard>
       )}
       {!loadingAuthState && !currentUser && (
         <GlassCard className="p-6 md:p-8 text-card-foreground flex flex-col items-center justify-center min-h-[300px] space-y-6 text-center">
-          <h3 className="text-2xl font-semibold text-foreground">Authentication Required</h3>
-          <p className="text-foreground">
+          <h3 className="text-2xl font-subtitle font-medium text-card-foreground">Authentication Required</h3>
+          <p className="text-card-foreground/80 font-body">
             Please sign in or create an account to complete your registration for the Meetei People's Convention.
           </p>
-          <GradientBorderButton onClick={openAuthDialog} className="font-headline text-lg py-3 mt-2 w-auto">
+          <GradientBorderButton onClick={openAuthDialog} className="text-base py-3 mt-2 w-auto">
             Sign In / Create Account
           </GradientBorderButton>
         </GlassCard>
@@ -160,21 +160,21 @@ export function RegistrationFormSection() {
       {!loadingAuthState && currentUser && (
       <GlassCard className="p-6 md:p-8 text-card-foreground">
         <div className="mb-8 space-y-3">
-            <h4 className="text-xl font-semibold font-headline text-center">Registration Steps:</h4>
-            <ol className="list-decimal list-inside space-y-1 font-lora text-foreground/90">
+            <h4 className="text-xl font-subtitle font-medium text-center text-card-foreground">Registration Steps:</h4>
+            <ol className="list-decimal list-inside space-y-1 font-body text-sm text-card-foreground/80">
                 {registrationSteps.map((step, index) => (
                     <li key={index}>{step}</li>
                 ))}
             </ol>
         </div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 font-body text-sm">
             <FormField
               control={form.control}
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel className="font-subtitle text-card-foreground">Full Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your full name" {...field} />
                   </FormControl>
@@ -188,7 +188,7 @@ export function RegistrationFormSection() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email Address</FormLabel>
+                  <FormLabel className="font-subtitle text-card-foreground">Email Address</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="your.email@example.com" {...field} defaultValue={currentUser.email || ""} />
                   </FormControl>
@@ -202,7 +202,7 @@ export function RegistrationFormSection() {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
+                  <FormLabel className="font-subtitle text-card-foreground">Phone Number</FormLabel>
                   <FormControl>
                     <Input type="tel" placeholder="+91 XXXXXXXXXX" {...field} />
                   </FormControl>
@@ -216,14 +216,14 @@ export function RegistrationFormSection() {
               name="registrationType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Registration Type</FormLabel>
+                  <FormLabel className="font-subtitle text-card-foreground">Registration Type</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="font-body">
                         <SelectValue placeholder="Select your registration type" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="font-body">
                       <SelectItem value="professional">Professional (₹500)</SelectItem>
                       <SelectItem value="student">Student (₹300)</SelectItem>
                       <SelectItem value="family">Family Pass (₹800)</SelectItem>
@@ -240,7 +240,7 @@ export function RegistrationFormSection() {
                 name="numberOfFamilyMembers"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Number of Family Members</FormLabel>
+                    <FormLabel className="font-subtitle text-card-foreground">Number of Family Members</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -267,7 +267,7 @@ export function RegistrationFormSection() {
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Current Address (Optional)</FormLabel>
+                  <FormLabel className="font-subtitle text-card-foreground">Current Address (Optional)</FormLabel>
                   <FormControl>
                     <Textarea placeholder="Enter your current address (City, State)" className="resize-none" {...field} />
                   </FormControl>
@@ -281,13 +281,13 @@ export function RegistrationFormSection() {
               name="paymentScreenshot"
               render={({ field: { onChange, value, ...rest } }) => ( 
                 <FormItem>
-                  <FormLabel>Payment Screenshot (UPI to radheoinam@oksbi - Optional but Recommended)</FormLabel>
+                  <FormLabel className="font-subtitle text-card-foreground">Payment Screenshot (UPI to radheoinam@oksbi - Optional but Recommended)</FormLabel>
                   <FormControl>
                     <Input 
                       type="file" 
                       accept={ACCEPTED_IMAGE_TYPES.join(",")}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.files)} 
-                      className="file:text-foreground file:font-medium file:mr-2"
+                      className="file:text-foreground file:font-subtitle file:uppercase file:text-xs file:tracking-wider file:font-medium file:mr-3"
                       {...rest} 
                     />
                   </FormControl>
@@ -303,7 +303,7 @@ export function RegistrationFormSection() {
               control={form.control}
               name="agreeToTerms"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4 shadow-sm bg-background/50">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4 shadow-sm bg-background/30 dark:bg-background/50">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -312,10 +312,10 @@ export function RegistrationFormSection() {
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel htmlFor="terms" className="cursor-pointer">
+                    <FormLabel htmlFor="terms" className="cursor-pointer font-subtitle text-card-foreground">
                       I agree to the terms and conditions of the Meetei People's Convention.
                     </FormLabel>
-                    <FormDescription className="text-muted-foreground">
+                    <FormDescription className="text-muted-foreground text-xs">
                       By registering, you acknowledge and accept our event policies.
                     </FormDescription>
                      <FormMessage />
@@ -326,7 +326,7 @@ export function RegistrationFormSection() {
 
             <GradientBorderButton 
               type="submit" 
-              className="w-full font-headline text-lg py-3" 
+              className="w-full text-base py-3" 
               disabled={isSubmitting}
             >
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

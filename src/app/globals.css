@@ -7,117 +7,115 @@ body {
   /* Default font is set by .font-body in layout.tsx */
 }
 
-.bg-gradient-light {
-  background: linear-gradient(135deg, #FFC4C4, #E0C3FC);
+.bg-pastel-gradient-overlay {
+  background: linear-gradient(135deg, hsl(240, 60%, 90%) 0%, hsl(195, 60%, 90%) 100%); /* Lavender to Pale Blue */
 }
 
-.bg-gradient-dark {
-  background: linear-gradient(135deg, #1B2245, #5D2A8E);
+.dark .bg-pastel-gradient-overlay {
+  background: linear-gradient(135deg, hsl(240, 20%, 20%) 0%, hsl(195, 20%, 20%) 100%); /* Darker Lavender to Darker Pale Blue */
+}
+
+.bg-accent-gradient {
+  background: linear-gradient(to right, hsl(195, 100%, 81%), hsl(256, 100%, 89%), hsl(23, 100%, 88%)); /* Soft Teal -> Lilac -> Peach */
 }
 
 .text-gradient-theme {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--accent))] to-[hsl(var(--primary))];
-}
-
-.dark .text-gradient-theme {
-   @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(var(--foreground))] via-[hsl(var(--accent))] to-[hsl(var(--foreground))];
+  @apply bg-clip-text text-transparent bg-accent-gradient;
 }
 
 
 @layer base {
   :root {
-    /* Light Mode: Base text is now white for global dark background */
-    --background: 260 100% 97%; /* Light Lavender solid fallback - primarily for card backgrounds */
-    --foreground: 0 0% 98%; /* Global foreground is light due to dark image overlay */
+    /* Light Mode - New Theme */
+    --background: 240 20% 98.5%; /* #F9F9FB Light off-white */
+    --foreground: 0 0% 20%; /* #333333 Dark Grey */
 
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 0 0% 20%; /* Charcoal Grey - text *on* cards in light mode */
+    --card: 0 0% 100%; /* Base for cards, GlassCard will override with transparency */
+    --card-foreground: 0 0% 13%; /* Darker Grey for text on cards */
 
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 0 0% 20%; /* Charcoal Grey */
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 13%;
 
-    --primary: 0 0% 20%; /* Charcoal Grey for buttons */
-    --primary-foreground: 0 0% 98%; /* Light text on primary buttons */
+    --primary: 256 100% 75%; /* Lilac - representative color from accent gradient for UI elements */
+    --primary-foreground: 0 0% 98%; /* White/Very Light Grey for text on primary buttons */
 
-    --secondary: 0 0% 96.1%; /* Default light grey */
-    --secondary-foreground: 0 0% 9%; /* Default dark text */
+    --secondary: 240 10% 95%; /* Light grey */
+    --secondary-foreground: 0 0% 20%; /* Dark grey */
 
-    --muted: 0 0% 90%; /* Lighter grey for muted backgrounds */
-    --muted-foreground: 0 0% 45%; /* Darker Grey for better contrast on light input backgrounds */
+    --muted: 240 10% 90%; /* Lighter grey */
+    --muted-foreground: 0 0% 40%; /* Medium Grey */
 
-    --accent: 0 100% 88%; /* Soft Coral #FFC4C4 for accents */
-    --accent-foreground: 0 0% 20%; /* Charcoal Grey text on accent */
+    --accent: 195 100% 81%; /* Soft Teal - start of accent gradient */
+    --accent-foreground: 0 0% 13%; /* Dark Grey text on accent */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 80%; /* Adjusted border for better visibility on light glass cards */
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 20%; /* Charcoal Grey for rings */
+    --border: 240 10% 85%; /* Very light grey for borders */
+    --input: 240 10% 92%; /* Light grey for input backgrounds */
+    --ring: 195 100% 81%; /* Soft Teal for focus rings */
 
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    --chart-1: 195 70% 70%;
+    --chart-2: 256 70% 80%;
+    --chart-3: 23 70% 80%;
+    --chart-4: 220 70% 75%;
+    --chart-5: 300 70% 80%;
+    --radius: 0.75rem; /* 12px, can be adjusted for 16-24px range on cards via specific classes */
 
-    /* Sidebar colors - keeping defaults for now, can be themed if sidebar is used */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-background: 240 10% 97%;
+    --sidebar-foreground: 0 0% 20%;
+    --sidebar-primary: 256 100% 75%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 195 100% 81%;
+    --sidebar-accent-foreground: 0 0% 13%;
+    --sidebar-border: 240 10% 85%;
+    --sidebar-ring: 195 100% 81%;
   }
 
   .dark {
-    /* Dark Mode: Midnight Blue (#1B2245) to Cosmic Purple (#5D2A8E) gradient. Accents: Pure white or light greys. */
-    --background: 231 47% 12%; /* Darker Midnight Blue solid fallback */
-    --foreground: 0 0% 98%; /* White/Light Grey */
+    /* Dark Mode - Adjusted for new theme structure */
+    --background: 240 10% 10%; /* Very Dark Blue/Grey */
+    --foreground: 0 0% 95%; /* Light Grey/White */
 
-    --card: 231 47% 15%; /* Darker card background */
-    --card-foreground: 0 0% 98%; /* White/Light Grey */
+    --card: 240 10% 15%; /* Base for dark cards */
+    --card-foreground: 0 0% 90%; 
 
-    --popover: 231 47% 10%; /* Darker popover */
-    --popover-foreground: 0 0% 98%; /* White/Light Grey */
+    --popover: 240 10% 12%;
+    --popover-foreground: 0 0% 90%;
 
-    --primary: 0 0% 98%; /* White/Light Grey for buttons */
-    --primary-foreground: 0 0% 10%; /* Dark Grey text on primary buttons */
+    --primary: 256 80% 70%; /* Brighter Lilac for dark mode */
+    --primary-foreground: 0 0% 10%; /* Dark text for contrast on bright primary */
 
-    --secondary: 0 0% 14.9%; /* Default dark grey */
-    --secondary-foreground: 0 0% 98%; /* Default light text */
+    --secondary: 240 10% 20%; 
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 0 0% 20%; /* Darker grey for muted backgrounds */
-    --muted-foreground: 0 0% 80%; /* Lighter grey for muted text - improved contrast */
+    --muted: 240 10% 25%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 271 56% 50%; /* Cosmic Purple, adjusted lightness for accent */
-    --accent-foreground: 0 0% 98%; /* White/Light Grey text on accent */
+    --accent: 195 80% 70%; /* Brighter Teal */
+    --accent-foreground: 0 0% 95%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 95%;
 
-    --border: 0 0% 25%; /* Adjusted border for visibility on dark glass cards */
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%; /* Light grey for rings */
+    --border: 240 10% 30%;
+    --input: 240 10% 22%;
+    --ring: 195 80% 70%;
 
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-1: 195 60% 60%;
+    --chart-2: 256 60% 70%;
+    --chart-3: 23 60% 70%;
+    --chart-4: 220 60% 65%;
+    --chart-5: 300 60% 70%;
 
-    /* Sidebar colors - keeping defaults for now */
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 240 10% 12%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 256 80% 70%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 195 80% 70%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 240 10% 30%;
+    --sidebar-ring: 195 80% 70%;
   }
 }
 
@@ -127,6 +125,5 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    /* Gradients applied via .bg-gradient-light/dark in RootLayout if used, currently background image overlay is global */
   }
 }

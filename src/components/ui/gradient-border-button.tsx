@@ -8,28 +8,30 @@ interface GradientBorderButtonProps extends React.ButtonHTMLAttributes<HTMLButto
 }
 
 export function GradientBorderButton({ children, className, asChild = false, ...props }: GradientBorderButtonProps) {
-  const Comp = asChild ? 'span' : 'button'; 
+  const Comp = asChild ? 'span' : 'button';
 
   return (
     <Comp
       className={cn(
-        "relative p-0.5 inline-flex items-center justify-center overflow-hidden rounded-lg group",
+        "relative inline-flex items-center justify-center rounded-xl group overflow-hidden", // rounded-xl for 12px
         "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background",
+        "transition-transform duration-200 ease-in-out hover:scale-105 focus:scale-105", // Scale-up on hover/focus
+        "font-subtitle uppercase tracking-wider text-sm", // Barlow Medium, Uppercase, tracking
         className
       )}
       {...props}
     >
+      {/* Accent Gradient Background */}
+      <span className="absolute inset-0 bg-accent-gradient opacity-80 group-hover:opacity-100 transition-opacity duration-200" />
+      
+      {/* Glass Effect Overlay - subtle */}
+      <span className="absolute inset-0 bg-white/10 dark:bg-black/10 backdrop-blur-[3px]" /> 
+
+      {/* Content */}
       <span className={cn(
-        "absolute inset-[-1000%] animate-[spin_2s_linear_infinite]",
-        "bg-[conic-gradient(from_90deg_at_50%_50%,hsl(var(--primary))_0%,hsl(var(--accent))_50%,hsl(var(--primary))_100%)]",
-        "dark:bg-[conic-gradient(from_90deg_at_50%_50%,hsl(var(--primary))_0%,hsl(var(--accent))_50%,hsl(var(--primary))_100%)]"
-      )} />
-      <span className={cn(
-        "relative inline-flex h-full w-full cursor-pointer items-center justify-center rounded-md",
-        "px-6 py-3 text-sm font-medium",
-        "bg-primary text-primary-foreground dark:bg-primary dark:text-primary-foreground",
-        "group-hover:opacity-90", 
-        "transition-all duration-200"
+        "relative inline-flex items-center justify-center h-full w-full",
+        "px-6 py-3", 
+        "text-primary-foreground" // White text
       )}>
         {children}
       </span>

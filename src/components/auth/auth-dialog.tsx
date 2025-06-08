@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react'; // Added this line
+import React from 'react'; 
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,7 +12,8 @@ import { useAuth } from '@/contexts/auth-context';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Loader2, UserCircle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { GradientBorderButton } from '../ui/gradient-border-button';
 
 const GoogleIcon = () => (
   <svg viewBox="0 0 48 48" width="18" height="18" className="mr-2">
@@ -93,37 +94,37 @@ export function AuthDialog() {
 
   return (
     <Dialog open={isAuthDialogOpen} onOpenChange={(isOpen) => { if (!isOpen) closeAuthDialog(); }}>
-      <DialogContent className="sm:max-w-md bg-card text-card-foreground">
+      <DialogContent className="sm:max-w-md bg-card text-card-foreground rounded-2xl">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-headline">
+          <DialogTitle className="text-center text-2xl font-headline text-foreground">
             {activeTab === 'signin' ? 'Sign In' : 'Create Account'}
           </DialogTitle>
-          <DialogDescription className="text-center text-muted-foreground">
+          <DialogDescription className="text-center text-muted-foreground font-body">
             {activeTab === 'signin' ? 'Access your account or sign in with Google.' : 'Create an account to continue.'}
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'signin' | 'signup')} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Sign In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'signin' | 'signup')} className="w-full font-body">
+          <TabsList className="grid w-full grid-cols-2 bg-muted/60">
+            <TabsTrigger value="signin" className="font-subtitle">Sign In</TabsTrigger>
+            <TabsTrigger value="signup" className="font-subtitle">Sign Up</TabsTrigger>
           </TabsList>
           <TabsContent value="signin" className="space-y-4 pt-4">
             <form onSubmit={handleSubmitSignIn(onSignInSubmit)} className="space-y-4">
               <div>
-                <Label htmlFor="email-signin">Email</Label>
-                <Input id="email-signin" type="email" placeholder="you@example.com" {...registerSignIn("email")} className="bg-muted/20 focus-visible:ring-ring" />
+                <Label htmlFor="email-signin" className="font-subtitle text-card-foreground">Email</Label>
+                <Input id="email-signin" type="email" placeholder="you@example.com" {...registerSignIn("email")} className="bg-background/50 focus-visible:ring-ring" />
                 {errorsSignIn.email && <p className="text-sm text-destructive mt-1">{errorsSignIn.email.message}</p>}
               </div>
               <div>
-                <Label htmlFor="password-signin">Password</Label>
-                <Input id="password-signin" type="password" placeholder="••••••••" {...registerSignIn("password")} className="bg-muted/20 focus-visible:ring-ring" />
+                <Label htmlFor="password-signin" className="font-subtitle text-card-foreground">Password</Label>
+                <Input id="password-signin" type="password" placeholder="••••••••" {...registerSignIn("password")} className="bg-background/50 focus-visible:ring-ring" />
                 {errorsSignIn.password && <p className="text-sm text-destructive mt-1">{errorsSignIn.password.message}</p>}
               </div>
-              <Button type="submit" className="w-full bg-primary text-primary-foreground dark:bg-secondary dark:text-secondary-foreground hover:opacity-90" disabled={isLoadingEmail || isLoadingGoogle}>
+              <GradientBorderButton type="submit" className="w-full" disabled={isLoadingEmail || isLoadingGoogle}>
                 {isLoadingEmail && activeTab === 'signin' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Sign In
-              </Button>
+              </GradientBorderButton>
             </form>
             <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
@@ -133,7 +134,7 @@ export function AuthDialog() {
                 <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
               </div>
             </div>
-            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoadingGoogle || isLoadingEmail}>
+            <Button variant="outline" className="w-full font-subtitle text-foreground/80 hover:text-primary border-border hover:border-primary/50" onClick={handleGoogleSignIn} disabled={isLoadingGoogle || isLoadingEmail}>
               {isLoadingGoogle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
               Sign in with Google
             </Button>
@@ -142,24 +143,24 @@ export function AuthDialog() {
           <TabsContent value="signup" className="space-y-4 pt-4">
             <form onSubmit={handleSubmitSignUp(onSignUpSubmit)} className="space-y-4">
               <div>
-                <Label htmlFor="email-signup">Email</Label>
-                <Input id="email-signup" type="email" placeholder="you@example.com" {...registerSignUp("email")} className="bg-muted/20 focus-visible:ring-ring" />
+                <Label htmlFor="email-signup" className="font-subtitle text-card-foreground">Email</Label>
+                <Input id="email-signup" type="email" placeholder="you@example.com" {...registerSignUp("email")} className="bg-background/50 focus-visible:ring-ring" />
                 {errorsSignUp.email && <p className="text-sm text-destructive mt-1">{errorsSignUp.email.message}</p>}
               </div>
               <div>
-                <Label htmlFor="password-signup">Password</Label>
-                <Input id="password-signup" type="password" placeholder="••••••••" {...registerSignUp("password")} className="bg-muted/20 focus-visible:ring-ring" />
+                <Label htmlFor="password-signup" className="font-subtitle text-card-foreground">Password</Label>
+                <Input id="password-signup" type="password" placeholder="••••••••" {...registerSignUp("password")} className="bg-background/50 focus-visible:ring-ring" />
                 {errorsSignUp.password && <p className="text-sm text-destructive mt-1">{errorsSignUp.password.message}</p>}
               </div>
               <div>
-                <Label htmlFor="confirmPassword-signup">Confirm Password</Label>
-                <Input id="confirmPassword-signup" type="password" placeholder="••••••••" {...registerSignUp("confirmPassword")} className="bg-muted/20 focus-visible:ring-ring" />
+                <Label htmlFor="confirmPassword-signup" className="font-subtitle text-card-foreground">Confirm Password</Label>
+                <Input id="confirmPassword-signup" type="password" placeholder="••••••••" {...registerSignUp("confirmPassword")} className="bg-background/50 focus-visible:ring-ring" />
                 {errorsSignUp.confirmPassword && <p className="text-sm text-destructive mt-1">{errorsSignUp.confirmPassword.message}</p>}
               </div>
-              <Button type="submit" className="w-full bg-primary text-primary-foreground dark:bg-secondary dark:text-secondary-foreground hover:opacity-90" disabled={isLoadingEmail || isLoadingGoogle}>
+               <GradientBorderButton type="submit" className="w-full" disabled={isLoadingEmail || isLoadingGoogle}>
                  {isLoadingEmail && activeTab === 'signup' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Create Account
-              </Button>
+              </GradientBorderButton>
             </form>
              <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
@@ -169,7 +170,7 @@ export function AuthDialog() {
                 <span className="bg-card px-2 text-muted-foreground">Or sign up with</span>
               </div>
             </div>
-            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoadingGoogle || isLoadingEmail}>
+            <Button variant="outline" className="w-full font-subtitle text-foreground/80 hover:text-primary border-border hover:border-primary/50" onClick={handleGoogleSignIn} disabled={isLoadingGoogle || isLoadingEmail}>
               {isLoadingGoogle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
               Sign up with Google
             </Button>

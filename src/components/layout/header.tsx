@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/', label: 'Home' },
@@ -45,15 +46,19 @@ export function Header() {
 
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-foreground/10 bg-black/[.85] dark:bg-black/[.90] backdrop-blur supports-[backdrop-filter]:bg-black/[.85] dark:supports-[backdrop-filter]:bg-black/[.90]">
-      <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-6">
+    <header className={cn(
+        "sticky top-0 z-50 w-full",
+        "bg-background/80 dark:bg-background/70 backdrop-blur-md", // Light bg, glassmorphism
+        "border-b border-border/60"
+      )}>
+      <div className="container flex h-20 max-w-screen-2xl items-center justify-between px-4 md:px-6">
         <Logo />
-        <nav className="hidden md:flex items-center space-x-1 text-sm font-semibold">
+        <nav className="hidden md:flex items-center space-x-1 font-subtitle text-base">
           {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="transition-colors text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md"
+              className="transition-colors text-foreground/80 hover:text-primary dark:hover:text-primary focus:outline-none focus:text-primary px-4 py-2 rounded-md hover:bg-primary/10 focus:bg-primary/10"
             >
               {item.label}
             </Link>
@@ -61,8 +66,8 @@ export function Header() {
         </nav>
         <div className="hidden md:flex items-center space-x-4">
           <Link href="/admin" passHref>
-            <Button variant="ghost" className="text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md font-semibold">
-              <LayoutDashboard className="mr-2 h-4 w-4" />
+            <Button variant="ghost" className="font-subtitle text-base text-foreground/80 hover:text-primary dark:hover:text-primary focus:outline-none focus:text-primary hover:bg-primary/10 focus:bg-primary/10 px-4 py-2 rounded-md">
+              <LayoutDashboard className="mr-2 h-5 w-5" />
               Admin
             </Button>
           </Link>
@@ -72,17 +77,17 @@ export function Header() {
           ) : currentUser ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 rounded-full px-3 text-foreground hover:text-foreground font-semibold">
-                   <Avatar className="h-8 w-8 mr-2">
+                <Button variant="ghost" className="relative h-12 rounded-full px-3 text-foreground hover:text-foreground font-subtitle">
+                   <Avatar className="h-9 w-9 mr-2 border border-border">
                     <AvatarImage src={currentUser.photoURL || undefined} alt={currentUser.displayName || currentUser.email || 'User'} />
                     <AvatarFallback>{getInitials(currentUser.displayName, currentUser.email)}</AvatarFallback>
                   </Avatar>
                   <span className="truncate max-w-[100px]">{currentUser.displayName || currentUser.email}</span>
-                  <ChevronDown className="ml-1 h-4 w-4" />
+                  <ChevronDown className="ml-1.5 h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
+                <DropdownMenuLabel className="font-normal font-body">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">{currentUser.displayName || "User"}</p>
                     <p className="text-xs leading-none text-muted-foreground">
@@ -91,46 +96,46 @@ export function Header() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logOut}>
+                <DropdownMenuItem onClick={logOut} className="font-subtitle">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-             <Button variant="ghost" onClick={openAuthDialog} className="text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md font-semibold">
-              <LogIn className="mr-2 h-4 w-4" /> Sign In
+             <Button variant="ghost" onClick={openAuthDialog} className="font-subtitle text-base text-foreground/80 hover:text-primary dark:hover:text-primary focus:outline-none focus:text-primary hover:bg-primary/10 focus:bg-primary/10 px-4 py-2 rounded-md">
+              <LogIn className="mr-2 h-5 w-5" /> Sign In
             </Button>
           )}
           
-          {currentUser ? (
-             <Link href="/#registration-form" passHref>
-                <GradientBorderButton asChild>
-                    Register for the Gathering
-                </GradientBorderButton>
-             </Link>
-          ) : (
-            <GradientBorderButton onClick={openAuthDialog}>
-              Register / Sign In
-            </GradientBorderButton>
-          )}
+          <GradientBorderButton 
+            onClick={currentUser ? undefined : openAuthDialog} 
+            asChild={!!currentUser}
+            className="text-sm"
+            >
+            {currentUser ? (
+              <Link href="/#registration-form">Register for the Gathering</Link>
+            ) : (
+              "Register / Sign In"
+            )}
+          </GradientBorderButton>
         </div>
         <div className="md:hidden">
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
+                <Menu className="h-7 w-7" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background p-4">
-              <nav className="flex flex-col space-y-2 mt-8">
+              <nav className="flex flex-col space-y-2 mt-8 font-subtitle">
                 {navItems.map((item) => (
                   <Link
                     key={item.label}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-lg font-semibold transition-colors text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md block"
+                    className="text-lg transition-colors text-foreground hover:text-primary focus:outline-none focus:text-primary px-3 py-2 rounded-md block"
                   >
                     {item.label}
                   </Link>
@@ -138,7 +143,7 @@ export function Header() {
                  <Link
                     href="/admin"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-lg font-semibold transition-colors text-foreground hover:text-accent dark:hover:text-accent focus:outline-none focus:text-accent dark:focus:text-accent hover:bg-accent/10 dark:hover:bg-accent/20 focus:bg-accent/10 dark:focus:bg-accent/20 px-3 py-2 rounded-md block"
+                    className="text-lg transition-colors text-foreground hover:text-primary focus:outline-none focus:text-primary px-3 py-2 rounded-md block"
                   >
                     <LayoutDashboard className="inline-block mr-2 h-5 w-5" /> Admin
                   </Link>
@@ -146,7 +151,7 @@ export function Header() {
                   {loadingAuthState && <div className="h-10 bg-muted/50 animate-pulse rounded-md w-full my-2"></div>}
                   {!loadingAuthState && currentUser && (
                     <>
-                      <div className="flex items-center space-x-3 px-2 py-2 mb-2">
+                      <div className="flex items-center space-x-3 px-2 py-2 mb-2 font-body">
                         <Avatar>
                           <AvatarImage src={currentUser.photoURL || undefined} />
                           <AvatarFallback>{getInitials(currentUser.displayName, currentUser.email)}</AvatarFallback>
@@ -156,28 +161,27 @@ export function Header() {
                           <p className="text-xs text-muted-foreground">{currentUser.email}</p>
                         </div>
                       </div>
-                      <Button variant="outline" onClick={() => { logOut(); setMobileMenuOpen(false); }} className="w-full font-semibold">
+                      <Button variant="outline" onClick={() => { logOut(); setMobileMenuOpen(false); }} className="w-full font-subtitle">
                         <LogOut className="mr-2 h-4 w-4" /> Sign Out
                       </Button>
                     </>
                   )}
                   {!loadingAuthState && !currentUser && (
-                    <Button variant="outline" onClick={() => { openAuthDialog(); setMobileMenuOpen(false);}} className="w-full font-semibold">
+                    <Button variant="outline" onClick={() => { openAuthDialog(); setMobileMenuOpen(false);}} className="w-full font-subtitle">
                       <LogIn className="mr-2 h-4 w-4" /> Sign In / Register
                     </Button>
                   )}
                 </div>
-                 {currentUser ? (
-                    <Link href="/#registration-form" onClick={() => setMobileMenuOpen(false)} passHref>
-                        <GradientBorderButton asChild className="w-full mt-4">
-                             Register for the Gathering
-                        </GradientBorderButton>
-                    </Link>
-                  ) : (
-                    <GradientBorderButton onClick={() => {openAuthDialog(); setMobileMenuOpen(false);}} className="w-full mt-4">
-                      Register / Sign In
-                    </GradientBorderButton>
-                  )}
+                <GradientBorderButton 
+                    onClick={() => { if(!currentUser) openAuthDialog(); setMobileMenuOpen(false);}} 
+                    asChild={!!currentUser}
+                    className="w-full mt-4 text-sm">
+                     {currentUser ? (
+                        <Link href="/#registration-form">Register for the Gathering</Link>
+                    ) : (
+                        "Register / Sign In"
+                    )}
+                </GradientBorderButton>
               </nav>
             </SheetContent>
           </Sheet>

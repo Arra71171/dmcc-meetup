@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -10,9 +11,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        headline: ['Montserrat', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
-        lora: ['Lora', 'serif'],
+        headline: ['Epilogue', 'sans-serif'], // Epilogue for Headings
+        subtitle: ['Barlow', 'sans-serif'], // Barlow for Subtitles/Buttons
+        body: ['DM Sans', 'sans-serif'],    // DM Sans for Body text
+        sans: ['DM Sans', 'sans-serif'],    // Fallback sans-serif
         code: ['monospace'],
       },
       colors: {
@@ -68,7 +70,10 @@ export default {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
+        lg: 'var(--radius)', // 12px from :root
+        xl: 'calc(var(--radius) + 4px)', // 16px
+        '2xl': 'calc(var(--radius) + 8px)', // 20px
+        '3xl': 'calc(var(--radius) + 12px)', // 24px
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
