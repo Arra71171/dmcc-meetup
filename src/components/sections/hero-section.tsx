@@ -13,7 +13,7 @@ export function HeroSection() {
         layout="fill"
         objectFit="cover"
         quality={80}
-        className="opacity-10 dark:opacity-5" // Reduced opacity for darker effect
+        className="opacity-15 dark:opacity-10" // Increased opacity
         data-ai-hint="abstract community celebration"
       />
       <div className="absolute inset-0 bg-black/70 dark:bg-black/80 z-0" /> {/* Dark overlay */}
@@ -23,10 +23,10 @@ export function HeroSection() {
           <span className="block text-gradient-theme">MEETEI PEOPLE&apos;S</span>
           <span className="block text-gradient-theme">CONVENTION, DELHI 2025</span>
         </h1>
-        <p className="mt-6 text-lg md:text-xl font-medium font-body text-foreground/80 dark:text-foreground/70 max-w-2xl mx-auto">
+        <p className="mt-6 text-lg md:text-xl font-medium font-body text-foreground/90 dark:text-foreground/80 max-w-2xl mx-auto"> {/* Increased contrast */}
           Uniting Heritage, Empowering Future
         </p>
-        <p className="mt-8 text-base md:text-lg font-lora text-foreground/70 dark:text-foreground/60 max-w-3xl mx-auto">
+        <p className="mt-8 text-base md:text-lg font-lora text-foreground/80 dark:text-foreground/70 max-w-3xl mx-auto"> {/* Increased contrast */}
           Join us for the Meetei People&apos;s Convention, Delhi 2025, a landmark gathering on our 2nd Rising Day. This event, set for June 15, 2025, at JNU Convention Center, celebrates our rich heritage and charts a course for a vibrant future. Be part of a historic moment for community empowerment and cultural renaissance in the nation&apos;s capital.
         </p>
         <GradientBorderButton className="mt-10 text-lg px-8 py-4 font-headline">
