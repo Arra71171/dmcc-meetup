@@ -1,6 +1,7 @@
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, type User } from "firebase/auth";
+import { getFirestore } from "firebase/firestore"; // Import getFirestore
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -20,10 +21,12 @@ if (!getApps().length) {
 }
 
 const auth = getAuth(app);
+const db = getFirestore(app); // Initialize Firestore and export it
 
 export {
   app,
   auth,
+  db, // Export db
   GoogleAuthProvider,
   signInWithPopup,
   createUserWithEmailAndPassword,
@@ -32,3 +35,4 @@ export {
   onAuthStateChanged,
   type User
 };
+
