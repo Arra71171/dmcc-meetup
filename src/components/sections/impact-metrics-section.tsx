@@ -2,56 +2,88 @@
 import Image from "next/image";
 import { GlassCard } from "@/components/ui/glass-card";
 import { cn } from "@/lib/utils";
-import { Award, Eye, HandHeart } from "lucide-react"; // Example icons
+import { Users, Feather, Accessibility, Megaphone, Target, Eye } from "lucide-react"; // Added specific icons
 
-export function ImpactMetricsSection() { // Note: Filename remains, content changes to "About DMCC"
+export function ImpactMetricsSection() { // This is the "About DMCC" section
+  const coreValues = [
+    {
+      icon: <Users className="w-6 h-6 text-primary mr-3 shrink-0" />,
+      name: "Unity",
+      description: "Building collective strength through community connection."
+    },
+    {
+      icon: <Feather className="w-6 h-6 text-primary mr-3 shrink-0" />,
+      name: "Cultural Pride",
+      description: "Preserving and celebrating our unique heritage."
+    },
+    {
+      icon: <Accessibility className="w-6 h-6 text-primary mr-3 shrink-0" />,
+      name: "Inclusivity",
+      description: "Creating welcoming spaces for all community members."
+    },
+    {
+      icon: <Megaphone className="w-6 h-6 text-primary mr-3 shrink-0" />,
+      name: "Advocacy",
+      description: "Promoting peaceful coexistence and community rights."
+    }
+  ];
+
   return (
     <section id="about-dmcc" className="w-full py-16 md:py-24">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-          <div className="w-full h-full flex items-center justify-center order-last md:order-first">
-            <GlassCard className="p-6 md:p-8">
-              <h2 className={cn(
-                "text-4xl md:text-5xl font-headline font-semibold text-left text-gradient-theme mb-8 tracking-tight",
-                "text-glass-shadow"
-                )}>
-                About Delhi Meetei Co-ordinating Committee (DMCC)
-              </h2>
-              
-              <div className="space-y-6 font-body text-card-foreground/90 leading-relaxed">
+        <h2 className={cn(
+          "text-4xl md:text-5xl font-headline font-semibold text-center text-gradient-theme mb-12 md:mb-16 tracking-tight uppercase",
+          "text-glass-shadow"
+          )}>
+          About DMCC
+        </h2>
+        <div className="grid md:grid-cols-5 gap-8 md:gap-12 items-start">
+          <div className="md:col-span-3 w-full h-full flex items-center justify-center order-last md:order-first">
+            <GlassCard className="p-6 md:p-10 w-full">
+              <div className="space-y-8 font-body text-card-foreground/90 leading-relaxed">
                 <div>
-                  <h3 className={cn("text-2xl font-subtitle font-medium mb-2 text-accent", "text-glass-shadow")}>Our Mission</h3>
-                  <p>
+                  <h3 className={cn("text-3xl font-subtitle font-semibold mb-3 text-accent flex items-center", "text-glass-shadow")}>
+                    <Target className="w-8 h-8 mr-3 text-accent shrink-0"/> Our Mission
+                  </h3>
+                  <p className="text-lg ml-11">
                     We are dedicated to strengthening community bonds through meaningful dialogue, cultural preservation, and unity-building initiatives that create lasting positive impact.
                   </p>
                 </div>
                 <div>
-                  <h3 className={cn("text-2xl font-subtitle font-medium mb-2 text-accent", "text-glass-shadow")}>Our Vision</h3>
-                  <p>
+                  <h3 className={cn("text-3xl font-subtitle font-semibold mb-3 text-accent flex items-center", "text-glass-shadow")}>
+                    <Eye className="w-8 h-8 mr-3 text-accent shrink-0"/> Our Vision
+                  </h3>
+                  <p className="text-lg ml-11">
                     To foster a thriving Meetei community that honors our rich heritage while embracing innovation and progress for future generations.
                   </p>
                 </div>
                 <div>
-                  <h3 className={cn("text-2xl font-subtitle font-medium mb-2 text-accent", "text-glass-shadow")}>Our Core Values</h3>
-                  <ul className="list-disc list-inside space-y-1 pl-2">
-                    <li><span className="font-semibold">Unity:</span> Building collective strength through community connection</li>
-                    <li><span className="font-semibold">Cultural Pride:</span> Preserving and celebrating our unique heritage</li>
-                    <li><span className="font-semibold">Inclusivity:</span> Creating welcoming spaces for all community members</li>
-                    <li><span className="font-semibold">Advocacy:</span> Promoting peaceful coexistence and community rights</li>
+                  <h3 className={cn("text-3xl font-subtitle font-semibold mb-4 text-accent", "text-glass-shadow")}>
+                    Our Core Values
+                  </h3>
+                  <ul className="space-y-4">
+                    {coreValues.map((value) => (
+                      <li key={value.name} className="flex items-start text-lg">
+                        {value.icon}
+                        <div>
+                          <span className="font-semibold text-primary/90">{value.name}:</span> {value.description}
+                        </div>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
             </GlassCard>
           </div>
-          <div className="w-full h-full flex items-center justify-center order-first md:order-last">
-            <div className="rounded-2xl overflow-hidden shadow-2xl">
+          <div className="md:col-span-2 w-full h-full flex items-center justify-center order-first md:order-last sticky top-24">
+            <div className="rounded-2xl overflow-hidden shadow-2xl aspect-[3/4] w-full max-w-md">
               <Image
-                src="https://placehold.co/500x650.png"
-                alt="DMCC community members or event"
+                src="https://placehold.co/500x667.png" 
+                alt="Symbolic image representing the DMCC community or its values"
                 width={500}
-                height={650}
-                className="object-cover"
-                data-ai-hint="community group meeting"
+                height={667}
+                className="object-cover w-full h-full"
+                data-ai-hint="community diverse group"
               />
             </div>
           </div>
