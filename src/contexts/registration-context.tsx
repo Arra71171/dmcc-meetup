@@ -5,7 +5,7 @@ import type React from 'react';
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode }
   from 'react';
 import type { RegistrationFormValues } from '@/components/forms/specific-registration-form'; 
-import { db } from '@/lib/firebase';
+import { db, auth } from '@/lib/firebase'; // Import auth
 import {
   collection,
   addDoc,
@@ -19,6 +19,10 @@ import {
   updateDoc
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+// Import useAuth to get currentUser directly if needed, though it's better if RegistrationForm passes it or checks it
+// For robust diagnostics, we can check it here too.
+import { useAuth } from './auth-context';
+
 
 export interface RegistrationEntry extends Omit<RegistrationFormValues, 'paymentScreenshot' | 'agreeToTerms'> {
   id: string;
@@ -42,11 +46,13 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   const [registrations, setRegistrations] = useState<RegistrationEntry[]>([]);
   const [loadingRegistrations, setLoadingRegistrations] = useState(true);
   const { toast } = useToast();
+  const { currentUser: authContextCurrentUser } = useAuth(); // Get currentUser from AuthContext for diagnostics
 
   useEffect(() => {
     setLoadingRegistrations(true);
-    console.log("RegistrationProvider: Setting up Firestore listener...");
+    console.log("RegistrationProvider: Setting up Firestore listener for /registrations collection...");
     const q = query(collection(db, "registrations"), orderBy("submittedAt", "desc"));
+    
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const fetchedRegistrations: RegistrationEntry[] = [];
       querySnapshot.forEach((doc) => {
@@ -59,6 +65,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         } else if (data.submittedAt instanceof Date) {
           submittedAtDate = data.submittedAt;
         } else {
+          console.warn(`Registration ${doc.id} has an invalid submittedAt, using current date as fallback.`);
           submittedAtDate = new Date(); 
         }
 
@@ -78,9 +85,9 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       });
       setRegistrations(fetchedRegistrations);
       setLoadingRegistrations(false);
-      console.log("Registrations fetched from Firestore:", JSON.stringify(fetchedRegistrations, null, 2));
+      console.log("RegistrationProvider: Registrations fetched/updated from Firestore:", JSON.stringify(fetchedRegistrations.length, null, 2), "registrations found.");
     }, (error) => {
-      console.error("Error fetching registrations from Firestore in onSnapshot: ", error);
+      console.error("RegistrationProvider: Error fetching registrations from Firestore in onSnapshot: ", error);
       toast({
         title: "Error Fetching Registrations",
         description: `Could not load registration data. ${error.message}`,
@@ -90,7 +97,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     });
 
     return () => {
-      console.log("RegistrationProvider: Unsubscribing Firestore listener.");
+      console.log("RegistrationProvider: Unsubscribing Firestore listener for /registrations.");
       unsubscribe();
     }
   }, [toast]);
@@ -99,10 +106,26 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   const addRegistration = useCallback(async (data: RegistrationFormValues) => {
     console.log("RegistrationContext: addRegistration CALLED with data:", JSON.stringify(data, (key, value) => value instanceof File ? value.name : value, 2));
     
+    // Diagnostic: Check currentUser from auth context at the moment of attempting to add registration
+    const firebaseCurrentUser = auth.currentUser; // Directly check Firebase auth's current user
+    console.log("RegistrationContext: Firebase auth.currentUser at time of addRegistration:", firebaseCurrentUser ? firebaseCurrentUser.uid : "null");
+    console.log("RegistrationContext: AuthContext currentUser at time of addRegistration:", authContextCurrentUser ? authContextCurrentUser.uid : "null");
+
+    if (!firebaseCurrentUser) {
+      console.error("RegistrationContext: User is NOT authenticated at the point of addRegistration. Aborting.");
+      toast({
+        title: "Authentication Error",
+        description: "You are not signed in. Please sign in and try again.",
+        variant: "destructive",
+      });
+      throw new Error("User not authenticated for addRegistration.");
+    }
+    
     const { paymentScreenshot, ...restOfData } = data;
 
-    const newEntryForFirestore: Omit<RegistrationEntry, 'id' | 'submittedAt' | 'paymentScreenshotFilename' | 'agreeToTerms'> & { submittedAt: any; paymentScreenshotFilename?: string | null, agreeToTerms: boolean } = {
+    const newEntryForFirestore: Omit<RegistrationEntry, 'id' | 'submittedAt' | 'paymentScreenshotFilename' | 'agreeToTerms'> & { submittedAt: any; paymentScreenshotFilename?: string | null, agreeToTerms: boolean, userId: string } = {
       ...restOfData,
+      userId: firebaseCurrentUser.uid, // Store the UID of the user who made the registration
       numberOfFamilyMembers: data.registrationType === 'family' ? data.numberOfFamilyMembers : undefined,
       paymentScreenshotFilename: paymentScreenshot instanceof File ? paymentScreenshot.name : null,
       agreeToTerms: data.agreeToTerms,
@@ -111,7 +134,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     console.log("RegistrationContext: Data prepared for Firestore:", JSON.stringify(newEntryForFirestore, null, 2));
 
     try {
-      console.log("RegistrationContext: Attempting addDoc to Firestore...");
+      console.log("RegistrationContext: Attempting addDoc to 'registrations' collection in Firestore...");
       const docRef = await addDoc(collection(db, "registrations"), newEntryForFirestore);
       console.log("RegistrationContext: Document written to Firestore with ID: ", docRef.id);
       // Success toast is handled in the form component after this promise resolves.
@@ -119,12 +142,12 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       console.error("RegistrationContext: Error during addDoc to Firestore:", e);
       toast({
         title: "Registration Firestore Error",
-        description: `Could not save your registration to the database. ${(e as Error).message || "Please try again."}`,
+        description: `Could not save your registration. ${(e as Error).message || "Please try again."}`,
         variant: "destructive",
       });
       throw e; // Re-throw the error so the calling component can also catch it
     }
-  }, [toast]);
+  }, [toast, authContextCurrentUser]); // Added authContextCurrentUser to dependency array
 
   const updateRegistration = useCallback(async (id: string, dataToUpdate: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt'>>) => {
     console.log(`RegistrationContext: updateRegistration called for ID ${id} with data:`, dataToUpdate);
@@ -177,7 +200,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   }, [registrations]);
 
   useEffect(() => {
-     console.log("Current registrations in context (client-side, synced from Firestore):", JSON.stringify(registrations, null, 2));
+     console.log("RegistrationContext: Current registrations array updated:", JSON.stringify(registrations.length, null, 2), "registrations in state.");
   }, [registrations]);
 
 
@@ -204,3 +227,4 @@ export function useRegistrations() {
   }
   return context;
 }
+
