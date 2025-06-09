@@ -65,15 +65,6 @@ export function HeroSection() {
           >
             This event successfully concluded on Sunday, June 15th, 2025, at JNU Convention Center, New Delhi.
           </motion.p>
-          <motion.p
-            className="mt-6 text-lg md:text-xl font-body text-accent max-w-2xl mx-auto leading-relaxed"
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.6, delay: 0.6 }}
-            variants={fadeInVariants}
-          >
-            Thank you to all participants for making it a memorable occasion!
-          </motion.p>
         </GlassCard>
       </div>
     </section>
