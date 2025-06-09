@@ -135,7 +135,23 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   const updateRegistration = useCallback(async (id: string, dataToUpdate: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt' | 'paymentScreenshot'>>) => {
     const regDocRef = doc(db, "registrations", id);
     try {
-      await updateDoc(regDocRef, dataToUpdate);
+      // Ensure numberOfFamilyMembers is handled correctly:
+      // If it's part of dataToUpdate and is an empty string or undefined,
+      // and the type is not 'family', we might want to remove it.
+      // Or, if type is 'family' and it's empty, it might be an issue.
+      // For now, we pass dataToUpdate as is. The form validation should handle required fields.
+      // If registrationType is changed away from 'family', numberOfFamilyMembers might need to be explicitly removed or set to null.
+      // The current form logic in AdminDashboardPage handles setting numberOfFamilyMembers to undefined if not 'family'.
+
+      const processedDataToUpdate = { ...dataToUpdate };
+      if (processedDataToUpdate.registrationType !== 'family' && 'numberOfFamilyMembers' in processedDataToUpdate) {
+        // If type is not family, ensure numberOfFamilyMembers is not sent or is explicitly null/undefined
+        // Firestore update with `undefined` will remove the field if it exists.
+        processedDataToUpdate.numberOfFamilyMembers = undefined;
+      }
+
+
+      await updateDoc(regDocRef, processedDataToUpdate);
       toast({
         title: "Registration Updated",
         description: "The registration details have been successfully updated.",
@@ -178,6 +194,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   }, [registrations]);
 
   useEffect(() => {
+    // Using JSON.stringify with a replacer to handle potential circular structures or large objects if any
     console.log("Current registrations in context (client-side, synced from Firestore):", JSON.stringify(registrations, null, 2));
   }, [registrations]);
 
@@ -205,5 +222,3 @@ export function useRegistrations() {
   }
   return context;
 }
-
-    
