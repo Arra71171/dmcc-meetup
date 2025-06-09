@@ -1,6 +1,6 @@
 
 import { GlassCard } from "@/components/ui/glass-card";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, CalendarCheck2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function ClosingRemarksSection() {
@@ -11,11 +11,17 @@ export function ClosingRemarksSection() {
           "text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-8 text-gradient-theme tracking-wide",
           "text-glass-shadow"
           )}>
-          Stay Connected
+          Stay Connected & Event Reminder
         </h2>
         <GlassCard className="p-6 md:p-8">
+          <div className="flex items-center justify-center mb-6">
+            <CalendarCheck2 className="w-10 h-10 text-accent mr-3" />
+            <p className="font-subtitle text-2xl text-accent text-center">
+              Mark Your Calendars: June 15th, 2025!
+            </p>
+          </div>
           <p className="font-body text-lg text-card-foreground/90 leading-relaxed mb-6 text-center">
-            If you have any questions or wish to connect with DMCC, please don’t hesitate to reach out to us:
+            We are eagerly anticipating your participation in the Meetei People's Convention. If you have any questions or wish to connect with DMCC, please don’t hesitate to reach out:
           </p>
           <div className="space-y-4 font-body text-base">
             <div className="flex items-center">
@@ -39,10 +45,10 @@ export function ClosingRemarksSection() {
       
       <GlassCard className="p-6 md:p-8 text-center">
           <p className="font-body text-lg text-card-foreground/90 leading-relaxed">
-            We cherish the memories created and the bonds strengthened during our convention.
+            This convention is more than just an event; it's a celebration of our identity, a platform for dialogue, and a step towards a more unified and prosperous Meetei community.
           </p>
           <p className="mt-6 font-subtitle text-xl text-accent">
-            We look forward to future community events and continued engagement!
+            We look forward to welcoming you!
           </p>
         </GlassCard>
     </section>

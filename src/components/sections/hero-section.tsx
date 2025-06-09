@@ -2,7 +2,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { GradientBorderButton } from "@/components/ui/gradient-border-button";
+import Link from "next/link";
 import { cn } from '@/lib/utils';
+import { CountdownTimer } from '@/components/ui/countdown-timer';
 import Image from "next/image";
 import { GlassCard } from "@/components/ui/glass-card";
 
@@ -12,6 +15,8 @@ const fadeInVariants = {
 };
 
 export function HeroSection() {
+  const eventDate = new Date('2025-06-15T10:00:00'); // June 15th, 2025, 10:00 AM
+
   return (
     <section
       id="hero"
@@ -63,11 +68,34 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.5 }}
             variants={fadeInVariants}
           >
-            This event successfully concluded on Sunday, June 15th, 2025, at JNU Convention Center, New Delhi.
+            Sunday, June 15th, 2025 | JNU Convention Center, New Delhi <br /> 10:00 AM - 6:00 PM
           </motion.p>
+          
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.6, delay: 0.6 }}
+            variants={fadeInVariants}
+            className="mt-8"
+          >
+            <Link href="/#register">
+              <GradientBorderButton className="text-base px-8 py-4">
+                Register Your Spot Now!
+              </GradientBorderButton>
+            </Link>
+          </motion.div>
         </GlassCard>
+
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.6, delay: 0.8 }}
+          variants={fadeInVariants}
+          className="mt-12 md:mt-16 flex justify-center"
+        >
+          <CountdownTimer targetDate={eventDate} />
+        </motion.div>
       </div>
     </section>
   );
 }
-    

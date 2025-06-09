@@ -4,8 +4,11 @@
 import { GlassCard } from "@/components/ui/glass-card";
 import { CalendarDays, Clock, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CountdownTimer } from '@/components/ui/countdown-timer';
 
 export function EventDetailsSection() {
+  const eventDate = new Date('2025-06-15T10:00:00');
+
   return (
     <section id="event-details" className="w-full max-w-4xl px-4">
       <h2 className={cn(
@@ -33,11 +36,14 @@ export function EventDetailsSection() {
         </GlassCard>
       </div>
       <GlassCard className="mt-12 md:mt-16 p-6 text-center">
-        <p className="font-body text-xl text-card-foreground/90">
-          This event concluded on <span className="font-semibold text-accent">Sunday, June 15th, 2025</span>.
-        </p>
-        <p className="font-body text-base text-muted-foreground mt-2">
-          We thank everyone who participated and contributed to its success.
+        <h3 className={cn("text-2xl font-subtitle font-medium mb-4 text-card-foreground", "text-glass-shadow")}>
+          Don&apos;t Miss Out!
+        </h3>
+        <div className="flex justify-center">
+            <CountdownTimer targetDate={eventDate} />
+        </div>
+        <p className="font-body text-base text-muted-foreground mt-4">
+          Secure your place for this landmark community event.
         </p>
       </GlassCard>
     </section>

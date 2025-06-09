@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Logo } from './logo';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, LogOut, ChevronDown, LayoutDashboard, ShieldAlert } from 'lucide-react';
+import { Menu, LogOut, ChevronDown, LayoutDashboard, ShieldAlert, UserPlus } from 'lucide-react'; // Added UserPlus
 import { useAuth } from '@/contexts/auth-context';
 import {
   DropdownMenu,
@@ -22,11 +22,11 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/#highlights', label: 'Highlights' },
-  // { href: '/#registration-form', label: 'Register' }, // "Register" link removed
+  { href: '/#register', label: 'Register' }, 
 ];
 
 export function Header() {
-  const { currentUser, loadingAuthState, logOut, isAdminOverrideLoggedIn } = useAuth(); // openAuthDialog removed as sign-in button also removed
+  const { currentUser, loadingAuthState, logOut, isAdminOverrideLoggedIn, openAuthDialog } = useAuth(); 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getInitials = (name?: string | null, email?: string | null) => {
@@ -61,6 +61,18 @@ export function Header() {
             <Link
               key={item.label}
               href={item.href}
+              onClick={() => {
+                if (item.href.startsWith('/#')) {
+                  setMobileMenuOpen(false);
+                  // Smooth scroll for internal links if desired
+                  const targetId = item.href.substring(2);
+                  const targetElement = document.getElementById(targetId);
+                  if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                    return; // Prevent default link behavior if handled by scroll
+                  }
+                }
+              }}
               className="transition-colors text-foreground/80 hover:text-primary dark:hover:text-primary focus:outline-none focus:text-primary px-4 py-2 rounded-md hover:bg-primary/10 focus:bg-primary/10"
             >
               {item.label}
@@ -108,7 +120,10 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            null // "Sign In" button removed for non-authenticated users, matching previous state
+             <Button onClick={() => openAuthDialog()} variant="outline" className="font-subtitle">
+                <UserPlus className="mr-2 h-5 w-5" />
+                Sign In / Register
+            </Button>
           )}
         </div>
         <div className="md:hidden">
@@ -125,7 +140,17 @@ export function Header() {
                   <Link
                     key={item.label}
                     href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      if (item.href.startsWith('/#')) {
+                        const targetId = item.href.substring(2);
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            // Timeout to allow sheet to close before scrolling
+                            setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth' }), 150);
+                        }
+                      }
+                    }}
                     className="text-lg transition-colors text-foreground hover:text-primary focus:outline-none focus:text-primary px-3 py-2 rounded-md block"
                   >
                     {item.label}
@@ -160,7 +185,9 @@ export function Header() {
                     </>
                   )}
                   {!loadingAuthState && !effectiveUserDisplay && (
-                    null // "Sign In / Register" button removed from mobile menu
+                     <Button onClick={() => { openAuthDialog(); setMobileMenuOpen(false);}} variant="outline" className="w-full font-subtitle">
+                        <UserPlus className="mr-2 h-5 w-5" /> Sign In / Register
+                    </Button>
                   )}
                 </div>
               </nav>
