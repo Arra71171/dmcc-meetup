@@ -9,7 +9,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { Loader2, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast'; // Ensure useToast is imported
 
 const validTypes: RegistrationType[] = ["student", "professional", "family", "others"];
 
@@ -48,13 +48,18 @@ export default function SpecificRegistrationPage() {
 
   useEffect(() => {
     if (!loadingAuthState && !currentUser && isValidType) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to access this registration form.",
-        variant: "destructive",
-      });
+      // Ensure toast is available before calling
+      if (toast && typeof toast === 'function') {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to access this registration form.",
+          variant: "destructive",
+        });
+      } else {
+        console.warn("Toast function not available when trying to show auth required message.");
+      }
       openAuthDialog();
-      router.push('/');
+      router.push('/'); // This navigation might still happen very quickly
     }
   }, [loadingAuthState, currentUser, isValidType, router, openAuthDialog, toast]);
 
@@ -73,6 +78,7 @@ export default function SpecificRegistrationPage() {
   }
 
   if (!currentUser && isValidType) {
+    // This UI might not be shown for long due to the useEffect redirect
     return (
       <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
@@ -89,13 +95,15 @@ export default function SpecificRegistrationPage() {
     );
   }
 
-  if (!currentUser && !isValidType) {
+  if (!currentUser && !isValidType && !loadingAuthState) {
+     // If not loading, not a valid type, and no user, redirect to home.
      router.push('/');
      return null;
   }
 
 
   if (!isValidType && registrationType === null && !loadingAuthState) {
+    // This case should ideally be hit if the type param is invalid from the start.
     return (
       <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
@@ -113,6 +121,7 @@ export default function SpecificRegistrationPage() {
   }
 
   if (!registrationType) {
+    // This is a fallback while type is being determined or if things are still loading.
     return (
        <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
@@ -124,7 +133,8 @@ export default function SpecificRegistrationPage() {
       </main>
     );
   }
-
+  
+  // If we reach here, user should be authenticated (or form won't render fully) and type should be valid.
   return (
     <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center">
       <div className="w-full max-w-3xl">
