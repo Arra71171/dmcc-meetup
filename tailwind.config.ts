@@ -11,10 +11,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        headline: ['Epilogue', 'sans-serif'], // Epilogue for Headings
-        subtitle: ['Barlow', 'sans-serif'], // Barlow for Subtitles/Buttons
-        body: ['DM Sans', 'sans-serif'],    // DM Sans for Body text
-        sans: ['DM Sans', 'sans-serif'],    // Fallback sans-serif
+        headline: ['Montserrat', 'sans-serif'],    // Montserrat for Headings (Bold)
+        subtitle: ['Inter', 'sans-serif'],        // Inter for Sub-headings/UI (Medium)
+        body: ['Lora', 'serif'],                  // Lora for Body copy (Regular)
+        sans: ['Inter', 'sans-serif'],            // Fallback sans-serif
         code: ['monospace'],
       },
       colors: {
@@ -70,10 +70,10 @@ export default {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)', // 12px from :root
-        xl: 'calc(var(--radius) + 4px)', // 16px
-        '2xl': 'calc(var(--radius) + 8px)', // 20px
-        '3xl': 'calc(var(--radius) + 12px)', // 24px
+        lg: 'var(--radius)', 
+        xl: 'calc(var(--radius) + 4px)', 
+        '2xl': 'calc(var(--radius) + 8px)', 
+        '3xl': 'calc(var(--radius) + 12px)', 
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },

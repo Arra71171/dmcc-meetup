@@ -18,7 +18,7 @@ export function HeroSection() {
       className="relative w-full flex flex-col items-center justify-center text-center py-20 md:py-28 lg:py-32 px-4 overflow-hidden min-h-[calc(100vh-5rem)]"
     >
       <Image
-        src="https://placehold.co/1920x1080/EAEAEA/EAEAEA.png" 
+        src="https://placehold.co/1920x1080/EAEAEA/EAEAEA.png"
         alt="Abstract background for DMCC Convention hero section"
         fill={true}
         className="-z-20 opacity-25 dark:opacity-15 object-cover"
@@ -63,9 +63,17 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.5 }}
             variants={fadeInVariants}
           >
-            Sunday, June 15th, 2025 | JNU Convention Center, New Delhi <br /> 10:00 AM - 6:00 PM
+            This event successfully concluded on Sunday, June 15th, 2025, at JNU Convention Center, New Delhi.
           </motion.p>
-          
+          <motion.p
+            className="mt-6 text-lg md:text-xl font-body text-accent max-w-2xl mx-auto leading-relaxed"
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.6, delay: 0.6 }}
+            variants={fadeInVariants}
+          >
+            Thank you to all participants for making it a memorable occasion!
+          </motion.p>
         </GlassCard>
       </div>
     </section>

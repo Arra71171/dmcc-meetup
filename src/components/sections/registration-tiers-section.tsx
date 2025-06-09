@@ -1,54 +1,50 @@
 
 'use client'; 
 
-import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import { GlassCard } from "@/components/ui/glass-card";
-import { useAuth } from '@/contexts/auth-context'; 
 import { cn } from "@/lib/utils";
-import { useRouter } from 'next/navigation'; // Import useRouter
+// useRouter and useAuth are no longer needed as registration is closed
+// import { useAuth } from '@/contexts/auth-context'; 
+// import { useRouter } from 'next/navigation'; 
 
 const tiers = [
   {
     name: "Students",
     price: "₹100",
-    description: "Students with valid ID",
-    cta: "Register as Student",
+    description: "For students with valid ID.",
     value: "student", 
   },
   {
     name: "Professionals",
     price: "₹299",
-    description: "Working professionals and general attendees",
-    cta: "Register as Professional",
+    description: "For working professionals and general attendees.",
     value: "professional",
   },
   {
     name: "Families",
     price: "₹499",
-    description: "Two adults and children under 16", 
-    cta: "Get Family Pass",
+    description: "Covered two adults and children under 16.", 
     value: "family",
   },
   {
     name: "Others",
     price: "₹100",
-    description: "For other attendees not covered above",
-    cta: "Register Now",
+    description: "For other attendees not covered above.",
     value: "others",
   },
 ];
 
 export function RegistrationTiersSection() {
-  const { currentUser, openAuthDialog } = useAuth();
-  const router = useRouter(); // Initialize router
+  // const { currentUser, openAuthDialog } = useAuth(); // Not needed
+  // const router = useRouter(); // Not needed
 
-  const handleTierClick = (tierValue: string) => {
-    if (!currentUser) {
-      openAuthDialog();
-    } else {
-      router.push(`/register/${tierValue}`); // Navigate to specific form page
-    }
-  };
+  // const handleTierClick = (tierValue: string) => { // Not needed
+  //   if (!currentUser) {
+  //     openAuthDialog();
+  //   } else {
+  //     router.push(`/register/${tierValue}`); 
+  //   }
+  // };
 
   return (
     <section id="register" className="w-full max-w-6xl px-4">
@@ -56,13 +52,13 @@ export function RegistrationTiersSection() {
         "text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-4 text-gradient-theme tracking-wide",
         "text-glass-shadow"
         )}>
-        Event Registration
+        Event Participation Summary
       </h2>
       <p className={cn(
         "text-lg font-body text-center mb-10 md:mb-12 text-foreground/80", 
         "text-glass-shadow"
         )}>
-        We believe in making this event accessible to everyone while maintaining quality.
+        We were delighted by the enthusiastic participation from our community.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch">
         {tiers.map((tier) => (
@@ -72,12 +68,10 @@ export function RegistrationTiersSection() {
             <p className="font-body text-card-foreground/80 text-center mb-6 text-sm leading-relaxed">
               {tier.description}
             </p>
-            <GradientBorderButton
-              onClick={() => handleTierClick(tier.value)} 
-              className="w-full text-sm py-3 px-6 mt-auto" 
-            >
-              <span>{tier.cta}</span> 
-            </GradientBorderButton>
+            {/* CTA Button removed */}
+            <p className="font-body text-card-foreground/70 text-center text-xs mt-auto pt-4 border-t border-border/30">
+              Registrations for this tier are now closed.
+            </p>
           </GlassCard>
         ))}
       </div>
@@ -85,7 +79,7 @@ export function RegistrationTiersSection() {
         "text-center text-xl font-subtitle font-medium mt-10 text-accent",
         "text-glass-shadow"
         )}>
-        Join 140+ community members who have already registered!
+        Over 140 community members participated in this memorable event!
       </p>
     </section>
   );

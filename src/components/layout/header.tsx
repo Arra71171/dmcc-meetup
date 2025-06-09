@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Logo } from './logo';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, LogOut, UserCircle, ChevronDown, LayoutDashboard, ShieldAlert } from 'lucide-react'; // Removed LogIn as it's no longer used directly here for a button
+import { Menu, LogOut, ChevronDown, LayoutDashboard, ShieldAlert } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
 import {
   DropdownMenu,
@@ -22,11 +22,11 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/#highlights', label: 'Highlights' },
-  { href: '/#registration-form', label: 'Register' },
+  // { href: '/#registration-form', label: 'Register' }, // "Register" link removed
 ];
 
 export function Header() {
-  const { currentUser, loadingAuthState, logOut, openAuthDialog, isAdminOverrideLoggedIn } = useAuth();
+  const { currentUser, loadingAuthState, logOut, isAdminOverrideLoggedIn } = useAuth(); // openAuthDialog removed as sign-in button also removed
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getInitials = (name?: string | null, email?: string | null) => {
@@ -108,7 +108,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            null /* "Sign In" button removed for non-authenticated users */
+            null // "Sign In" button removed for non-authenticated users, matching previous state
           )}
         </div>
         <div className="md:hidden">
@@ -160,7 +160,7 @@ export function Header() {
                     </>
                   )}
                   {!loadingAuthState && !effectiveUserDisplay && (
-                    null /* "Sign In / Register" button removed from mobile menu */
+                    null // "Sign In / Register" button removed from mobile menu
                   )}
                 </div>
               </nav>

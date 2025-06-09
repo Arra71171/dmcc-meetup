@@ -11,11 +11,11 @@ export function ClosingRemarksSection() {
           "text-3xl md:text-4xl font-headline font-semibold text-center uppercase mb-8 text-gradient-theme tracking-wide",
           "text-glass-shadow"
           )}>
-          Get Connected
+          Stay Connected
         </h2>
         <GlassCard className="p-6 md:p-8">
           <p className="font-body text-lg text-card-foreground/90 leading-relaxed mb-6 text-center">
-            If you have any questions or need assistance, please don’t hesitate to reach out to us:
+            If you have any questions or wish to connect with DMCC, please don’t hesitate to reach out to us:
           </p>
           <div className="space-y-4 font-body text-base">
             <div className="flex items-center">
@@ -39,10 +39,10 @@ export function ClosingRemarksSection() {
       
       <GlassCard className="p-6 md:p-8 text-center">
           <p className="font-body text-lg text-card-foreground/90 leading-relaxed">
-            Let&apos;s come together to celebrate our stories, honor our culture, and strengthen our community bonds.
+            We cherish the memories created and the bonds strengthened during our convention.
           </p>
           <p className="mt-6 font-subtitle text-xl text-accent">
-            See you on June 15th at JNU Convention Center!
+            We look forward to future community events and continued engagement!
           </p>
         </GlassCard>
     </section>
