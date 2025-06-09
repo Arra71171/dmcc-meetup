@@ -5,65 +5,122 @@ import type React from 'react';
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode }
   from 'react';
 import type { RegistrationFormValues } from '@/components/forms/specific-registration-form';
-import { db } from '@/lib/firebase'; // Import Firestore instance
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  onSnapshot,
+  query,
+  orderBy,
+  doc,
+  deleteDoc,
+  Timestamp, // Import Timestamp
+  updateDoc
+} from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
-
-export interface RegistrationEntry extends RegistrationFormValues {
-  id: string; // Firestore document ID will be used here when fetching
-  submittedAt: Date | firebase.firestore.Timestamp; // Allow both for local state and Firestore
+export interface RegistrationEntry extends Omit<RegistrationFormValues, 'paymentScreenshot'> {
+  id: string;
+  submittedAt: Date; // Ensure this is always Date in the context's state
   paymentScreenshotFilename?: string | null;
+  paymentScreenshot?: File | FileList | null | undefined; // Keep for type consistency if needed by form, but not stored directly
 }
 
 interface RegistrationContextType {
   registrations: RegistrationEntry[];
-  addRegistration: (data: RegistrationFormValues) => Promise<void>; // Make async
-  updateRegistration: (id: string, data: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt'>>) => void;
-  deleteRegistration: (id: string) => void;
+  addRegistration: (data: RegistrationFormValues) => Promise<void>;
+  updateRegistration: (id: string, data: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt' | 'paymentScreenshot'>>) => Promise<void>;
+  deleteRegistration: (id: string) => Promise<void>;
   getRegistrationById: (id: string) => RegistrationEntry | undefined;
+  loadingRegistrations: boolean;
 }
 
 const RegistrationContext = createContext<RegistrationContextType | undefined>(undefined);
 
-// Helper to generate unique IDs for local state fallback if needed, though Firestore provides IDs
-const generateLocalId = () => Math.random().toString(36).substr(2, 9);
-
 export function RegistrationProvider({ children }: { children: ReactNode }) {
   const [registrations, setRegistrations] = useState<RegistrationEntry[]>([]);
+  const [loadingRegistrations, setLoadingRegistrations] = useState(true);
   const { toast } = useToast();
 
+  useEffect(() => {
+    setLoadingRegistrations(true);
+    const q = query(collection(db, "registrations"), orderBy("submittedAt", "desc"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const fetchedRegistrations: RegistrationEntry[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        // Ensure submittedAt is a Date object
+        let submittedAtDate: Date;
+        if (data.submittedAt instanceof Timestamp) {
+          submittedAtDate = data.submittedAt.toDate();
+        } else if (data.submittedAt && typeof data.submittedAt.seconds === 'number') {
+          // Handle cases where it might be a plain object from serverTimestamp() before conversion
+          submittedAtDate = new Timestamp(data.submittedAt.seconds, data.submittedAt.nanoseconds).toDate();
+        } else if (data.submittedAt instanceof Date) {
+          submittedAtDate = data.submittedAt;
+        }
+        else {
+          submittedAtDate = new Date(); // Fallback, though ideally submittedAt should always exist
+        }
+
+        fetchedRegistrations.push({
+          ...data,
+          id: doc.id,
+          // Cast data to appropriate types from Firestore
+          fullName: data.fullName || '',
+          email: data.email || '',
+          phone: data.phone || '',
+          registrationType: data.registrationType || 'others',
+          // numberOfFamilyMembers will be undefined if not 'family'
+          numberOfFamilyMembers: data.numberOfFamilyMembers,
+          address: data.address,
+          expectations: data.expectations,
+          paymentScreenshotFilename: data.paymentScreenshotFilename,
+          agreeToTerms: data.agreeToTerms || false,
+          submittedAt: submittedAtDate,
+        } as RegistrationEntry);
+      });
+      setRegistrations(fetchedRegistrations);
+      setLoadingRegistrations(false);
+      console.log("Registrations fetched from Firestore:", JSON.stringify(fetchedRegistrations, null, 2));
+    }, (error) => {
+      console.error("Error fetching registrations from Firestore: ", error);
+      toast({
+        title: "Error Fetching Registrations",
+        description: "Could not load registration data from the database.",
+        variant: "destructive",
+      });
+      setLoadingRegistrations(false);
+    });
+
+    return () => unsubscribe(); // Cleanup listener on component unmount
+  }, [toast]);
+
+
   const addRegistration = useCallback(async (data: RegistrationFormValues) => {
-    const newEntryForFirestore = {
-      ...data,
-      // Remove paymentScreenshot FileList before saving to Firestore
-      paymentScreenshot: undefined,
+    // Prepare data for Firestore
+    const newEntryForFirestore: Omit<RegistrationEntry, 'id' | 'submittedAt' | 'paymentScreenshot' | 'agreeToTerms'> & { submittedAt: any, paymentScreenshotFilename?: string | null, agreeToTerms: boolean } = {
+      fullName: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      registrationType: data.registrationType,
+      numberOfFamilyMembers: data.registrationType === 'family' ? data.numberOfFamilyMembers : undefined,
+      address: data.address,
+      expectations: data.expectations,
       paymentScreenshotFilename: data.paymentScreenshot instanceof FileList && data.paymentScreenshot.length > 0
         ? data.paymentScreenshot[0].name
-        : data.paymentScreenshot instanceof File // Handle single file case if input changes
+        : data.paymentScreenshot instanceof File
         ? (data.paymentScreenshot as File).name
         : null,
-      numberOfFamilyMembers: data.registrationType === 'family' ? data.numberOfFamilyMembers : undefined,
-      submittedAt: serverTimestamp(), // Use Firestore server timestamp
+      agreeToTerms: data.agreeToTerms,
+      submittedAt: serverTimestamp(),
     };
 
     try {
-      // Save to Firestore
       const docRef = await addDoc(collection(db, "registrations"), newEntryForFirestore);
       console.log("Document written to Firestore with ID: ", docRef.id);
-
-      // Add to local state for immediate UI update (will be replaced by Firestore listener later)
-      // For local state, we'll use a client-side date and the Firestore ID
-      const newEntryForLocalState: RegistrationEntry = {
-        ...data,
-        id: docRef.id, // Use Firestore document ID
-        submittedAt: new Date(), // Use local date for now for local state
-        paymentScreenshotFilename: newEntryForFirestore.paymentScreenshotFilename,
-        numberOfFamilyMembers: newEntryForFirestore.numberOfFamilyMembers,
-      };
-      setRegistrations(prev => [...prev, newEntryForLocalState]);
-      
-      // Toast is handled in the form itself after this function resolves
+      // No need to manually update local state, onSnapshot will handle it.
     } catch (e) {
       console.error("Error adding document to Firestore: ", e);
       toast({
@@ -71,31 +128,57 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         description: "Could not save your registration to the database. Please try again.",
         variant: "destructive",
       });
-      throw e; // Re-throw error so the form can catch it
+      throw e;
     }
   }, [toast]);
 
-  const updateRegistration = useCallback((id: string, data: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt'>>) => {
-    // TODO: Implement Firestore update in Chunk 5
-    setRegistrations(prev =>
-      prev.map(reg => (reg.id === id ? { ...reg, ...data, submittedAt: reg.submittedAt } : reg))
-    );
-    console.log("Update called for local state (Firestore update pending):", id, data);
-  }, []);
+  const updateRegistration = useCallback(async (id: string, dataToUpdate: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt' | 'paymentScreenshot'>>) => {
+    const regDocRef = doc(db, "registrations", id);
+    try {
+      await updateDoc(regDocRef, dataToUpdate);
+      toast({
+        title: "Registration Updated",
+        description: "The registration details have been successfully updated.",
+        variant: "default",
+      });
+      // onSnapshot will update local state
+    } catch (error) {
+      console.error("Error updating registration in Firestore: ", error);
+      toast({
+        title: "Update Failed",
+        description: "Could not update the registration in the database.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  }, [toast]);
 
-  const deleteRegistration = useCallback((id: string) => {
-    // TODO: Implement Firestore delete in Chunk 5
-    setRegistrations(prev => prev.filter(reg => reg.id !== id));
-    console.log("Delete called for local state (Firestore delete pending):", id);
-  }, []);
+  const deleteRegistration = useCallback(async (id: string) => {
+    const regDocRef = doc(db, "registrations", id);
+    try {
+      await deleteDoc(regDocRef);
+      toast({
+        title: "Registration Deleted",
+        description: "The registration has been successfully deleted.",
+        variant: "default",
+      });
+      // onSnapshot listener will automatically update the local state.
+    } catch (error) {
+      console.error("Error deleting registration from Firestore: ", error);
+      toast({
+        title: "Deletion Failed",
+        description: "Could not delete the registration from the database.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   const getRegistrationById = useCallback((id: string) => {
     return registrations.find(reg => reg.id === id);
   }, [registrations]);
 
   useEffect(() => {
-    // This log shows the client-side state. It will be replaced by Firestore data later.
-    console.log("Current registrations in context (client-side state):", JSON.stringify(registrations, null, 2));
+    console.log("Current registrations in context (client-side, synced from Firestore):", JSON.stringify(registrations, null, 2));
   }, [registrations]);
 
 
@@ -105,6 +188,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     updateRegistration,
     deleteRegistration,
     getRegistrationById,
+    loadingRegistrations,
   };
 
   return (
@@ -121,3 +205,5 @@ export function useRegistrations() {
   }
   return context;
 }
+
+    

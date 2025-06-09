@@ -45,7 +45,7 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
-  SidebarTrigger as MainSidebarTrigger, // Aliased to avoid conflict
+  SidebarTrigger as MainSidebarTrigger,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -58,11 +58,10 @@ const ITEMS_PER_PAGE = 10;
 
 export default function AdminDashboardPage() {
   const { currentUser, loadingAuthState, openAuthDialog, isAdminOverrideLoggedIn, logOut } = useAuth();
-  const { registrations, deleteRegistration, updateRegistration } = useRegistrations();
+  const { registrations, deleteRegistration, updateRegistration, loadingRegistrations } = useRegistrations();
 
-  // Log registrations received by the AdminDashboardPage
   useEffect(() => {
-    console.log("AdminDashboardPage received registrations:", registrations);
+    console.log("AdminDashboardPage received registrations:", JSON.stringify(registrations, null, 2));
   }, [registrations]);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -71,9 +70,10 @@ export default function AdminDashboardPage() {
   const [editingRegistration, setEditingRegistration] = useState<RegistrationEntry | null>(null);
 
   const filteredRegistrations = useMemo(() => {
+    if (!registrations) return [];
     return registrations.filter(reg =>
-      reg.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      reg.email.toLowerCase().includes(searchTerm.toLowerCase())
+      (reg.fullName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (reg.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     ).sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
   }, [registrations, searchTerm]);
 
@@ -83,13 +83,13 @@ export default function AdminDashboardPage() {
     currentPage * ITEMS_PER_PAGE
   );
 
-  if (loadingAuthState) {
+  if (loadingAuthState || loadingRegistrations) {
     return (
       <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
           <Loader2 className="w-12 h-12 text-accent animate-spin mb-4" />
           <p className="font-body text-lg text-card-foreground/90">
-            Checking authentication status...
+            {loadingAuthState ? "Checking authentication status..." : "Loading registrations..."}
           </p>
         </GlassCard>
       </main>
@@ -143,10 +143,10 @@ export default function AdminDashboardPage() {
     const csvContent = filteredRegistrations.map(reg =>
       [
         reg.id,
-        `"${reg.fullName.replace(/"/g, '""')}"`,
-        `"${reg.email.replace(/"/g, '""')}"`,
-        reg.phone,
-        reg.registrationType,
+        `"${(reg.fullName || '').replace(/"/g, '""')}"`,
+        `"${(reg.email || '').replace(/"/g, '""')}"`,
+        reg.phone || '',
+        reg.registrationType || '',
         reg.registrationType === 'family' ? reg.numberOfFamilyMembers || 'N/A' : 'N/A',
         `"${(reg.address || 'N/A').replace(/"/g, '""')}"`,
         `"${(reg.expectations || 'N/A').replace(/"/g, '""')}"`,
@@ -200,7 +200,7 @@ export default function AdminDashboardPage() {
       setFormData(prev => ({ ...prev, [name]: name === "numberOfFamilyMembers" && value !== "" ? parseInt(value, 10) : value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       const dataToSubmit: Partial<Omit<RegistrationEntry, 'id'|'submittedAt'|'paymentScreenshot'>> = {
         ...formData,
@@ -208,7 +208,8 @@ export default function AdminDashboardPage() {
             ? (formData.numberOfFamilyMembers ? String(formData.numberOfFamilyMembers) : undefined) 
             : undefined,
       };
-      onSubmit(dataToSubmit);
+      await updateRegistration(initialData.id, dataToSubmit); // Call updateRegistration from context
+      onSubmit(dataToSubmit); // Keep this to close modal etc.
     };
 
     return (
@@ -231,6 +232,7 @@ export default function AdminDashboardPage() {
             <option value="professional">Professional</option>
             <option value="student">Student</option>
             <option value="family">Family</option>
+            <option value="others">Others</option>
           </select>
         </div>
         {formData.registrationType === 'family' && (
@@ -298,8 +300,8 @@ export default function AdminDashboardPage() {
 
           <GlassCard className="p-4 md:p-6 mb-6">
             <p className="font-body text-sm text-card-foreground/80">
-              Client-side data prototype: Registrations are stored in memory and will be lost on page refresh.
-              A full backend is required for persistent storage and to capture data from the public registration form.
+              Registrations are now fetched from and managed in the Firestore database.
+              Changes will be reflected in real-time.
             </p>
           </GlassCard>
 
@@ -455,10 +457,8 @@ export default function AdminDashboardPage() {
           {editingRegistration && (
             <RegistrationEditForm
               initialData={editingRegistration}
-              onSubmit={(data) => {
-                if (editingRegistration?.id) {
-                  updateRegistration(editingRegistration.id, data);
-                }
+              onSubmit={async (data) => { // Made onSubmit async
+                // The actual updateRegistration call is now inside RegistrationEditForm's handleSubmit
                 setIsEditModalOpen(false);
                 setEditingRegistration(null);
               }}
