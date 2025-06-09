@@ -9,7 +9,7 @@ import { GlassCard } from '@/components/ui/glass-card';
 import { Loader2, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast'; // Added standard import
+import { useToast } from '@/hooks/use-toast';
 
 const validTypes: RegistrationType[] = ["student", "professional", "family", "others"];
 
@@ -28,7 +28,7 @@ const typeToPriceMap: Record<RegistrationType, string> = {
 };
 
 export default function SpecificRegistrationPage() {
-  const { toast } = useToast(); // Moved toast initialization here
+  const { toast } = useToast(); // Moved toast initialization to the top
   const params = useParams();
   const router = useRouter();
   const { currentUser, loadingAuthState, openAuthDialog } = useAuth();
@@ -48,18 +48,13 @@ export default function SpecificRegistrationPage() {
 
   useEffect(() => {
     if (!loadingAuthState && !currentUser && isValidType) {
-      // If a valid type is in URL but user is not logged in,
-      // prompt login then redirect back or let them proceed.
-      // For now, show auth prompt then they'd need to re-initiate from tiers page.
-      // Or, we can store intended type and redirect after login.
-      // Simplest for now: redirect to home as they shouldn't be here without auth.
       toast({
         title: "Authentication Required",
         description: "Please sign in to access this registration form.",
         variant: "destructive",
       });
-      openAuthDialog(); // Open auth dialog
-      router.push('/'); // Redirect to home after a brief moment or upon dialog close
+      openAuthDialog(); 
+      router.push('/'); 
     }
   }, [loadingAuthState, currentUser, isValidType, router, openAuthDialog, toast]);
 
@@ -78,7 +73,6 @@ export default function SpecificRegistrationPage() {
   }
 
   if (!currentUser && isValidType) {
-     // This state might be brief if redirection or auth dialog takes over
     return (
       <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
@@ -96,13 +90,12 @@ export default function SpecificRegistrationPage() {
   }
   
   if (!currentUser && !isValidType) {
-    // If not logged in and type is invalid, definitely redirect or show generic error
      router.push('/');
-     return null; // Or a more graceful error page
+     return null; 
   }
 
 
-  if (!isValidType && registrationType === null && !loadingAuthState) { // Check after loading
+  if (!isValidType && registrationType === null && !loadingAuthState) { 
     return (
       <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
@@ -120,7 +113,6 @@ export default function SpecificRegistrationPage() {
   }
 
   if (!registrationType) {
-    // Fallback if registrationType is somehow still null after checks (shouldn't happen if logic is correct)
     return (
        <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
@@ -152,3 +144,5 @@ export default function SpecificRegistrationPage() {
     </main>
   );
 }
+
+    

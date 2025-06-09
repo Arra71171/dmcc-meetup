@@ -45,7 +45,7 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
-  SidebarTrigger as MainSidebarTrigger,
+  SidebarTrigger as MainSidebarTrigger, // Ensured this is the aliased import
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -208,8 +208,8 @@ export default function AdminDashboardPage() {
             ? (formData.numberOfFamilyMembers ? String(formData.numberOfFamilyMembers) : undefined) 
             : undefined,
       };
-      await updateRegistration(initialData.id, dataToSubmit); // Call updateRegistration from context
-      onSubmit(dataToSubmit); // Keep this to close modal etc.
+      await updateRegistration(initialData.id, dataToSubmit); 
+      onSubmit(dataToSubmit); 
     };
 
     return (
@@ -301,7 +301,7 @@ export default function AdminDashboardPage() {
           <GlassCard className="p-4 md:p-6 mb-6">
             <p className="font-body text-sm text-card-foreground/80">
               Registrations are now fetched from and managed in the Firestore database.
-              Changes will be reflected in real-time.
+              Changes should be reflected in real-time. If you encounter issues, please check your Firestore security rules.
             </p>
           </GlassCard>
 
@@ -457,8 +457,7 @@ export default function AdminDashboardPage() {
           {editingRegistration && (
             <RegistrationEditForm
               initialData={editingRegistration}
-              onSubmit={async (data) => { // Made onSubmit async
-                // The actual updateRegistration call is now inside RegistrationEditForm's handleSubmit
+              onSubmit={async (data) => {
                 setIsEditModalOpen(false);
                 setEditingRegistration(null);
               }}
