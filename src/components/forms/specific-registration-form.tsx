@@ -143,17 +143,19 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
 
   const onSubmit: SubmitHandler<RegistrationFormValues> = async (data) => {
     console.log("SpecificRegistrationForm: onSubmit handler CALLED.");
-    console.log("SpecificRegistrationForm: Form data received by onSubmit:", JSON.stringify(data, null, 2));
+    setIsSubmitting(true); // Moved to the top for immediate feedback
+    console.log("SpecificRegistrationForm: isSubmitting set to true.");
 
     if (!currentUser) {
       console.warn("SpecificRegistrationForm: User not authenticated, aborting submission.");
       toast({ title: "Authentication Required", description: "Please sign in to submit the form.", variant: "destructive" });
       openAuthDialog();
+      setIsSubmitting(false); // Reset submitting state
       return;
     }
     
-    setIsSubmitting(true);
-    console.log("SpecificRegistrationForm: isSubmitting set to true.");
+    console.log("SpecificRegistrationForm: User authenticated, proceeding with submission.");
+    console.log("SpecificRegistrationForm: Form data received by onSubmit:", JSON.stringify(data, null, 2));
     
     try {
       console.log("SpecificRegistrationForm: Calling addRegistration from context...");
@@ -238,12 +240,14 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
           let errorMessages = "Please correct the following errors:\n";
           for (const key in errors) {
             if (errors[key as keyof RegistrationFormValues]) {
-               errorMessages += `- ${key}: ${errors[key as keyof RegistrationFormValues]?.message}\n`;
+               const fieldName = key as keyof RegistrationFormValues;
+               const message = errors[fieldName]?.message;
+               errorMessages += `- ${fieldName}: ${message}\n`;
             }
           }
           toast({
             title: "Validation Error",
-            description: "Please check the form for errors: " + Object.keys(errors).join(', ') + ". See console for details.",
+            description: "Please check the form for errors. " + Object.keys(errors).map(key => `${key}: ${errors[key as keyof RegistrationFormValues]?.message}`).join("; "),
             variant: "destructive",
             duration: 7000,
           });
