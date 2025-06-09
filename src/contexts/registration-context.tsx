@@ -78,7 +78,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       });
       setRegistrations(fetchedRegistrations);
       setLoadingRegistrations(false);
-      // console.log("Registrations fetched from Firestore:", JSON.stringify(fetchedRegistrations, null, 2));
+      console.log("Registrations fetched from Firestore:", JSON.stringify(fetchedRegistrations, null, 2));
     }, (error) => {
       console.error("Error fetching registrations from Firestore in onSnapshot: ", error);
       toast({
@@ -97,34 +97,32 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
 
 
   const addRegistration = useCallback(async (data: RegistrationFormValues) => {
-    console.log("RegistrationContext: addRegistration CALLED with data:", JSON.stringify(data, null, 2));
+    console.log("RegistrationContext: addRegistration CALLED with data:", JSON.stringify(data, (key, value) => value instanceof File ? value.name : value, 2));
     
-    const newEntryForFirestore = {
-      fullName: data.fullName,
-      email: data.email,
-      phone: data.phone,
-      registrationType: data.registrationType,
+    const { paymentScreenshot, ...restOfData } = data;
+
+    const newEntryForFirestore: Omit<RegistrationEntry, 'id' | 'submittedAt' | 'paymentScreenshotFilename' | 'agreeToTerms'> & { submittedAt: any; paymentScreenshotFilename?: string | null, agreeToTerms: boolean } = {
+      ...restOfData,
       numberOfFamilyMembers: data.registrationType === 'family' ? data.numberOfFamilyMembers : undefined,
-      address: data.address,
-      expectations: data.expectations,
-      paymentScreenshotFilename: data.paymentScreenshot ? data.paymentScreenshot.name : null,
+      paymentScreenshotFilename: paymentScreenshot instanceof File ? paymentScreenshot.name : null,
       agreeToTerms: data.agreeToTerms,
       submittedAt: serverTimestamp(),
     };
     console.log("RegistrationContext: Data prepared for Firestore:", JSON.stringify(newEntryForFirestore, null, 2));
 
     try {
+      console.log("RegistrationContext: Attempting addDoc to Firestore...");
       const docRef = await addDoc(collection(db, "registrations"), newEntryForFirestore);
       console.log("RegistrationContext: Document written to Firestore with ID: ", docRef.id);
-      // Toast for success is now handled in the form component after this promise resolves.
+      // Success toast is handled in the form component after this promise resolves.
     } catch (e) {
-      console.error("RegistrationContext: Error calling addDoc to Firestore:", e);
+      console.error("RegistrationContext: Error during addDoc to Firestore:", e);
       toast({
         title: "Registration Firestore Error",
-        description: `Could not save your registration to database. ${(e as Error).message || "Please try again."}`,
+        description: `Could not save your registration to the database. ${(e as Error).message || "Please try again."}`,
         variant: "destructive",
       });
-      throw e; 
+      throw e; // Re-throw the error so the calling component can also catch it
     }
   }, [toast]);
 
@@ -179,7 +177,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   }, [registrations]);
 
   useEffect(() => {
-    // console.log("Current registrations in context (client-side, synced from Firestore):", JSON.stringify(registrations, null, 2));
+     console.log("Current registrations in context (client-side, synced from Firestore):", JSON.stringify(registrations, null, 2));
   }, [registrations]);
 
 
