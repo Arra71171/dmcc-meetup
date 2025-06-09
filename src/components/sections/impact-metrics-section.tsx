@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { GlassCard } from "@/components/ui/glass-card";
 import { cn } from "@/lib/utils";
-import { Users, Feather, Accessibility, Megaphone, Target, Eye } from "lucide-react"; // Added specific icons
+import { Users, Feather, Accessibility, Megaphone, Target, Eye } from "lucide-react";
 
 export function ImpactMetricsSection() { // This is the "About DMCC" section
   const coreValues = [
@@ -78,12 +78,13 @@ export function ImpactMetricsSection() { // This is the "About DMCC" section
           <div className="md:col-span-2 w-full h-full flex items-center justify-center order-first md:order-last sticky top-24">
             <div className="rounded-2xl overflow-hidden shadow-2xl aspect-[3/4] w-full max-w-md">
               <Image
-                src="https://placehold.co/500x667.png" 
+                src="https://placehold.co/500x667.png"
                 alt="Symbolic image representing the DMCC community or its values"
                 width={500}
                 height={667}
                 className="object-cover w-full h-full"
                 data-ai-hint="community diverse group"
+                priority
               />
             </div>
           </div>

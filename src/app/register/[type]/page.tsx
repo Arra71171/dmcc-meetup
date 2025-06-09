@@ -28,7 +28,7 @@ const typeToPriceMap: Record<RegistrationType, string> = {
 };
 
 export default function SpecificRegistrationPage() {
-  const { toast } = useToast(); // Moved toast initialization to the top
+  const { toast } = useToast(); // Moved to the top
   const params = useParams();
   const router = useRouter();
   const { currentUser, loadingAuthState, openAuthDialog } = useAuth();
@@ -53,8 +53,8 @@ export default function SpecificRegistrationPage() {
         description: "Please sign in to access this registration form.",
         variant: "destructive",
       });
-      openAuthDialog(); 
-      router.push('/'); 
+      openAuthDialog();
+      router.push('/');
     }
   }, [loadingAuthState, currentUser, isValidType, router, openAuthDialog, toast]);
 
@@ -88,14 +88,14 @@ export default function SpecificRegistrationPage() {
       </main>
     );
   }
-  
+
   if (!currentUser && !isValidType) {
      router.push('/');
-     return null; 
+     return null;
   }
 
 
-  if (!isValidType && registrationType === null && !loadingAuthState) { 
+  if (!isValidType && registrationType === null && !loadingAuthState) {
     return (
       <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
@@ -124,7 +124,7 @@ export default function SpecificRegistrationPage() {
       </main>
     );
   }
-  
+
   return (
     <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center">
       <div className="w-full max-w-3xl">
@@ -144,5 +144,3 @@ export default function SpecificRegistrationPage() {
     </main>
   );
 }
-
-    
