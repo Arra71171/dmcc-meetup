@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { GlassCard } from "@/components/ui/glass-card";
-import { useState, type ChangeEvent, useEffect } from 'react';
+import { useState, type ChangeEvent, useEffect, type ComponentPropsWithoutRef } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 import { useRegistrations } from "@/contexts/registration-context";
@@ -31,26 +31,22 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "applicat
 
 export type RegistrationType = "professional" | "student" | "family" | "others";
 
+// Define a Zod schema for a single file or undefined
+const fileSchema = z.instanceof(File, { message: "Please upload a file." })
+  .refine(file => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+  .refine(file => ACCEPTED_IMAGE_TYPES.includes(file.type), ".jpg, .jpeg, .png, .webp, and .pdf files are accepted.")
+  .optional()
+  .nullable();
+
+
 const registrationFormSchema = z.object({
   fullName: z.string().min(2, { message: "Full name must be at least 2 characters." }).max(100, { message: "Full name must be less than 100 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   phone: z.string().min(10, { message: "Phone number must be at least 10 digits." }).regex(/^(\+\d{1,3}[- ]?)?\d{10}$/, { message: "Invalid phone number format." }),
-  registrationType: z.enum(["professional", "student", "family", "others"]), // This will be set programmatically
+  registrationType: z.enum(["professional", "student", "family", "others"]),
   numberOfFamilyMembers: z.string().optional(),
   address: z.string().max(250, {message: "Address must be less than 250 characters."}).optional(),
-  paymentScreenshot: z
-    .custom<FileList | undefined>() 
-    .refine((files) => { 
-      if (!files || files.length === 0) return true; 
-      return files?.[0]?.size <= MAX_FILE_SIZE;
-    }, `Max file size is 5MB.`)
-    .refine(
-      (files) => { 
-        if (!files || files.length === 0) return true; 
-        return ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type);
-      },
-      ".jpg, .jpeg, .png, .webp and .pdf files are accepted."
-    ).optional(),
+  paymentScreenshot: fileSchema, // Use the single file schema
   agreeToTerms: z.boolean().refine((val) => val === true, {
     message: "You must agree to the terms and conditions.",
   }),
@@ -65,7 +61,7 @@ const registrationFormSchema = z.object({
       });
     } else {
       const numMembers = parseInt(data.numberOfFamilyMembers, 10);
-      if (isNaN(numMembers) || numMembers < 1 || numMembers > 10) { 
+      if (isNaN(numMembers) || numMembers < 1 || numMembers > 10) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Please enter a valid number of family members (1-10).",
@@ -76,7 +72,14 @@ const registrationFormSchema = z.object({
   }
 });
 
-export type RegistrationFormValues = z.infer<typeof registrationFormSchema>; 
+// Infer type for form values
+export type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
+
+// Type for the FileList version, which is what the input element provides
+type RegistrationFormInputValues = Omit<RegistrationFormValues, 'paymentScreenshot'> & {
+  paymentScreenshot?: FileList | null;
+};
+
 
 interface SpecificRegistrationFormProps {
   initialRegistrationType: RegistrationType;
@@ -85,20 +88,20 @@ interface SpecificRegistrationFormProps {
 export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRegistrationFormProps) {
   const { toast } = useToast();
   const { currentUser, loadingAuthState, openAuthDialog } = useAuth();
-  const { addRegistration } = useRegistrations(); 
+  const { addRegistration } = useRegistrations();
   const router = useRouter();
   
-  const form = useForm<RegistrationFormValues>({
+  const form = useForm<RegistrationFormInputValues>({ // Use the input type here
     resolver: zodResolver(registrationFormSchema),
     defaultValues: {
       fullName: currentUser?.displayName || "",
       email: currentUser?.email || "",
       phone: "",
       address: "",
-      registrationType: initialRegistrationType, // Set from prop
-      numberOfFamilyMembers: initialRegistrationType === 'family' ? "1" : "", // Default for family
+      registrationType: initialRegistrationType,
+      numberOfFamilyMembers: initialRegistrationType === 'family' ? "1" : "",
       agreeToTerms: false,
-      paymentScreenshot: undefined,
+      paymentScreenshot: null, // Initialize as null for FileList
       expectations: "",
     },
     mode: "onChange",
@@ -107,7 +110,6 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Pre-fill user data if available and form fields are empty
     if (currentUser) {
       if (!form.getValues("email") && currentUser.email) {
         form.setValue("email", currentUser.email, { shouldValidate: true });
@@ -116,13 +118,10 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
         form.setValue("fullName", currentUser.displayName, { shouldValidate: true });
       }
     }
-    // Ensure registrationType is correctly set from the prop
     form.setValue("registrationType", initialRegistrationType, { shouldDirty: true });
-
   }, [currentUser, form, initialRegistrationType]);
 
-
-  const onSubmit: SubmitHandler<RegistrationFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<RegistrationFormInputValues> = async (data) => {
     if (!currentUser) {
       toast({ title: "Authentication Required", description: "Please sign in to submit the form.", variant: "destructive" });
       openAuthDialog();
@@ -131,36 +130,36 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Ensure registrationType is correctly passed from the form state
-      const submissionData = {
+      // Transform FileList to File | null for validation and addRegistration
+      const submissionData: RegistrationFormValues = {
         ...data,
-        registrationType: form.getValues("registrationType"), // Use the value from form state
+        paymentScreenshot: data.paymentScreenshot?.[0] || null,
       };
-
-      addRegistration(submissionData); 
+      
+      await addRegistration(submissionData);
       
       toast({
         title: "Registration Submitted!",
         description: "Your registration details have been received. We will verify and get back to you shortly.",
-        variant: "default", 
+        variant: "default",
       });
-      form.reset(); 
-      const fileInput = document.querySelector('input[type="file"][name="paymentScreenshot"]') as HTMLInputElement | null;
+      form.reset();
+      // Also reset the file input visually
+      const fileInput = document.getElementById('paymentScreenshotInput') as HTMLInputElement | null;
       if (fileInput) {
-        fileInput.value = ''; 
+        fileInput.value = '';
       }
-      router.push('/'); // Redirect to homepage after successful registration
+      router.push('/');
 
     } catch (error) {
       console.error("Submission Error:", error);
-      toast({
-        title: "Submission Failed",
-        description: "There was an error submitting your registration. Please try again.",
-        variant: "destructive",
-      });
+      // Toast for submission failure is handled by addRegistration if it throws
+      // If addRegistration doesn't throw but we want a generic error here:
+      // toast({
+      //   title: "Submission Failed",
+      //   description: "There was an error submitting your registration. Please try again.",
+      //   variant: "destructive",
+      // });
     } finally {
       setIsSubmitting(false);
     }
@@ -176,7 +175,6 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
   }
 
   if (!currentUser) {
-    // This case should ideally be handled by the page component, but as a fallback:
     return (
       <GlassCard className="p-6 md:p-8 text-card-foreground text-center">
         <p className="mb-4">Please sign in to complete your registration.</p>
@@ -191,7 +189,6 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
     <GlassCard className="p-6 md:p-8 text-card-foreground">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 font-body text-sm">
-          {/* registrationType field is now hidden as it's set by initialRegistrationType prop */}
           <FormField
             control={form.control}
             name="fullName"
@@ -245,13 +242,13 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
                 <FormItem>
                   <FormLabel className="font-subtitle text-card-foreground">Number of Family Members</FormLabel>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      placeholder="e.g., 2" 
+                    <Input
+                      type="number"
+                      placeholder="e.g., 2"
                       {...field}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
                           const value = e.target.value;
-                          field.onChange(value); 
+                          field.onChange(value);
                       }}
                       min="1"
                     />
@@ -278,7 +275,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="expectations"
@@ -305,7 +302,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
               <div className="flex flex-col sm:flex-row items-center gap-4 mt-2">
                 <div className="w-32 h-32 relative border border-border rounded-md overflow-hidden bg-muted/30 flex items-center justify-center">
                   <Image
-                    src="https://placehold.co/128x128.png" // Replace with actual QR code image
+                    src="https://placehold.co/128x128.png"
                     alt="UPI QR Code Placeholder"
                     width={128}
                     height={128}
@@ -313,7 +310,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
                   />
                 </div>
                 <p className="text-xs text-muted-foreground font-body flex-1">
-                  You can scan the QR code with your UPI app or use the UPI ID directly. 
+                  You can scan the QR code with your UPI app or use the UPI ID directly.
                   We will manually verify all payments and confirm your registration within 24-48 hours.
                 </p>
               </div>
@@ -323,21 +320,24 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
           <FormField
             control={form.control}
             name="paymentScreenshot"
-            render={({ field: { onChange, value, ...rest } }) => ( 
+            render={({ field: { onChange, value, ...rest } }) => (
               <FormItem>
                 <FormLabel className="font-subtitle text-card-foreground">Upload Payment Screenshot (Optional but Recommended)</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="file" 
+                   <Input
+                    id="paymentScreenshotInput" // Added id for easier reset
+                    type="file"
                     accept={ACCEPTED_IMAGE_TYPES.join(",")}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.files)} 
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      // react-hook-form expects FileList for file inputs
+                      onChange(e.target.files);
+                    }}
                     className="file:text-foreground file:font-subtitle file:uppercase file:text-xs file:tracking-wider file:font-medium file:mr-3"
-                    {...rest} 
-                    name="paymentScreenshot" 
+                    {...rest} // name is already part of rest from form.control
                   />
                 </FormControl>
                  <FormDescription className="text-muted-foreground">
-                  Attaching a screenshot helps expedite the verification process.
+                  Attaching a screenshot helps expedite the verification process. Max 5MB.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -370,9 +370,9 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
             )}
           />
 
-          <GradientBorderButton 
-            type="submit" 
-            className="w-full text-base py-3" 
+          <GradientBorderButton
+            type="submit"
+            className="w-full text-base py-3"
             disabled={isSubmitting}
           >
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
