@@ -31,39 +31,35 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "applicat
 
 export type RegistrationType = "professional" | "student" | "family" | "others";
 
-// Schema for a FileList, transforming to a single File or null, then refining the File
 const fileListToFileSchema = z
-  .custom<FileList | null | undefined>() // Input from react-hook-form for <input type="file">
-  .optional() // The FileList itself is optional
+  .custom<FileList | null | undefined>()
+  .optional()
   .transform((fileList, ctx) => {
     if (fileList && fileList.length > 1) {
-      // Zod's transform can add issues to the context (ctx)
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Please upload only one file.",
       });
-      return z.NEVER; // Stop further processing for this field
+      return z.NEVER; 
     }
     if (fileList && fileList.length === 1) {
-      return fileList[0]; // Transform to a single File
+      return fileList[0]; 
     }
-    return null; // Or null if no file or empty FileList
+    return null; 
   })
-  .nullable() // Allow null after transform (if no file was selected)
-  .refine( // Now refine the single File object (or null)
+  .nullable()
+  .refine(
     (file) => {
-      if (!file) return true; // If null (optional field, no file selected), validation passes
+      if (!file) return true; 
       return file.size <= MAX_FILE_SIZE;
     },
-    // Custom error message function for size
     (file) => ({ message: file ? `Max file size is 5MB. Yours is ~${(file.size / (1024*1024)).toFixed(2)}MB` : 'Max file size is 5MB.'})
   )
   .refine(
     (file) => {
-      if (!file) return true; // If null, validation passes
+      if (!file) return true; 
       return ACCEPTED_IMAGE_TYPES.includes(file.type);
     },
-    // Custom error message function for type
     (file) => ({ message: file ? `Accepted types: JPG, PNG, WEBP, PDF. Yours is ${file.type}` : 'Invalid file type.' })
   );
 
@@ -101,12 +97,7 @@ const registrationFormSchema = z.object({
   }
 });
 
-// This is the type for the data structure *after* Zod validation and transformation.
-// paymentScreenshot will be `File | null | undefined`.
 export type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
-
-// This is the type for the data structure that the form hook manages (input to Zod schema).
-// paymentScreenshot will be `FileList | null | undefined`.
 type RegistrationFormInputType = z.input<typeof registrationFormSchema>;
 
 
@@ -123,8 +114,8 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
   const form = useForm<RegistrationFormInputType>({ 
     resolver: zodResolver(registrationFormSchema),
     defaultValues: {
-      fullName: "", // Will be overridden by useEffect if currentUser exists
-      email: "",    // Will be overridden by useEffect if currentUser exists
+      fullName: "", 
+      email: "",    
       phone: "",
       address: "",
       registrationType: initialRegistrationType,
@@ -133,14 +124,13 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
       paymentScreenshot: null, 
       expectations: "",
     },
-    mode: "onChange", // Validate on change for better UX
+    mode: "onChange", 
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
-      // Only set if form field is empty, to avoid overwriting user input if they log in mid-form
       if (!form.getValues("email") && currentUser.email) {
         form.setValue("email", currentUser.email, { shouldValidate: true });
       }
@@ -148,32 +138,36 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
         form.setValue("fullName", currentUser.displayName, { shouldValidate: true });
       }
     }
-    // Always set registrationType based on the prop, mark as dirty to ensure it's part of submission
     form.setValue("registrationType", initialRegistrationType, { shouldDirty: true });
   }, [currentUser, form, initialRegistrationType]);
 
-  const onSubmit: SubmitHandler<RegistrationFormValues> = async (data) => { // data is RegistrationFormValues (transformed)
-    console.log("SpecificRegistrationForm: onSubmit triggered.");
+  const onSubmit: SubmitHandler<RegistrationFormValues> = async (data) => {
+    console.log("SpecificRegistrationForm: onSubmit handler CALLED.");
+    console.log("SpecificRegistrationForm: Form data received by onSubmit:", JSON.stringify(data, null, 2));
+
     if (!currentUser) {
-      console.log("SpecificRegistrationForm: User not authenticated, aborting submission.");
+      console.warn("SpecificRegistrationForm: User not authenticated, aborting submission.");
       toast({ title: "Authentication Required", description: "Please sign in to submit the form.", variant: "destructive" });
       openAuthDialog();
       return;
     }
-    console.log("SpecificRegistrationForm: User authenticated, proceeding with submission.");
+    
     setIsSubmitting(true);
+    console.log("SpecificRegistrationForm: isSubmitting set to true.");
     
     try {
-      console.log("SpecificRegistrationForm: Data to be submitted to addRegistration:", data);
-      // `data.paymentScreenshot` is already `File | null` due to Zod transform
+      console.log("SpecificRegistrationForm: Calling addRegistration from context...");
       await addRegistration(data); 
+      console.log("SpecificRegistrationForm: addRegistration call completed.");
       
       toast({
         title: "Registration Submitted!",
         description: "Your registration details have been received. We will verify and get back to you shortly.",
         variant: "default",
       });
-      form.reset({ // Reset with initial type and potential family members default
+      console.log("SpecificRegistrationForm: Success toast shown.");
+
+      form.reset({ 
         fullName: currentUser?.displayName || "",
         email: currentUser?.email || "",
         phone: "",
@@ -184,30 +178,32 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
         paymentScreenshot: null,
         expectations: "",
       });
+      console.log("SpecificRegistrationForm: Form reset.");
       const fileInput = document.getElementById('paymentScreenshotInput') as HTMLInputElement | null;
       if (fileInput) {
         fileInput.value = '';
       }
+      console.log("SpecificRegistrationForm: Navigating to homepage.");
       router.push('/');
 
     } catch (error) {
-      console.error("Submission Error in SpecificRegistrationForm onSubmit:", error);
+      console.error("SpecificRegistrationForm: Error in onSubmit after calling addRegistration:", error);
       toast({
         title: "Submission Failed",
-        description: `An unexpected error occurred. ${(error as Error).message || "Please try again."}`,
+        description: `An unexpected error occurred: ${(error as Error).message || "Please try again."}`,
         variant: "destructive",
       });
     } finally {
-      console.log("SpecificRegistrationForm: setIsSubmitting(false).");
+      console.log("SpecificRegistrationForm: setIsSubmitting(false) in finally block.");
       setIsSubmitting(false);
     }
   };
   
-  // For debugging validation errors
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
       if (form.formState.errors[name as keyof RegistrationFormInputType]) {
-        console.log(`Validation error on ${name}:`, form.formState.errors[name as keyof RegistrationFormInputType]?.message);
+        // This log helps see Zod validation errors in real-time in the console
+        // console.log(`Client-Side Validation error on field '${name}':`, form.formState.errors[name as keyof RegistrationFormInputType]?.message);
       }
     });
     return () => subscription.unsubscribe();
@@ -238,11 +234,18 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
     <GlassCard className="p-6 md:p-8 text-card-foreground">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.error("Form validation errors:", errors);
+          console.error("FORM SUBMISSION FAILED - Zod Validation Errors:", errors);
+          let errorMessages = "Please correct the following errors:\n";
+          for (const key in errors) {
+            if (errors[key as keyof RegistrationFormValues]) {
+               errorMessages += `- ${key}: ${errors[key as keyof RegistrationFormValues]?.message}\n`;
+            }
+          }
           toast({
             title: "Validation Error",
-            description: "Please check the form for errors and try again.",
-            variant: "destructive"
+            description: "Please check the form for errors: " + Object.keys(errors).join(', ') + ". See console for details.",
+            variant: "destructive",
+            duration: 7000,
           });
         })} className="space-y-6 font-body text-sm">
           <FormField
@@ -304,7 +307,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
                       {...field}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
                           const value = e.target.value;
-                          field.onChange(value); // Pass string value, Zod handles parsing/validation
+                          field.onChange(value); 
                       }}
                       min="1"
                     />
@@ -376,7 +379,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
           <FormField
             control={form.control}
             name="paymentScreenshot"
-            render={({ field: { onChange, value, ...rest } }) => ( // `value` here is FileList | null
+            render={({ field: { onChange, value, ...rest } }) => ( 
               <FormItem>
                 <FormLabel className="font-subtitle text-card-foreground">Upload Payment Screenshot (Optional but Recommended)</FormLabel>
                 <FormControl>
@@ -385,10 +388,10 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
                     type="file"
                     accept={ACCEPTED_IMAGE_TYPES.join(",")}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      onChange(e.target.files); // Pass FileList or null
+                      onChange(e.target.files); 
                     }}
                     className="file:text-foreground file:font-subtitle file:uppercase file:text-xs file:tracking-wider file:font-medium file:mr-3"
-                    {...rest} // `name` is part of rest from form.control
+                    {...rest} 
                   />
                 </FormControl>
                  <FormDescription className="text-muted-foreground">

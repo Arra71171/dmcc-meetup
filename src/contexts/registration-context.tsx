@@ -4,7 +4,6 @@
 import type React from 'react';
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode }
   from 'react';
-// Ensure RegistrationFormValues is imported correctly based on the new type export from specific-registration-form
 import type { RegistrationFormValues } from '@/components/forms/specific-registration-form'; 
 import { db } from '@/lib/firebase';
 import {
@@ -21,18 +20,16 @@ import {
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
-// This interface represents the data structure in Firestore and in the context's state.
-// `paymentScreenshot` itself is not stored; only its filename is.
 export interface RegistrationEntry extends Omit<RegistrationFormValues, 'paymentScreenshot' | 'agreeToTerms'> {
   id: string;
   submittedAt: Date; 
-  paymentScreenshotFilename?: string | null; // Filename of the uploaded screenshot
-  agreeToTerms: boolean; // Explicitly include agreeToTerms as it's part of the form
+  paymentScreenshotFilename?: string | null; 
+  agreeToTerms: boolean; 
 }
 
 interface RegistrationContextType {
   registrations: RegistrationEntry[];
-  addRegistration: (data: RegistrationFormValues) => Promise<void>; // Expects transformed data
+  addRegistration: (data: RegistrationFormValues) => Promise<void>; 
   updateRegistration: (id: string, data: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt'>>) => Promise<void>;
   deleteRegistration: (id: string) => Promise<void>;
   getRegistrationById: (id: string) => RegistrationEntry | undefined;
@@ -74,19 +71,19 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
           numberOfFamilyMembers: data.numberOfFamilyMembers,
           address: data.address,
           expectations: data.expectations,
-          paymentScreenshotFilename: data.paymentScreenshotFilename, // This comes from Firestore
-          agreeToTerms: data.agreeToTerms === true, // Ensure boolean
+          paymentScreenshotFilename: data.paymentScreenshotFilename, 
+          agreeToTerms: data.agreeToTerms === true, 
           submittedAt: submittedAtDate,
-        } as RegistrationEntry); // Cast to ensure all fields are present
+        } as RegistrationEntry); 
       });
       setRegistrations(fetchedRegistrations);
       setLoadingRegistrations(false);
-      console.log("Registrations fetched from Firestore:", JSON.stringify(fetchedRegistrations, null, 2));
+      // console.log("Registrations fetched from Firestore:", JSON.stringify(fetchedRegistrations, null, 2));
     }, (error) => {
-      console.error("Error fetching registrations from Firestore: ", error);
+      console.error("Error fetching registrations from Firestore in onSnapshot: ", error);
       toast({
         title: "Error Fetching Registrations",
-        description: "Could not load registration data from the database.",
+        description: `Could not load registration data. ${error.message}`,
         variant: "destructive",
       });
       setLoadingRegistrations(false);
@@ -100,8 +97,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
 
 
   const addRegistration = useCallback(async (data: RegistrationFormValues) => {
-    console.log("RegistrationContext: addRegistration called with data:", data);
-    // `data.paymentScreenshot` is `File | null` here due to Zod transform in the form.
+    console.log("RegistrationContext: addRegistration CALLED with data:", JSON.stringify(data, null, 2));
     
     const newEntryForFirestore = {
       fullName: data.fullName,
@@ -111,24 +107,24 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       numberOfFamilyMembers: data.registrationType === 'family' ? data.numberOfFamilyMembers : undefined,
       address: data.address,
       expectations: data.expectations,
-      paymentScreenshotFilename: data.paymentScreenshot ? data.paymentScreenshot.name : null, // Correctly access .name if File
+      paymentScreenshotFilename: data.paymentScreenshot ? data.paymentScreenshot.name : null,
       agreeToTerms: data.agreeToTerms,
       submittedAt: serverTimestamp(),
     };
-    console.log("RegistrationContext: Prepared data for Firestore:", newEntryForFirestore);
+    console.log("RegistrationContext: Data prepared for Firestore:", JSON.stringify(newEntryForFirestore, null, 2));
 
     try {
       const docRef = await addDoc(collection(db, "registrations"), newEntryForFirestore);
-      console.log("Document written to Firestore with ID: ", docRef.id);
-      // onSnapshot will update local state, so no manual push here.
+      console.log("RegistrationContext: Document written to Firestore with ID: ", docRef.id);
+      // Toast for success is now handled in the form component after this promise resolves.
     } catch (e) {
-      console.error("Error adding document to Firestore in addRegistration:", e);
+      console.error("RegistrationContext: Error calling addDoc to Firestore:", e);
       toast({
-        title: "Registration Failed",
-        description: `Could not save your registration. ${(e as Error).message || "Please try again."}`,
+        title: "Registration Firestore Error",
+        description: `Could not save your registration to database. ${(e as Error).message || "Please try again."}`,
         variant: "destructive",
       });
-      throw e; // Re-throw to be caught by the form's onSubmit
+      throw e; 
     }
   }, [toast]);
 
@@ -140,8 +136,6 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       if (processedDataToUpdate.registrationType !== 'family' && 'numberOfFamilyMembers' in processedDataToUpdate) {
         processedDataToUpdate.numberOfFamilyMembers = undefined;
       }
-      // Note: paymentScreenshotFilename would need to be handled separately if file updates were allowed via edit.
-      // For now, we assume the form only updates non-file fields from RegistrationEntry.
       
       await updateDoc(regDocRef, processedDataToUpdate);
       toast({
@@ -185,7 +179,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   }, [registrations]);
 
   useEffect(() => {
-    console.log("Current registrations in context (client-side, synced from Firestore):", JSON.stringify(registrations, null, 2));
+    // console.log("Current registrations in context (client-side, synced from Firestore):", JSON.stringify(registrations, null, 2));
   }, [registrations]);
 
 
