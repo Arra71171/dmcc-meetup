@@ -4,7 +4,8 @@
 import type React from 'react';
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode }
   from 'react';
-import type { RegistrationFormValues } from '@/components/forms/specific-registration-form';
+// Ensure RegistrationFormValues is imported correctly based on the new type export from specific-registration-form
+import type { RegistrationFormValues } from '@/components/forms/specific-registration-form'; 
 import { db } from '@/lib/firebase';
 import {
   collection,
@@ -15,22 +16,24 @@ import {
   orderBy,
   doc,
   deleteDoc,
-  Timestamp, // Import Timestamp
+  Timestamp,
   updateDoc
 } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
-export interface RegistrationEntry extends Omit<RegistrationFormValues, 'paymentScreenshot'> {
+// This interface represents the data structure in Firestore and in the context's state.
+// `paymentScreenshot` itself is not stored; only its filename is.
+export interface RegistrationEntry extends Omit<RegistrationFormValues, 'paymentScreenshot' | 'agreeToTerms'> {
   id: string;
-  submittedAt: Date; // Ensure this is always Date in the context's state
-  paymentScreenshotFilename?: string | null;
-  paymentScreenshot?: File | FileList | null | undefined; // Keep for type consistency if needed by form, but not stored directly
+  submittedAt: Date; 
+  paymentScreenshotFilename?: string | null; // Filename of the uploaded screenshot
+  agreeToTerms: boolean; // Explicitly include agreeToTerms as it's part of the form
 }
 
 interface RegistrationContextType {
   registrations: RegistrationEntry[];
-  addRegistration: (data: RegistrationFormValues) => Promise<void>;
-  updateRegistration: (id: string, data: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt' | 'paymentScreenshot'>>) => Promise<void>;
+  addRegistration: (data: RegistrationFormValues) => Promise<void>; // Expects transformed data
+  updateRegistration: (id: string, data: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt'>>) => Promise<void>;
   deleteRegistration: (id: string) => Promise<void>;
   getRegistrationById: (id: string) => RegistrationEntry | undefined;
   loadingRegistrations: boolean;
@@ -45,41 +48,36 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setLoadingRegistrations(true);
+    console.log("RegistrationProvider: Setting up Firestore listener...");
     const q = query(collection(db, "registrations"), orderBy("submittedAt", "desc"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const fetchedRegistrations: RegistrationEntry[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        // Ensure submittedAt is a Date object
         let submittedAtDate: Date;
         if (data.submittedAt instanceof Timestamp) {
           submittedAtDate = data.submittedAt.toDate();
         } else if (data.submittedAt && typeof data.submittedAt.seconds === 'number') {
-          // Handle cases where it might be a plain object from serverTimestamp() before conversion
           submittedAtDate = new Timestamp(data.submittedAt.seconds, data.submittedAt.nanoseconds).toDate();
         } else if (data.submittedAt instanceof Date) {
           submittedAtDate = data.submittedAt;
-        }
-        else {
-          submittedAtDate = new Date(); // Fallback, though ideally submittedAt should always exist
+        } else {
+          submittedAtDate = new Date(); 
         }
 
         fetchedRegistrations.push({
-          ...data,
           id: doc.id,
-          // Cast data to appropriate types from Firestore
           fullName: data.fullName || '',
           email: data.email || '',
           phone: data.phone || '',
           registrationType: data.registrationType || 'others',
-          // numberOfFamilyMembers will be undefined if not 'family'
           numberOfFamilyMembers: data.numberOfFamilyMembers,
           address: data.address,
           expectations: data.expectations,
-          paymentScreenshotFilename: data.paymentScreenshotFilename,
-          agreeToTerms: data.agreeToTerms || false,
+          paymentScreenshotFilename: data.paymentScreenshotFilename, // This comes from Firestore
+          agreeToTerms: data.agreeToTerms === true, // Ensure boolean
           submittedAt: submittedAtDate,
-        } as RegistrationEntry);
+        } as RegistrationEntry); // Cast to ensure all fields are present
       });
       setRegistrations(fetchedRegistrations);
       setLoadingRegistrations(false);
@@ -94,13 +92,18 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       setLoadingRegistrations(false);
     });
 
-    return () => unsubscribe(); // Cleanup listener on component unmount
+    return () => {
+      console.log("RegistrationProvider: Unsubscribing Firestore listener.");
+      unsubscribe();
+    }
   }, [toast]);
 
 
   const addRegistration = useCallback(async (data: RegistrationFormValues) => {
-    // Prepare data for Firestore
-    const newEntryForFirestore: Omit<RegistrationEntry, 'id' | 'submittedAt' | 'paymentScreenshot' | 'agreeToTerms'> & { submittedAt: any, paymentScreenshotFilename?: string | null, agreeToTerms: boolean } = {
+    console.log("RegistrationContext: addRegistration called with data:", data);
+    // `data.paymentScreenshot` is `File | null` here due to Zod transform in the form.
+    
+    const newEntryForFirestore = {
       fullName: data.fullName,
       email: data.email,
       phone: data.phone,
@@ -108,61 +111,49 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       numberOfFamilyMembers: data.registrationType === 'family' ? data.numberOfFamilyMembers : undefined,
       address: data.address,
       expectations: data.expectations,
-      paymentScreenshotFilename: data.paymentScreenshot instanceof FileList && data.paymentScreenshot.length > 0
-        ? data.paymentScreenshot[0].name
-        : data.paymentScreenshot instanceof File
-        ? (data.paymentScreenshot as File).name
-        : null,
+      paymentScreenshotFilename: data.paymentScreenshot ? data.paymentScreenshot.name : null, // Correctly access .name if File
       agreeToTerms: data.agreeToTerms,
       submittedAt: serverTimestamp(),
     };
+    console.log("RegistrationContext: Prepared data for Firestore:", newEntryForFirestore);
 
     try {
       const docRef = await addDoc(collection(db, "registrations"), newEntryForFirestore);
       console.log("Document written to Firestore with ID: ", docRef.id);
-      // No need to manually update local state, onSnapshot will handle it.
+      // onSnapshot will update local state, so no manual push here.
     } catch (e) {
-      console.error("Error adding document to Firestore: ", e);
+      console.error("Error adding document to Firestore in addRegistration:", e);
       toast({
         title: "Registration Failed",
-        description: "Could not save your registration to the database. Please try again.",
+        description: `Could not save your registration. ${(e as Error).message || "Please try again."}`,
         variant: "destructive",
       });
-      throw e;
+      throw e; // Re-throw to be caught by the form's onSubmit
     }
   }, [toast]);
 
-  const updateRegistration = useCallback(async (id: string, dataToUpdate: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt' | 'paymentScreenshot'>>) => {
+  const updateRegistration = useCallback(async (id: string, dataToUpdate: Partial<Omit<RegistrationEntry, 'id' | 'submittedAt'>>) => {
+    console.log(`RegistrationContext: updateRegistration called for ID ${id} with data:`, dataToUpdate);
     const regDocRef = doc(db, "registrations", id);
     try {
-      // Ensure numberOfFamilyMembers is handled correctly:
-      // If it's part of dataToUpdate and is an empty string or undefined,
-      // and the type is not 'family', we might want to remove it.
-      // Or, if type is 'family' and it's empty, it might be an issue.
-      // For now, we pass dataToUpdate as is. The form validation should handle required fields.
-      // If registrationType is changed away from 'family', numberOfFamilyMembers might need to be explicitly removed or set to null.
-      // The current form logic in AdminDashboardPage handles setting numberOfFamilyMembers to undefined if not 'family'.
-
       const processedDataToUpdate = { ...dataToUpdate };
       if (processedDataToUpdate.registrationType !== 'family' && 'numberOfFamilyMembers' in processedDataToUpdate) {
-        // If type is not family, ensure numberOfFamilyMembers is not sent or is explicitly null/undefined
-        // Firestore update with `undefined` will remove the field if it exists.
         processedDataToUpdate.numberOfFamilyMembers = undefined;
       }
-
-
+      // Note: paymentScreenshotFilename would need to be handled separately if file updates were allowed via edit.
+      // For now, we assume the form only updates non-file fields from RegistrationEntry.
+      
       await updateDoc(regDocRef, processedDataToUpdate);
       toast({
         title: "Registration Updated",
         description: "The registration details have been successfully updated.",
         variant: "default",
       });
-      // onSnapshot will update local state
     } catch (error) {
       console.error("Error updating registration in Firestore: ", error);
       toast({
         title: "Update Failed",
-        description: "Could not update the registration in the database.",
+        description: `Could not update the registration. ${(error as Error).message || "Please try again."}`,
         variant: "destructive",
       });
       throw error;
@@ -170,6 +161,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   }, [toast]);
 
   const deleteRegistration = useCallback(async (id: string) => {
+    console.log(`RegistrationContext: deleteRegistration called for ID ${id}`);
     const regDocRef = doc(db, "registrations", id);
     try {
       await deleteDoc(regDocRef);
@@ -178,12 +170,11 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         description: "The registration has been successfully deleted.",
         variant: "default",
       });
-      // onSnapshot listener will automatically update the local state.
     } catch (error) {
       console.error("Error deleting registration from Firestore: ", error);
       toast({
         title: "Deletion Failed",
-        description: "Could not delete the registration from the database.",
+        description: `Could not delete the registration. ${(error as Error).message || "Please try again."}`,
         variant: "destructive",
       });
     }
@@ -194,7 +185,6 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   }, [registrations]);
 
   useEffect(() => {
-    // Using JSON.stringify with a replacer to handle potential circular structures or large objects if any
     console.log("Current registrations in context (client-side, synced from Firestore):", JSON.stringify(registrations, null, 2));
   }, [registrations]);
 
