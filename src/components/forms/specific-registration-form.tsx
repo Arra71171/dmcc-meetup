@@ -98,7 +98,7 @@ const registrationFormSchema = z.object({
 });
 
 export type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
-type RegistrationFormInputType = z.input<typeof registrationFormSchema>;
+
 
 
 interface SpecificRegistrationFormProps {
@@ -224,7 +224,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
   if (!currentUser) {
     return (
       <GlassCard className="p-6 md:p-8 text-card-foreground text-center">
-        <p className="mb-4">Please sign in to complete your registration.</p>
+        <p className="mb-4">Please sign in to complete your registration. We&apos;ve received your registration!</p>
         <GradientBorderButton onClick={() => openAuthDialog()}>
           Sign In / Create Account
         </GradientBorderButton>

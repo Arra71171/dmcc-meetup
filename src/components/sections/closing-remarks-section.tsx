@@ -54,7 +54,7 @@ export function ClosingRemarksSection() {
           <GlassCard className="md:col-span-2 p-8 text-center">
             <MessageCircle className="w-10 h-10 text-foreground/80 mx-auto mb-4" />
             <p className="text-lg md:text-xl font-body italic text-foreground max-w-4xl mx-auto leading-relaxed">
-              "This convention is more than just an event; it's a celebration of our identity, a platform for dialogue, and a step towards a more unified and prosperous Meetei community. We look forward to welcoming you!"
+              &quot;This convention is more than just an event; it&apos;s a celebration of our identity, a platform for dialogue, and a step towards a more unified and prosperous Meetei community. We look forward to welcoming you!&quot;
             </p>
           </GlassCard>
         </div>

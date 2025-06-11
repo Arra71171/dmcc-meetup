@@ -547,6 +547,9 @@ export default function AdminDashboardPage() {
             <RegistrationEditForm
               initialData={editingRegistration}
               onSubmit={async (data) => {
+                if (editingRegistration) {
+                  await updateRegistration(editingRegistration.id, data);
+                }
                 setIsEditModalOpen(false);
                 setEditingRegistration(null);
               }}

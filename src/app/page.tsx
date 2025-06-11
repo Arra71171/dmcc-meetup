@@ -11,10 +11,7 @@ import { EventDetailsSection } from "@/components/sections/event-details-section
 import { ClosingRemarksSection } from "@/components/sections/closing-remarks-section";
 
 import { InvitationSection } from "@/components/sections/invitation-section";
-import { AnimatedCard } from "@/components/ui/animated-card";
-import { AnimatedText } from "@/components/ui/animated-text";
 import { pageLoadAnimation } from "@/lib/animations";
-import gsap from "gsap";
 import dynamic from 'next/dynamic';
 
 const ChatInterface = dynamic(() => import('@/components/chat/ChatInterface'), { ssr: false });

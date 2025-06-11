@@ -103,15 +103,18 @@ Now, begin the conversation.`
       let errorPayload = { message: `API error: ${errorText}` };
       try {
         errorPayload = JSON.parse(errorText).error;
-      } catch (e) {}
+      } catch {
+        // Parsing failed, errorText is not JSON. Keep the original text.
+      }
       return NextResponse.json({ error: errorPayload }, { status: response.status });
     }
 
     const data = await response.json();
     return NextResponse.json({ content: data.choices[0].message.content });
 
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected server error occurred.';
     console.error('Error in chat API:', error);
-    return NextResponse.json({ error: { message: error.message || 'An unexpected error occurred' } }, { status: 500 });
+    return NextResponse.json({ error: { message: errorMessage } }, { status: 500 });
   }
 }

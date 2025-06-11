@@ -5,7 +5,7 @@ import { useRef, useLayoutEffect } from 'react';
 import { AnimatedCard } from "@/components/ui/animated-card";
 import { AnimatedText } from "@/components/ui/animated-text";
 import Image from 'next/image';
-import { Users, Music, Drama, Megaphone, Utensils, Smile, MessageSquare, Heart, FileText, Star, Handshake } from "lucide-react";
+import { Users, Music, Drama, Megaphone, Utensils, MessageSquare, Heart, Handshake } from "lucide-react";
 import { cn } from "@/lib/utils";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -89,21 +89,7 @@ const highlights: Highlight[] = [
 
 export function EventHighlightsSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<HTMLDivElement[]>([]);
   const iconRefs = useRef<HTMLDivElement[]>([]);
-  
-  // Add elements to refs
-  const addToCardsRef = (el: HTMLDivElement) => {
-    if (el && !cardsRef.current.includes(el)) {
-      cardsRef.current.push(el);
-    }
-  };
-  
-  const addToIconRefs = (el: HTMLDivElement) => {
-    if (el && !iconRefs.current.includes(el)) {
-      iconRefs.current.push(el);
-    }
-  };
   
   gsap.registerPlugin(ScrollTrigger);
 

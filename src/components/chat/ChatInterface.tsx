@@ -49,8 +49,9 @@ const ChatInterface = () => {
       }
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.content }]);
-    } catch (error: any) {
-      setMessages(prev => [...prev, { role: 'error', content: `Error: ${error.message}` }]);
+        } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+      setMessages(prev => [...prev, { role: 'error', content: `Error: ${errorMessage}` }]);
     } finally {
       setIsLoading(false);
     }
