@@ -120,7 +120,7 @@ export function RegistrationFormSection() {
 
   const onSubmit: SubmitHandler<RegistrationFormValues> = async (data) => {
     // Convert FileList to File for the addRegistration function
-    let processedData = {
+    const processedData = {
       ...data,
       paymentScreenshot: data.paymentScreenshot && data.paymentScreenshot.length > 0 ? data.paymentScreenshot[0] : null
     };
@@ -356,7 +356,7 @@ export function RegistrationFormSection() {
                   <FormField
                     control={form.control}
                     name="paymentScreenshot"
-                    render={({ field: { onChange, value, ...rest } }) => ( 
+                    render={({ field: { onChange, ...rest } }) => ( 
                       <FormItem>
                         <FormLabel className="font-subtitle text-card-foreground">Upload Payment Screenshot (Optional but Recommended)</FormLabel>
                         <FormControl>

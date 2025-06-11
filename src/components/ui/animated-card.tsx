@@ -201,3 +201,5 @@ export const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(
     );
   }
 );
+
+AnimatedCard.displayName = "AnimatedCard";

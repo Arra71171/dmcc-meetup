@@ -202,7 +202,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
   };
   
   useEffect(() => {
-    const subscription = form.watch((value, { name, type }) => {
+    const subscription = form.watch((value, { name }) => {
       if (form.formState.errors[name as keyof RegistrationFormValues]) {
         // This log helps see Zod validation errors in real-time in the console
         // console.log(`Client-Side Validation error on field '${name}':`, form.formState.errors[name as keyof RegistrationFormInputType]?.message);
@@ -369,7 +369,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
           <FormField
             control={form.control}
             name="paymentScreenshot"
-            render={({ field: { onChange, value, ...rest } }) => ( 
+            render={({ field: { onChange, value: _value, ...rest } }) => ( 
               <FormItem>
                 <FormLabel className="font-subtitle text-card-foreground">Upload Payment Screenshot (Optional but Recommended)</FormLabel>
                 <FormControl>

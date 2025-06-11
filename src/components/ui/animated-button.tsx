@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import gsap from "gsap";
@@ -19,6 +20,7 @@ interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEleme
   asChild?: boolean;
   disableHoverScale?: boolean;
   neonBorder?: boolean;
+  loading?: boolean;
 }
 
 export const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
@@ -37,6 +39,7 @@ export const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButton
       asChild,
       disableHoverScale = false,
       neonBorder = false,
+      loading = false,
       ...props
     },
     ref
@@ -176,9 +179,10 @@ export const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButton
               },
               className
             )}
+            disabled={loading || props.disabled}
             {...props}
           >
-            <span className="relative z-10">{children}</span>
+            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <span className="relative z-10">{children}</span>}
           </button>
           <Effects />
         </div>
@@ -197,9 +201,10 @@ export const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButton
           size={size}
           className={cn("relative", className)}
           asChild={asChild}
+          disabled={loading || props.disabled}
           {...props}
         >
-          {children}
+          {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : children}
         </Button>
         <Effects />
       </div>
@@ -222,3 +227,5 @@ export const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButton
     */
   }
 );
+
+AnimatedButton.displayName = "AnimatedButton";

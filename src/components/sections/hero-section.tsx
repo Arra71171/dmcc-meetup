@@ -6,7 +6,6 @@ import gsap from 'gsap';
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { AnimatedText } from "@/components/ui/animated-text";
 import Link from "next/link";
-import { cn } from '@/lib/utils';
 import Image from "next/image";
 import { ChevronDown } from 'lucide-react';
 

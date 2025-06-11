@@ -25,6 +25,7 @@ const actionTypes = {
   REMOVE_TOAST: "REMOVE_TOAST",
 } as const
 
+// eslint-disable-next-line prefer-const
 let count = 0
 
 function genId() {
