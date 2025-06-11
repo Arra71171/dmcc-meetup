@@ -1,14 +1,20 @@
-
 import type {Config} from 'tailwindcss';
 
 export default {
-  darkMode: ['class'],
+
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: {
+        '2xl': '1400px',
+      },
+    },
     extend: {
       fontFamily: {
         headline: ['Montserrat', 'sans-serif'],    // Montserrat for Headings (Bold)
@@ -67,6 +73,13 @@ export default {
           'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
+        },
+        // Midnight Bloom specific colors
+        'midnight-bloom': {
+          'coral': '#FFC4C4',
+          'lavender': '#E0C3FC',
+          'midnight': '#1B2245',
+          'cosmic': '#5D2A8E',
         },
       },
       borderRadius: {

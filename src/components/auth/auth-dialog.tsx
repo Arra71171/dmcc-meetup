@@ -44,7 +44,6 @@ type EmailSignUpValues = z.infer<typeof emailSignUpSchema>;
 
 // Schema for admin username/password login
 const adminLoginSchema = z.object({
-  username: z.string().min(1, { message: "Username is required." }),
   password: z.string().min(1, { message: "Password is required." }),
 });
 type AdminLoginValues = z.infer<typeof adminLoginSchema>;
@@ -52,12 +51,13 @@ type AdminLoginValues = z.infer<typeof adminLoginSchema>;
 
 export function AuthDialog() {
   const {
+    currentUser,
     isAuthDialogOpen,
     closeAuthDialog,
     signInWithGoogle,
     signInWithEmail,
     signUpWithEmail,
-    loginAsAdminOverride,
+    signInWithAdminOverride,
     authDialogMode,
   } = useAuth();
   const [activeTab, setActiveTab] = useState<'signin' | 'signup'>('signin');
@@ -76,6 +76,15 @@ export function AuthDialog() {
   const { register: registerAdmin, handleSubmit: handleSubmitAdmin, formState: { errors: errorsAdmin }, reset: resetAdminForm } = useForm<AdminLoginValues>({
     resolver: zodResolver(adminLoginSchema),
   });
+
+  const getDialogDescription = () => {
+    if (authDialogMode === 'adminOnly') {
+      return 'Enter your admin credentials.';
+    }
+    return activeTab === 'signin'
+      ? 'Access your account or sign in with Google.'
+      : 'Create an account to continue.';
+  };
 
   const handleGoogleSignIn = async () => {
     setIsLoadingGoogle(true);
@@ -100,7 +109,7 @@ export function AuthDialog() {
 
   const onAdminLoginSubmit = async (data: AdminLoginValues) => {
     setIsLoadingAdmin(true);
-    await loginAsAdminOverride(data.username, data.password);
+    await signInWithAdminOverride(data.password);
     setIsLoadingAdmin(false);
     if (!isAuthDialogOpen) resetAdminForm();
   };
@@ -116,6 +125,13 @@ export function AuthDialog() {
     }
   }, [isAuthDialogOpen, activeTab, authDialogMode, resetSignInForm, resetSignUpForm, resetAdminForm]);
 
+  React.useEffect(() => {
+    // When user is authenticated, close the dialog
+    if (currentUser && isAuthDialogOpen) {
+      closeAuthDialog();
+    }
+  }, [currentUser, isAuthDialogOpen, closeAuthDialog]);
+
 
   if (!isAuthDialogOpen) return null;
 
@@ -127,17 +143,12 @@ export function AuthDialog() {
             {authDialogMode === 'adminOnly' ? 'Admin Login' : (activeTab === 'signin' ? 'Sign In' : 'Create Account')}
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground font-body">
-            {authDialogMode === 'adminOnly' ? 'Enter your admin credentials.' : (activeTab === 'signin' ? 'Access your account or sign in with Google.' : 'Create an account to continue.')}
+            {getDialogDescription()}
           </DialogDescription>
         </DialogHeader>
 
         {authDialogMode === 'adminOnly' ? (
           <form onSubmit={handleSubmitAdmin(onAdminLoginSubmit)} className="space-y-4 pt-4">
-            <div>
-              <Label htmlFor="username-admin" className="font-subtitle text-card-foreground">Username</Label>
-              <Input id="username-admin" type="text" placeholder="admin" {...registerAdmin("username")} className="bg-background/50 focus-visible:ring-ring" />
-              {errorsAdmin.username && <p className="text-sm text-destructive mt-1">{errorsAdmin.username.message}</p>}
-            </div>
             <div>
               <Label htmlFor="password-admin" className="font-subtitle text-card-foreground">Password</Label>
               <Input id="password-admin" type="password" placeholder="••••••••" {...registerAdmin("password")} className="bg-background/50 focus-visible:ring-ring" />

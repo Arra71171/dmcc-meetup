@@ -1,4 +1,7 @@
 
+'use client';
+
+import { useEffect, useState } from 'react';
 import { HeroSection } from "@/components/sections/hero-section";
 import { ImpactMetricsSection } from "@/components/sections/impact-metrics-section"; // Renamed in thought process, but keeping filename for now
 import { EventHighlightsSection } from "@/components/sections/event-highlights-section";
@@ -6,44 +9,60 @@ import { RegistrationTiersSection } from "@/components/sections/registration-tie
 // import { RegistrationFormSection } from "@/components/sections/registration-form-section"; // Removed
 import { EventDetailsSection } from "@/components/sections/event-details-section";
 import { ClosingRemarksSection } from "@/components/sections/closing-remarks-section";
-import { Separator } from "@/components/ui/separator";
-import { InvitationSection } from "@/components/sections/invitation-section";
-import { GlassCard } from "@/components/ui/glass-card";
 
+import { InvitationSection } from "@/components/sections/invitation-section";
+import { AnimatedCard } from "@/components/ui/animated-card";
+import { AnimatedText } from "@/components/ui/animated-text";
+import { pageLoadAnimation } from "@/lib/animations";
+import gsap from "gsap";
+import dynamic from 'next/dynamic';
+
+const ChatInterface = dynamic(() => import('@/components/chat/ChatInterface'), { ssr: false });
 
 export default function Home() {
-  return (
-    <main className="w-full"> 
-      <HeroSection />
-      
-      <div className="flex flex-col items-center w-full space-y-16 md:space-y-24 lg:space-y-32 py-16 md:py-24 lg:py-32 px-4">
-        <InvitationSection />
-        <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
-        {/* This is now the "About DMCC" section due to content change */}
-        <ImpactMetricsSection /> 
-        <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
-        <EventHighlightsSection />
-        <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
-        <EventDetailsSection />
-        <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
-        <RegistrationTiersSection />
-        {/* Separator and RegistrationFormSection removed */}
-        <Separator className="my-8 md:my-12 max-w-sm md:max-w-md mx-auto bg-border/50 h-0.5" />
-        <ClosingRemarksSection />
-      </div>
+  const [isMounted, setIsMounted] = useState(false);
 
-      <footer className="w-full py-12 mt-16 border-t border-border">
-        <div className="container mx-auto px-4">
-          <GlassCard className="max-w-3xl mx-auto p-6 md:p-8 text-center">
-            <p className="font-body text-sm text-card-foreground/80">
-              © 2025 Delhi Meetei Co-ordinating Committee. All rights reserved.
-            </p>
-            <p className="font-body text-xs text-muted-foreground mt-3">
-              Crafted with care by Meetei Club South X
-            </p>
-          </GlassCard>
-        </div>
-      </footer>
-    </main>
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Initialize page load animations
+  useEffect(() => {
+    // Use the pageLoadAnimation function from animations.ts
+    const animation = pageLoadAnimation();
+    
+    return () => {
+      // Cleanup animations if needed
+      animation.kill();
+    };
+  }, []);
+  
+  return (
+    <>
+      <main className="w-full animate-on-load"> 
+        <HeroSection />
+        
+        <InvitationSection />
+        <ImpactMetricsSection />
+        <EventHighlightsSection />
+        <EventDetailsSection />
+        <RegistrationTiersSection />
+        <ClosingRemarksSection />
+
+        <footer className="w-full py-12 mt-16 border-t border-border">
+          <div className="container mx-auto px-4">
+            <div className="text-center">
+              <p className="font-body text-sm text-neutral-400">
+                © 2025 Delhi Meetei Co-ordinating Committee. All rights reserved.
+              </p>
+              <p className="font-body text-xs text-neutral-400 mt-3">
+                For the people, by the people — with ❤️ from Meetei Club South X.
+              </p>
+            </div>
+          </div>
+        </footer>
+      </main>
+      {isMounted && <ChatInterface />}
+    </>
   );
 }

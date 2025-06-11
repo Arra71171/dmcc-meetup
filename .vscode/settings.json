@@ -1,4 +1,17 @@
 {
     "IDX.aI.enableInlineCompletion": true,
-    "IDX.aI.enableCodebaseIndexing": true
+    "IDX.aI.enableCodebaseIndexing": true,
+    "css.lint.unknownAtRules": "ignore",
+    "css.validate": false,
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    "tailwindCSS.includeLanguages": {
+        "typescript": "javascript",
+        "typescriptreact": "javascript"
+    },
+    "tailwindCSS.experimental.classRegex": [
+        ["cn\\(([^)]*)\\)", "['\"`]([^'\"`]*)['\"`]"]
+    ],
+    "tailwindCSS.validate": true
 }

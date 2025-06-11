@@ -1,198 +1,152 @@
-
 'use client';
 
-import Link from 'next/link';
+import type React from 'react';
 import { useState } from 'react';
+import Link from 'next/link';
 import { Logo } from './logo';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, LogOut, ChevronDown, LayoutDashboard, ShieldAlert, UserPlus } from 'lucide-react'; // Added UserPlus
-import { useAuth } from '@/contexts/auth-context';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Menu, LogOut, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/auth-context';
 
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/#highlights', label: 'Highlights' },
-  { href: '/#register', label: 'Register' }, 
+  { href: '/#details', label: 'Details' },
 ];
 
-export function Header() {
-  const { currentUser, loadingAuthState, logOut, isAdminOverrideLoggedIn, openAuthDialog } = useAuth(); 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const getInitials = (name?: string | null, email?: string | null) => {
-    if (name) {
-      const parts = name.split(' ');
-      if (parts.length > 1) {
-        return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+const NavLink = ({ href, children, onClick }: { href: string, children: React.ReactNode, onClick?: () => void }) => {
+  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (href.startsWith('/#')) {
+      e.preventDefault();
+      const targetId = href.substring(2);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth' });
       }
-      return name.substring(0, 2).toUpperCase();
     }
-    if (email) {
-      return email.substring(0, 2).toUpperCase();
+    if (onClick) {
+      onClick();
     }
-    return 'U';
   };
 
-  const effectiveUserDisplay = isAdminOverrideLoggedIn
-    ? { displayName: "Admin", email: "Administrator", photoURL: null, isOverride: true }
-    : currentUser;
+  return (
+    <Link
+      href={href}
+      onClick={handleScroll}
+      className="transition-colors text-foreground/80 hover:text-primary focus:outline-none focus:text-primary px-4 py-2 rounded-md hover:bg-primary/10 focus:bg-primary/10 font-subtitle text-base"
+    >
+      {children}
+    </Link>
+  );
+};
 
+export const Header = () => {
+  const { currentUser, isAdmin, logOut, openAuthDialog } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className={cn(
-        "sticky top-0 z-50 w-full",
-        "bg-background/80 dark:bg-background/70 backdrop-blur-md",
-        "border-b border-border/60"
-      )}>
-      <div className="container flex h-20 max-w-screen-2xl items-center justify-between px-4 md:px-6">
-        <Logo />
-        <nav className="hidden md:flex items-center space-x-1 font-subtitle text-base">
+      "sticky top-0 z-50 w-full",
+      "bg-background/80 backdrop-blur-md",
+      "border-b border-border/60"
+    )}>
+      {/* Use Flexbox for mobile and Grid for desktop for robust alignment */}
+      <div className="container flex justify-between md:grid md:grid-cols-3 h-20 max-w-screen-2xl items-center px-4 md:px-6">
+        
+        {/* Left Section: Aligned left in both mobile (flex) and desktop (grid) */}
+        <div className="md:justify-self-start">
+          <Logo />
+        </div>
+
+        {/* Center Section (Desktop): Centered in the grid, hidden on mobile */}
+        <nav className="hidden md:flex md:justify-self-center space-x-2">
           {navItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              onClick={() => {
-                if (item.href.startsWith('/#')) {
-                  setMobileMenuOpen(false);
-                  // Smooth scroll for internal links if desired
-                  const targetId = item.href.substring(2);
-                  const targetElement = document.getElementById(targetId);
-                  if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                    return; // Prevent default link behavior if handled by scroll
-                  }
-                }
-              }}
-              className="transition-colors text-foreground/80 hover:text-primary dark:hover:text-primary focus:outline-none focus:text-primary px-4 py-2 rounded-md hover:bg-primary/10 focus:bg-primary/10"
-            >
-              {item.label}
-            </Link>
+            <NavLink key={item.label} href={item.href}>{item.label}</NavLink>
           ))}
         </nav>
-        <div className="hidden md:flex items-center space-x-4">
-          <Link href="/admin" passHref>
-            <Button variant="ghost" className="font-subtitle text-base text-foreground/80 hover:text-primary dark:hover:text-primary focus:outline-none focus:text-primary hover:bg-primary/10 focus:bg-primary/10 px-4 py-2 rounded-md">
-              <LayoutDashboard className="mr-2 h-5 w-5" />
-              Admin
-            </Button>
-          </Link>
 
-          {loadingAuthState ? (
-            <div className="h-10 w-24 bg-muted/50 animate-pulse rounded-md"></div>
-          ) : effectiveUserDisplay ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-12 rounded-full px-3 text-foreground hover:text-foreground font-subtitle">
-                   <Avatar className={cn("h-9 w-9 mr-2 border border-border", effectiveUserDisplay.isOverride && "border-destructive")}>
-                    <AvatarImage src={effectiveUserDisplay.photoURL || undefined} alt={effectiveUserDisplay.displayName || effectiveUserDisplay.email || 'User'} />
-                    <AvatarFallback className={cn(effectiveUserDisplay.isOverride && "bg-destructive/20 text-destructive")}>
-                      {effectiveUserDisplay.isOverride ? <ShieldAlert className="h-5 w-5" /> : getInitials(effectiveUserDisplay.displayName, effectiveUserDisplay.email)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="truncate max-w-[100px]">{effectiveUserDisplay.displayName || effectiveUserDisplay.email}</span>
-                  <ChevronDown className="ml-1.5 h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal font-body">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{effectiveUserDisplay.displayName || "User"}</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {effectiveUserDisplay.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logOut} className="font-subtitle">
+        {/* Right Section: Aligned right in both mobile (flex) and desktop (grid) */}
+        <div className="md:justify-self-end flex items-center">
+          {/* Desktop Auth Buttons */}
+          <div className="hidden md:flex items-center space-x-2">
+            {currentUser ? (
+              <>
+                {isAdmin && (
+                  <Button asChild variant="secondary" size="sm">
+                    <Link href="/admin">Dashboard</Link>
+                  </Button>
+                )}
+                <Button onClick={logOut} variant="outline" size="sm">
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-             <Button onClick={() => openAuthDialog()} variant="outline" className="font-subtitle">
-                <UserPlus className="mr-2 h-5 w-5" />
-                Sign In / Register
-            </Button>
-          )}
-        </div>
-        <div className="md:hidden">
-          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-7 w-7" />
-                <span className="sr-only">Toggle Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background p-4">
-              <nav className="flex flex-col space-y-2 mt-8 font-subtitle">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      if (item.href.startsWith('/#')) {
-                        const targetId = item.href.substring(2);
-                        const targetElement = document.getElementById(targetId);
-                        if (targetElement) {
-                            // Timeout to allow sheet to close before scrolling
-                            setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth' }), 150);
-                        }
-                      }
-                    }}
-                    className="text-lg transition-colors text-foreground hover:text-primary focus:outline-none focus:text-primary px-3 py-2 rounded-md block"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-                 <Link
-                    href="/admin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-lg transition-colors text-foreground hover:text-primary focus:outline-none focus:text-primary px-3 py-2 rounded-md block"
-                  >
-                    <LayoutDashboard className="inline-block mr-2 h-5 w-5" /> Admin
-                  </Link>
-                <div className="pt-6 border-t border-border/40 mt-4">
-                  {loadingAuthState && <div className="h-10 bg-muted/50 animate-pulse rounded-md w-full my-2"></div>}
-                  {!loadingAuthState && effectiveUserDisplay && (
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={() => openAuthDialog('adminOnly')} variant="secondary" size="sm">
+                  SysOp Login
+                </Button>
+                <Button onClick={() => openAuthDialog()} variant="default" size="sm">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Register / Sign In
+                </Button>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Menu */}
+          <div className="md:hidden">
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-7 w-7" />
+                  <span className="sr-only">Toggle Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] bg-background p-4 flex flex-col">
+                <SheetHeader className="text-left">
+                  <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+                  <SheetDescription className="sr-only">
+                    Main navigation and authentication options.
+                  </SheetDescription>
+                </SheetHeader>
+                <nav className="flex flex-col space-y-2 mt-8 font-subtitle flex-grow">
+                  {navItems.map((item) => (
+                    <NavLink key={item.label} href={item.href} onClick={() => setMobileMenuOpen(false)}>{item.label}</NavLink>
+                  ))}
+                </nav>
+                
+                {/* Mobile Auth Buttons */}
+                <div className="mt-auto flex flex-col space-y-2 pt-4 border-t border-border">
+                  {currentUser ? (
                     <>
-                      <div className="flex items-center space-x-3 px-2 py-2 mb-2 font-body">
-                        <Avatar className={cn(effectiveUserDisplay.isOverride && "border-destructive")}>
-                          <AvatarImage src={effectiveUserDisplay.photoURL || undefined} />
-                           <AvatarFallback className={cn(effectiveUserDisplay.isOverride && "bg-destructive/20 text-destructive")}>
-                             {effectiveUserDisplay.isOverride ? <ShieldAlert className="h-5 w-5" /> : getInitials(effectiveUserDisplay.displayName, effectiveUserDisplay.email)}
-                           </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium">{effectiveUserDisplay.displayName || "User"}</p>
-                          <p className="text-xs text-muted-foreground">{effectiveUserDisplay.email}</p>
-                        </div>
-                      </div>
-                      <Button variant="outline" onClick={() => { logOut(); setMobileMenuOpen(false); }} className="w-full font-subtitle">
-                        <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                      {isAdmin && (
+                        <Button asChild variant="ghost" className="justify-start font-subtitle text-base">
+                          <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+                        </Button>
+                      )}
+                      <Button onClick={() => { logOut(); setMobileMenuOpen(false); }} variant="ghost" className="justify-start font-subtitle text-base">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button onClick={() => { openAuthDialog('adminOnly'); setMobileMenuOpen(false); }} variant="ghost" className="justify-start font-subtitle text-base">
+                        SysOp Login
+                      </Button>
+                      <Button onClick={() => { openAuthDialog(); setMobileMenuOpen(false); }} variant="ghost" className="justify-start font-subtitle text-base">
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Register / Sign In
                       </Button>
                     </>
                   )}
-                  {!loadingAuthState && !effectiveUserDisplay && (
-                     <Button onClick={() => { openAuthDialog(); setMobileMenuOpen(false);}} variant="outline" className="w-full font-subtitle">
-                        <UserPlus className="mr-2 h-5 w-5" /> Sign In / Register
-                    </Button>
-                  )}
                 </div>
-              </nav>
-            </SheetContent>
-          </Sheet>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
     </header>

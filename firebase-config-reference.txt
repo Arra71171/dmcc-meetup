@@ -1,0 +1,9 @@
+# Firebase Configuration Reference
+# Copy these corrected values to your .env.local file
+
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAW81ZfJkTg8qDvg6-BapnFbFLMQH7gkOU
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=dmcc-community.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=dmcc-community
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=dmcc-community.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=587053997027
+NEXT_PUBLIC_FIREBASE_APP_ID=1:587053997027:web:e1a7aaac9bf62bb7525ed6

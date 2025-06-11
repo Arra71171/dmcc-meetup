@@ -1,14 +1,16 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { format } from 'date-fns';
-import { GlassCard } from "@/components/ui/glass-card";
 import { ShieldCheck, LogIn, Loader2, UserCog, Users, Edit, Trash2, Search, Download, LogOut as LogOutIcon, MessageSquareText, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
 import { useRegistrations, type RegistrationEntry } from '@/contexts/registration-context';
 import { Button } from "@/components/ui/button";
+import { LuminanceButton } from "@/components/ui/luminance-button";
+import { LuminanceCard } from "@/components/ui/luminance-card";
+import { MagneticElement } from "@/components/ui/magnetic-element";
+import { RevealOnScroll } from "@/lib/smooth-scroll";
 import {
   Table,
   TableBody,
@@ -57,7 +59,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 const ITEMS_PER_PAGE = 10;
 
 export default function AdminDashboardPage() {
-  const { currentUser, loadingAuthState, openAuthDialog, isAdminOverrideLoggedIn, logOut } = useAuth();
+  const { currentUser, loadingAuthState, openAuthDialog, isAdmin, logOut } = useAuth();
   const { registrations, deleteRegistration, updateRegistration, loadingRegistrations } = useRegistrations();
 
   useEffect(() => {
@@ -86,20 +88,30 @@ export default function AdminDashboardPage() {
   if (loadingAuthState || loadingRegistrations) {
     return (
       <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
-        <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
+        <LuminanceCard 
+          className="w-full max-w-md p-6 md:p-8 text-center rounded-xl border border-border backdrop-blur-sm dark:bg-background/70 bg-background/70"
+          glowColor="rgba(99, 102, 241, 0.4)"
+          glowIntensity={0.6}
+          interactive={true}
+        >
           <Loader2 className="w-12 h-12 text-accent animate-spin mb-4" />
           <p className="font-body text-lg text-card-foreground/90">
             {loadingAuthState ? "Checking authentication status..." : "Loading registrations..."}
           </p>
-        </GlassCard>
+        </LuminanceCard>
       </main>
     );
   }
 
-  if (!isAdminOverrideLoggedIn && !currentUser) {
+  if (!isAdmin) {
      return (
       <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
-        <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
+        <LuminanceCard 
+          className="w-full max-w-md p-6 md:p-8 text-center rounded-xl border border-border backdrop-blur-sm dark:bg-background/70 bg-background/70"
+          glowColor="rgba(220, 38, 38, 0.5)"
+          glowIntensity={0.7}
+          interactive={true}
+        >
           <UserCog className="w-16 h-16 text-destructive mb-4" />
           <h1 className={cn(
             "text-2xl md:text-3xl font-headline font-semibold text-gradient-theme tracking-wide mb-4",
@@ -110,19 +122,26 @@ export default function AdminDashboardPage() {
           <p className="font-body text-lg text-card-foreground/90 leading-relaxed mb-6">
             You must be logged in as an administrator to view this page.
           </p>
-          <Button onClick={() => openAuthDialog('adminOnly')} variant="outline" className="font-subtitle">
-            <LogIn className="mr-2 h-5 w-5" />
-            Log In as Admin
-          </Button>
-        </GlassCard>
+          <MagneticElement>
+            <LuminanceButton onClick={() => openAuthDialog('adminOnly')} variant="outline" className="font-subtitle" glowColor="rgba(99, 102, 241, 0.5)">
+              <LogIn className="mr-2 h-5 w-5" />
+              Log In as Admin
+            </LuminanceButton>
+          </MagneticElement>
+        </LuminanceCard>
       </main>
     );
   }
   
-  if (currentUser && !isAdminOverrideLoggedIn) {
+  if (currentUser && !isAdmin) {
      return (
       <main className="container mx-auto px-4 py-8 md:py-12 lg:py-16 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
-        <GlassCard className="w-full max-w-md p-6 md:p-8 text-center">
+        <LuminanceCard 
+          className="w-full max-w-md p-6 md:p-8 text-center rounded-xl border border-border backdrop-blur-sm dark:bg-background/70 bg-background/70"
+          glowColor="rgba(220, 38, 38, 0.6)"
+          glowIntensity={0.7}
+          interactive={true}
+        >
            <ShieldCheck className="w-16 h-16 text-destructive mb-4" />
           <h1 className={cn(
             "text-2xl md:text-3xl font-headline font-semibold text-gradient-theme tracking-wide mb-4",
@@ -130,10 +149,16 @@ export default function AdminDashboardPage() {
             )}>
             Not Authorized
           </h1>
-          <p className="font-body text-lg text-card-foreground/90 leading-relaxed">
+          <p className="font-body text-lg text-card-foreground/90 leading-relaxed mb-6">
             You do not have permission to access this page.
           </p>
-        </GlassCard>
+          <MagneticElement>
+            <LuminanceButton onClick={logOut} variant="outline" className="font-subtitle" glowColor="rgba(99, 102, 241, 0.5)">
+              <LogOutIcon className="mr-2 h-5 w-5" />
+              Log Out
+            </LuminanceButton>
+          </MagneticElement>
+        </LuminanceCard>
       </main>
     );
   }
@@ -259,7 +284,7 @@ export default function AdminDashboardPage() {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <main className="flex h-full bg-background">
+      <main className="flex h-full w-full min-h-screen bg-background">
         <Sidebar collapsible="icon" className="border-r">
           <SidebarHeader>
             <div className="flex items-center gap-2 p-2 justify-between">
@@ -285,7 +310,7 @@ export default function AdminDashboardPage() {
           </SidebarFooter>
         </Sidebar>
 
-        <SidebarInset className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto flex flex-col">
+        <SidebarInset className="flex-1 w-full p-4 md:p-6 lg:p-8 overflow-y-auto flex flex-col">
           <div className="flex items-center justify-between mb-6">
              <div className="flex items-center">
                 <MainSidebarTrigger className="md:hidden mr-2" /> 
@@ -298,12 +323,19 @@ export default function AdminDashboardPage() {
              </div>
           </div>
 
-          <GlassCard className="p-4 md:p-6 mb-6">
-            <p className="font-body text-sm text-card-foreground/80">
-              Registrations are now fetched from and managed in the Firestore database.
-              Changes should be reflected in real-time. If you encounter issues, please check your Firestore security rules.
-            </p>
-          </GlassCard>
+          <RevealOnScroll>
+            <LuminanceCard 
+              className="p-4 md:p-6 mb-6 rounded-xl border border-border backdrop-blur-sm dark:bg-background/70 bg-background/70"
+              glowColor="rgba(99, 102, 241, 0.3)"
+              glowIntensity={0.4}
+              interactive={true}
+            >
+              <p className="font-body text-sm text-card-foreground/80">
+                Registrations are now fetched from and managed in the Firestore database.
+                Changes should be reflected in real-time. If you encounter issues, please check your Firestore security rules.
+              </p>
+            </LuminanceCard>
+          </RevealOnScroll>
 
           <div className="mb-6 flex flex-col sm:flex-row gap-4">
             <div className="relative flex-grow">
@@ -316,14 +348,29 @@ export default function AdminDashboardPage() {
                 className="pl-10 w-full"
               />
             </div>
-            <Button variant="outline" onClick={handleExportCSV} className="text-sm">
-              <Download className="mr-2 h-5 w-5" />
-              Export CSV
-            </Button>
+            <MagneticElement>
+              <LuminanceButton 
+                variant="outline" 
+                onClick={handleExportCSV} 
+                className="text-sm"
+                glowColor="rgba(99, 102, 241, 0.5)"
+                pulseEffect={true}
+              >
+                <Download className="mr-2 h-5 w-5" />
+                Export CSV
+              </LuminanceButton>
+            </MagneticElement>
           </div>
           <TooltipProvider>
-            <GlassCard className="overflow-hidden flex-grow">
-              <Table>
+            <RevealOnScroll>
+              <LuminanceCard 
+                className="overflow-hidden w-full flex-grow rounded-xl border border-border dark:bg-background/70 bg-background/70" 
+                glowColor="rgba(99, 102, 241, 0.3)"
+                glowIntensity={0.5}
+                interactive={true}
+              >
+              <div className="w-full overflow-x-auto">
+              <Table className="w-full">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="font-subtitle">Full Name</TableHead>
@@ -383,14 +430,35 @@ export default function AdminDashboardPage() {
                         </TableCell>
                         <TableCell className="font-body hidden lg:table-cell">{format(new Date(reg.submittedAt), 'PPp')}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" className="mr-2" onClick={() => { setEditingRegistration(reg); setIsEditModalOpen(true); }}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
+                          <span className="inline-flex items-center mr-1">
+                            <MagneticElement strength={25}>
+                              <LuminanceButton 
+                                variant="ghost" 
+                                size="icon" 
+                                className="rounded-full" 
+                                onClick={() => { setEditingRegistration(reg); setIsEditModalOpen(true); }}
+                                glowColor="rgba(99, 102, 241, 0.4)"
+                                glowIntensity={0.5}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </LuminanceButton>
+                            </MagneticElement>
+                          </span>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                               <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <span className="inline-flex items-center">
+                                <MagneticElement strength={25}>
+                                  <LuminanceButton 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="rounded-full text-destructive hover:text-destructive" 
+                                    glowColor="rgba(220, 38, 38, 0.4)"
+                                    glowIntensity={0.5}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </LuminanceButton>
+                                </MagneticElement>
+                              </span>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
@@ -419,29 +487,50 @@ export default function AdminDashboardPage() {
                   )}
                 </TableBody>
               </Table>
-            </GlassCard>
+              </div>
+              </LuminanceCard>
+            </RevealOnScroll>
           </TooltipProvider>
 
           {totalPages > 1 && (
-            <div className="mt-6 flex justify-center items-center space-x-2 font-body">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <span>Page {currentPage} of {totalPages}</span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-            </div>
+            <RevealOnScroll>
+              <div className="mt-6 flex justify-center items-center space-x-4 font-body">
+                <MagneticElement>
+                  <LuminanceButton
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    glowColor="rgba(99, 102, 241, 0.4)"
+                    pulseEffect={false}
+                  >
+                    Previous
+                  </LuminanceButton>
+                </MagneticElement>
+                
+                <LuminanceCard
+                  className="px-4 py-2 rounded-md dark:bg-background/70 bg-background/70 text-center"
+                  glowColor="rgba(99, 102, 241, 0.3)"
+                  glowIntensity={0.3}
+                  interactive={false}
+                >
+                  <span>Page {currentPage} of {totalPages}</span>
+                </LuminanceCard>
+                
+                <MagneticElement>
+                  <LuminanceButton
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    glowColor="rgba(99, 102, 241, 0.4)"
+                    pulseEffect={false}
+                  >
+                    Next
+                  </LuminanceButton>
+                </MagneticElement>
+              </div>
+            </RevealOnScroll>
           )}
         </SidebarInset>
       </main>

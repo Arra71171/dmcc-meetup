@@ -1,0 +1,34 @@
+// Firestore rules for the DMCC Community project
+// Updated rules for DMCC Meetup application
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if user is an admin via custom claims
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Helper function to check if a user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if a user is the owner of a document
+    function isOwner(resource) {
+      return isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Rules for the 'registrations' collection
+    match /registrations/{registrationId} {
+      // Admins can read all registrations.
+      allow read: if isAdmin();
+      
+      // Any authenticated user can create a registration, but they must set the userId to their own UID.
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      
+      // Only the user who created the registration or an admin can update or delete it.
+      allow update, delete: if isOwner(resource) || isAdmin();
+    }
+  }
+}

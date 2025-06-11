@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Account Switcher</title>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  
+  <!-- FirebaseUI -->
+  <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #4285F4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #3367D6;
+    }
+    #status {
+      margin: 20px 0;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    #user-info {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Firebase Account Switcher</h1>
+  
+  <div class="container">
+    <h2>Current Authentication State</h2>
+    <div id="user-info">Loading user info...</div>
+    
+    <div>
+      <button id="sign-out">Sign Out</button>
+      <button id="switch-account">Switch Account</button>
+    </div>
+    
+    <div id="status" style="display: none;"></div>
+  </div>
+  
+  <div class="container">
+    <h2>Sign In</h2>
+    <div id="firebaseui-auth-container"></div>
+  </div>
+
+  <script>
+    // Initialize Firebase with your project config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAW81ZfJkTg8qDvg6-BapnFbFLMQH7gkOU",
+      authDomain: "dmcc-community.firebaseapp.com",
+      projectId: "dmcc-community",
+      storageBucket: "dmcc-community.firebasestorage.app",
+      messagingSenderId: "587053997027", // Fixed the messagesing sender ID (removed 'y' prefix)
+      appId: "1:587053997027:web:e1a7aaac9bf62bb7525ed6" // Fixed the app ID format
+    };
+    
+    // Function to parse URL parameters
+    function getUrlParams() {
+      const params = {};
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      
+      for(const [key, value] of urlParams.entries()) {
+        params[key] = value;
+      }
+      
+      return params;
+    }
+    
+    // Get config from URL parameters if provided
+    const urlParams = getUrlParams();
+    
+    if (urlParams.apiKey) firebaseConfig.apiKey = urlParams.apiKey;
+    if (urlParams.authDomain) firebaseConfig.authDomain = urlParams.authDomain;
+    if (urlParams.projectId) firebaseConfig.projectId = urlParams.projectId;
+    if (urlParams.storageBucket) firebaseConfig.storageBucket = urlParams.storageBucket;
+    if (urlParams.messagingSenderId) firebaseConfig.messagingSenderId = urlParams.messagingSenderId;
+    if (urlParams.appId) firebaseConfig.appId = urlParams.appId;
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    
+    // Initialize FirebaseUI
+    const ui = new firebaseui.auth.AuthUI(firebase.auth());
+    
+    // FirebaseUI config
+    const uiConfig = {
+      signInFlow: 'popup',
+      signInOptions: [
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        firebase.auth.EmailAuthProvider.PROVIDER_ID
+      ],
+      callbacks: {
+        signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+          showStatus('Signed in successfully!', 'success');
+          updateUserInfo();
+          return false; // Don't redirect
+        },
+        uiShown: function() {
+          document.getElementById('loader').style.display = 'none';
+        }
+      }
+    };
+    
+    // Start FirebaseUI
+    ui.start('#firebaseui-auth-container', uiConfig);
+    
+    // DOM elements
+    const signOutBtn = document.getElementById('sign-out');
+    const switchAccountBtn = document.getElementById('switch-account');
+    const statusDiv = document.getElementById('status');
+    const userInfoDiv = document.getElementById('user-info');
+    
+    // Sign out function
+    signOutBtn.addEventListener('click', () => {
+      firebase.auth().signOut().then(() => {
+        showStatus('Signed out successfully!', 'success');
+        updateUserInfo();
+      }).catch((error) => {
+        showStatus('Error signing out: ' + error.message, 'error');
+      });
+    });
+    
+    // Switch account function
+    switchAccountBtn.addEventListener('click', () => {
+      // Using Google provider to force account chooser
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+      
+      firebase.auth().signInWithPopup(provider).then((result) => {
+        showStatus('Account switched successfully!', 'success');
+        updateUserInfo();
+      }).catch((error) => {
+        showStatus('Error switching account: ' + error.message, 'error');
+      });
+    });
+    
+    // Show status message
+    function showStatus(message, type) {
+      statusDiv.textContent = message;
+      statusDiv.className = type;
+      statusDiv.style.display = 'block';
+      
+      // Hide after 5 seconds
+      setTimeout(() => {
+        statusDiv.style.display = 'none';
+      }, 5000);
+    }
+    
+    // Update user info
+    function updateUserInfo() {
+      const user = firebase.auth().currentUser;
+      
+      if (user) {
+        userInfoDiv.innerHTML = `
+          <p><strong>Signed in as:</strong> ${user.displayName || 'N/A'}</p>
+          <p><strong>Email:</strong> ${user.email || 'N/A'}</p>
+          <p><strong>User ID:</strong> ${user.uid}</p>
+          <p><strong>Email verified:</strong> ${user.emailVerified ? 'Yes' : 'No'}</p>
+        `;
+      } else {
+        userInfoDiv.textContent = 'No user is currently signed in.';
+      }
+    }
+    
+    // Initial user info update
+    firebase.auth().onAuthStateChanged(updateUserInfo);
+  </script>
+</body>
+</html>

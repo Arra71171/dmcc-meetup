@@ -1,138 +1,364 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* Custom properties for animations if needed */
+  @property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  :root {
+    /* Midnight Bloom Theme - Dark Mode */
+    /* Base gradient: Midnight Blue → Cosmic Purple */
+    --background: 225 39% 14%; /* #1B2245 - Midnight blue background */
+    --foreground: 0 0% 98%; /* #FAFAFA - White text */
+
+    /* Card colors with glass effect support */
+    --card: 225 39% 18%; /* Slightly lighter midnight blue for cards */
+    --card-foreground: 0 0% 98%; /* White text */
+
+    --popover: 225 39% 18%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Primary: Cosmic Purple (#5D2A8E) */
+    --primary: 270 55% 36%; /* Cosmic purple primary */
+    --primary-foreground: 0 0% 98%; /* White text on purple */
+
+    /* Secondary: Lighter cosmic purple */
+    --secondary: 270 45% 45%; /* Lighter cosmic purple */
+    --secondary-foreground: 0 0% 98%; /* White text */
+
+    /* Muted colors */
+    --muted: 225 25% 25%; /* Dark blue-grey */
+    --muted-foreground: 0 0% 70%; /* Light grey */
+
+    /* Accent: Bright purple-pink */
+    --accent: 285 70% 60%; /* Bright purple-pink accent */
+    --accent-foreground: 0 0% 98%; /* White text on accent */
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Borders and inputs */
+    --border: 225 25% 25%; /* Dark blue-grey borders */
+    --input: 225 25% 20%; /* Darker input backgrounds */
+    --ring: 285 70% 60%; /* Bright accent for focus rings */
+
+    /* Chart colors following Midnight Bloom dark palette */
+    --chart-1: 270 55% 36%; /* Cosmic purple */
+    --chart-2: 285 70% 60%; /* Bright purple-pink */
+    --chart-3: 300 65% 55%; /* Purple-magenta */
+    --chart-4: 315 60% 50%; /* Magenta */
+    --chart-5: 330 55% 45%; /* Purple-red */
+
+    /* Sidebar colors */
+    --sidebar-background: 225 39% 12%; /* Darker midnight blue */
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 270 55% 36%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 285 70% 60%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 225 25% 20%;
+    --sidebar-ring: 285 70% 60%;
+
+    /* Typography and spacing */
+    --font-sans: 'Inter', sans-serif;
+    --font-serif: 'Lora', serif;
+    --font-mono: 'Source Code Pro', monospace;
+    --font-headline: 'Montserrat', sans-serif;
+
+    --radius: 0.75rem;
+
+    /* Glass effect variables */
+    --glass-opacity: 0.35;
+    --glass-blur: 25px;
+
+    /* Shadow system for dark mode */
+    --shadow-color: 0 0% 0%;
+    --shadow-opacity: 0.25;
+    --shadow-blur: 20px;
+    --shadow-spread: -5px;
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 10px;
+
+    /* Typography tracking */
+    --tracking-normal: 0em;
+    --tracking-tight: -0.025em;
+    --tracking-wide: 0.025em;
+  }
+
+  body {
+    letter-spacing: var(--tracking-normal);
+  }
+}
+
+@layer components {
+  /* Midnight Bloom glass effect for buttons */
+  .midnight-bloom-glow {
+    /* Soft glow effect using Midnight Bloom colors */
+    box-shadow: 0 0 15px hsl(var(--primary) / var(--glass-opacity)),
+                0 0 30px hsl(var(--secondary) / calc(var(--glass-opacity) * 0.6));
+  }
+
+  /* Enhanced glow on hover */
+  .group:hover .midnight-bloom-glow {
+    box-shadow: 0 0 20px hsl(var(--primary) / calc(var(--glass-opacity) * 1.5)),
+                0 0 40px hsl(var(--secondary) / var(--glass-opacity)),
+                0 0 60px hsl(var(--accent) / calc(var(--glass-opacity) * 0.8));
+  }
+
+  /* Neon Glass Card Effect */
+  .glass-card {
+    background: hsl(var(--card) / 0.4);
+    backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border) / 0.2);
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.6),
+                0 0 30px hsl(var(--secondary) / 0.4);
+    transition: box-shadow 0.3s ease-in-out, background 0.3s ease-in-out;
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 0 25px hsl(var(--primary) / 0.8),
+                0 0 50px hsl(var(--secondary) / 0.5);
+  }
+
+  .dark .glass-card {
+    background: hsl(var(--card) / 0.2);
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.4),
+                0 0 30px hsl(var(--secondary) / 0.2);
+  }
+
+  .dark .glass-card:hover {
+    box-shadow: 0 0 25px hsl(var(--primary) / 0.6),
+                0 0 50px hsl(var(--secondary) / 0.3);
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+
+  /* Glassmorphism Card Style */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.3s ease, border 0.3s ease;
+  }
+
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}
+
+@keyframes rotateNeonBorder {
+  0% {
+    --angle: 0deg;
+  }
+  50% {
+    filter: brightness(1.3) saturate(1.5);
+  }
+  100% {
+    --angle: 360deg;
+    filter: brightness(1) saturate(1);
+  }
+}
+
 body {
-  /* Default font is set by .font-body in layout.tsx */
+  font-family: 'Inter', sans-serif;
+  @apply transition-colors duration-300;
 }
 
-.bg-pastel-gradient-overlay {
-  background: linear-gradient(135deg, hsl(240, 60%, 90%) 0%, hsl(195, 60%, 90%) 100%); /* Lavender to Pale Blue */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cabinet Grotesk', sans-serif;
+  @apply font-bold tracking-tight;
 }
 
-.dark .bg-pastel-gradient-overlay {
-  background: linear-gradient(135deg, hsl(240, 20%, 20%) 0%, hsl(195, 20%, 20%) 100%); /* Darker Lavender to Darker Pale Blue */
+/* Dynamic Depth Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
-/* Specific gradient for button backgrounds - always the light pastel one */
-.bg-accent-gradient-button {
-  background: linear-gradient(to right, hsl(195, 100%, 81%), hsl(256, 100%, 89%), hsl(23, 100%, 88%)); /* Soft Teal -> Lilac -> Peach */
+@keyframes pulse-subtle {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.bg-midnight-bloom-gradient {
+  /* Light mode: Soft Coral → Lavender Mist */
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+}
+
+.bg-midnight-bloom-secondary {
+  /* Light mode: Coral to pink-purple blend */
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+}
+
+.dark .bg-midnight-bloom-gradient {
+  /* Dark mode: Midnight Blue → Cosmic Purple */
+  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--primary)) 100%);
+}
+
+.dark .bg-midnight-bloom-secondary {
+  /* Dark mode: Cosmic purple to bright accent */
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+}
+
+/* Legacy gradient classes for backward compatibility */
+.bg-primary-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+}
+
+.bg-secondary-gradient {
+  background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--accent)) 100%);
+}
+
+/* Midnight Bloom Text Gradients */
+.text-gradient-midnight-bloom {
+  @apply bg-clip-text text-transparent;
+  /* Light mode: Soft Coral → Lavender Mist */
+  background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
+}
+
+.dark .text-gradient-midnight-bloom {
+  /* Dark mode: Cosmic Purple → Bright Accent */
+  background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)));
+}
+
+.text-gradient-primary {
+  @apply bg-clip-text text-transparent;
+  background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
+}
+
+.text-gradient-secondary {
+  @apply bg-clip-text text-transparent;
+  background-image: linear-gradient(to right, hsl(var(--secondary)), hsl(var(--accent)));
 }
 
 .text-gradient-theme {
   @apply bg-clip-text text-transparent;
-  /* Apply rich multi-stop gradient directly for light mode */
-  background-image: linear-gradient(to right, hsl(180, 60%, 50%), hsl(220, 80%, 55%), hsl(270, 80%, 55%), hsl(320, 80%, 60%), hsl(25, 90%, 55%));
+  /* Light mode: Midnight Bloom inspired multi-stop */
+  background-image: linear-gradient(to right,
+    hsl(var(--primary)),
+    hsl(var(--secondary)),
+    hsl(var(--accent))
+  );
 }
 
 .dark .text-gradient-theme {
-  /* Apply light pastel gradient directly for dark mode */
-  background-image: linear-gradient(to right, hsl(195, 100%, 81%), hsl(256, 100%, 89%), hsl(23, 100%, 88%));
+  /* Dark mode: Enhanced cosmic gradient */
+  background-image: linear-gradient(to right,
+    hsl(var(--primary)),
+    hsl(var(--accent)),
+    hsl(var(--secondary))
+  );
 }
 
 
-@layer base {
-  :root {
-    /* Light Mode - New Theme */
-    --background: 240 20% 98.5%; /* #F9F9FB Light off-white */
-    --foreground: 0 0% 20%; /* #333333 Dark Grey */
-
-    --card: 0 0% 100%; /* Base for cards, GlassCard will override with transparency */
-    --card-foreground: 0 0% 13%; /* Darker Grey for text on cards */
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 13%;
-
-    --primary: 256 100% 75%; /* Lilac - representative color from accent gradient for UI elements */
-    --primary-foreground: 0 0% 98%; /* White/Very Light Grey for text on primary buttons */
-
-    --secondary: 240 10% 95%; /* Light grey */
-    --secondary-foreground: 0 0% 20%; /* Dark grey */
-
-    --muted: 240 10% 90%; /* Lighter grey */
-    --muted-foreground: 0 0% 40%; /* Medium Grey */
-
-    --accent: 195 100% 81%; /* Soft Teal - start of accent gradient */
-    --accent-foreground: 0 0% 13%; /* Dark Grey text on accent */
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 10% 85%; /* Very light grey for borders */
-    --input: 240 10% 92%; /* Light grey for input backgrounds */
-    --ring: 195 100% 81%; /* Soft Teal for focus rings */
-
-    --chart-1: 195 70% 70%;
-    --chart-2: 256 70% 80%;
-    --chart-3: 23 70% 80%;
-    --chart-4: 220 70% 75%;
-    --chart-5: 300 70% 80%;
-    --radius: 0.75rem; /* 12px, can be adjusted for 16-24px range on cards via specific classes */
-
-    --sidebar-background: 240 15% 96%; /* Adjusted: was 240 10% 97% -> #f4f4f7. More distinct from main bg */
-    --sidebar-foreground: 0 0% 20%;
-    --sidebar-primary: 256 100% 75%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 195 100% 81%;
-    --sidebar-accent-foreground: 0 0% 13%;
-    --sidebar-border: 240 10% 85%;
-    --sidebar-ring: 195 100% 81%;
-  }
-
-  .dark {
-    /* Dark Mode - Adjusted for new theme structure */
-    --background: 240 10% 10%; /* Very Dark Blue/Grey */
-    --foreground: 0 0% 95%; /* Light Grey/White */
-
-    --card: 240 10% 15%; /* Base for dark cards */
-    --card-foreground: 0 0% 90%; 
-
-    --popover: 240 10% 12%;
-    --popover-foreground: 0 0% 90%;
-
-    --primary: 256 80% 70%; /* Brighter Lilac for dark mode */
-    --primary-foreground: 0 0% 10%; /* Dark text for contrast on bright primary */
-
-    --secondary: 240 10% 20%; 
-    --secondary-foreground: 0 0% 90%;
-
-    --muted: 240 10% 25%;
-    --muted-foreground: 0 0% 70%;
-
-    --accent: 195 80% 70%; /* Brighter Teal */
-    --accent-foreground: 0 0% 95%;
-
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 95%;
-
-    --border: 240 10% 30%;
-    --input: 240 10% 22%;
-    --ring: 195 80% 70%;
-
-    --chart-1: 195 60% 60%;
-    --chart-2: 256 60% 70%;
-    --chart-3: 23 60% 70%;
-    --chart-4: 220 60% 65%;
-    --chart-5: 300 60% 70%;
-
-    --sidebar-background: 240 10% 12%; /* Slightly lighter than main dark bg */
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 256 80% 70%;
-    --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 195 80% 70%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 240 10% 30%;
-    --sidebar-ring: 195 80% 70%;
-  }
-}
 
 @layer utilities {
+  /* Text Effects */
   .text-glass-shadow {
     text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
   }
   .dark .text-glass-shadow {
     text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Animation Utilities */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .animate-float-fast {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .animate-pulse-subtle {
+    animation: pulse-subtle 3s ease-in-out infinite;
+  }
+
+  .hover-scale {
+    transition: transform 0.3s ease;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px hsl(var(--shadow-color) / var(--shadow-opacity));
+  }
+
+  .dark .hover-lift:hover {
+    box-shadow: 0 10px 25px hsl(var(--shadow-color) / calc(var(--shadow-opacity) * 1.2));
+  }
+
+  /* Midnight Bloom border and glow effects */
+  .border-gradient {
+    border: double 1px transparent;
+    background-image: linear-gradient(hsl(var(--card)), hsl(var(--card))),
+                      linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  .midnight-bloom-glow-hover:hover {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.4),
+                0 0 40px hsl(var(--secondary) / 0.3),
+                0 0 60px hsl(var(--accent) / 0.2);
+  }
+
+  .glow-on-hover:hover {
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.5);
   }
 }
 

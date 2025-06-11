@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler, type FieldErrors } from "react-hook-form";
 import * as z from "zod";
 import { GradientBorderButton } from "@/components/ui/gradient-border-button";
 import {
@@ -111,7 +111,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
   const { addRegistration } = useRegistrations();
   const router = useRouter();
   
-  const form = useForm<RegistrationFormInputType>({ 
+  const form = useForm<RegistrationFormValues>({ 
     resolver: zodResolver(registrationFormSchema),
     defaultValues: {
       fullName: "", 
@@ -203,7 +203,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
   
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
-      if (form.formState.errors[name as keyof RegistrationFormInputType]) {
+      if (form.formState.errors[name as keyof RegistrationFormValues]) {
         // This log helps see Zod validation errors in real-time in the console
         // console.log(`Client-Side Validation error on field '${name}':`, form.formState.errors[name as keyof RegistrationFormInputType]?.message);
       }
@@ -233,18 +233,10 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
   }
 
   return (
-    <GlassCard className="p-6 md:p-8 text-card-foreground">
+    <GlassCard className="p-6 md:p-8 text-card-foreground border border-slate-700/50 shadow-2xl shadow-black/30">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+        <form onSubmit={form.handleSubmit(onSubmit, (errors: FieldErrors<RegistrationFormValues>) => {
           console.error("FORM SUBMISSION FAILED - Zod Validation Errors:", errors);
-          let errorMessages = "Please correct the following errors:\n";
-          for (const key in errors) {
-            if (errors[key as keyof RegistrationFormValues]) {
-               const fieldName = key as keyof RegistrationFormValues;
-               const message = errors[fieldName]?.message;
-               errorMessages += `- ${fieldName}: ${message}\n`;
-            }
-          }
           toast({
             title: "Validation Error",
             description: "Please check the form for errors. " + Object.keys(errors).map(key => `${key}: ${errors[key as keyof RegistrationFormValues]?.message}`).join("; "),
@@ -252,78 +244,76 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
             duration: 7000,
           });
         })} className="space-y-6 font-body text-sm">
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="font-subtitle text-card-foreground">Full Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your full name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="font-subtitle text-card-foreground">Email Address</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="your.email@example.com" {...field} readOnly={!!currentUser?.email && field.value === currentUser.email} />
-                </FormControl>
-                <FormDescription className="text-muted-foreground">
-                  {currentUser?.email && field.value === currentUser.email ? "Email pre-filled from your account." : ""}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="font-subtitle text-card-foreground">Phone Number</FormLabel>
-                <FormControl>
-                  <Input type="tel" placeholder="+91 XXXXXXXXXX" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {initialRegistrationType === "family" && (
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
-              name="numberOfFamilyMembers"
+              name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-subtitle text-card-foreground">Number of Family Members</FormLabel>
+                  <FormLabel className="font-subtitle text-card-foreground">Full Name</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="e.g., 2"
-                      {...field}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                          const value = e.target.value;
-                          field.onChange(value); 
-                      }}
-                      min="1"
-                    />
+                    <Input placeholder="Enter your full name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-subtitle text-card-foreground">Email Address</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="your.email@example.com" {...field} readOnly={!!currentUser?.email && field.value === currentUser.email} />
                   </FormControl>
                   <FormDescription className="text-muted-foreground">
-                    Total members attending under this Family Pass (including yourself if applicable).
+                    {currentUser?.email && field.value === currentUser.email ? "Email pre-filled from your account." : ""}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          )}
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-subtitle text-card-foreground">Phone Number</FormLabel>
+                  <FormControl>
+                    <Input type="tel" placeholder="+91 XXXXXXXXXX" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {initialRegistrationType === "family" && (
+              <FormField
+                control={form.control}
+                name="numberOfFamilyMembers"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-subtitle text-card-foreground">Number of Family Members</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="e.g., 2"
+                        {...field}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => field.onChange(e.target.value)}
+                        min="1"
+                      />
+                    </FormControl>
+                    <FormDescription className="text-muted-foreground">
+                      Total members attending under this Family Pass (including yourself if applicable).
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+          </div>
 
           <FormField
             control={form.control}
@@ -355,26 +345,22 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
 
           <FormItem>
             <FormLabel className="font-subtitle text-card-foreground">Payment Details (UPI)</FormLabel>
-            <div className="p-4 rounded-md border border-border bg-background/30 dark:bg-background/50 space-y-3">
-              <p className="font-body text-card-foreground/90">
-                Please make your payment to the following UPI ID:
-              </p>
-              <p className="font-mono text-lg font-semibold text-accent p-2 bg-muted/50 rounded-md inline-block">
-                radheoinam@oksbi
+            <div className="p-4 rounded-md border border-border bg-background/30 dark:bg-background/50">
+              <p className="font-body text-card-foreground/80 text-sm md:text-base">
+                Please complete your payment using the details below:
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 mt-2">
                 <div className="w-32 h-32 relative border border-border rounded-md overflow-hidden bg-muted/30 flex items-center justify-center">
                   <Image
-                    src="https://placehold.co/128x128.png"
-                    alt="UPI QR Code Placeholder"
+                    src="/images/qr-code.jpg"
+                    alt="DMCC UPI QR Code"
                     width={128}
                     height={128}
-                    data-ai-hint="QR code payment"
                   />
                 </div>
-                <p className="text-xs text-muted-foreground font-body flex-1">
-                  You can scan the QR code with your UPI app or use the UPI ID directly.
-                  We will manually verify all payments and confirm your registration within 24-48 hours.
+                <p className="text-xs sm:text-sm text-muted-foreground font-body flex-1">
+                  Scan the QR code with your UPI app (GPay, PhonePe, etc.).
+                  Your registration will be confirmed via email after payment verification (24-48 hours).
                 </p>
               </div>
             </div>
@@ -405,12 +391,12 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
               </FormItem>
             )}
           />
-
+          
           <FormField
             control={form.control}
             name="agreeToTerms"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4 shadow-sm bg-background/30 dark:bg-background/50">
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border-2 border-slate-700/60 bg-slate-800/40 p-4 shadow-lg transition-all hover:border-accent/60 hover:bg-slate-800/60">
                 <FormControl>
                   <Checkbox
                     checked={field.value}

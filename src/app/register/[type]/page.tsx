@@ -27,6 +27,8 @@ const typeToPriceMap: Record<RegistrationType, string> = {
   others: "₹100",
 };
 
+
+
 export default function SpecificRegistrationPage() {
   const { toast } = useToast(); // Moved to the top
   const params = useParams();
