@@ -22,8 +22,9 @@ export function useSmoothScroll() {
       wheelMultiplier: 1,
       touchMultiplier: 2,
       smoothWheel: true,
+      // @ts-expect-error - smoothTouch is a valid option but not in the current type definitions
       smoothTouch: false,
-    } as any);
+    });
 
     setLenis(lenisInstance);
 

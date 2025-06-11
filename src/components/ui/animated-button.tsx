@@ -197,7 +197,7 @@ export const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButton
             if (typeof ref === "function") ref(el);
             else if (ref) ref.current = el;
           }}
-          variant={variant as any}
+          variant={variant}
           size={size}
           className={cn("relative", className)}
           asChild={asChild}

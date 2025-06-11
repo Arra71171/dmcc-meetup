@@ -133,8 +133,8 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     }
     
     const { paymentScreenshot, numberOfFamilyMembers, ...restOfData } = data;
-    
-    const newEntryForFirestore: any = {
+
+    const baseEntry = {
       ...restOfData,
       userId: firebaseCurrentUser.uid,
       paymentScreenshotFilename: paymentScreenshot instanceof File ? paymentScreenshot.name : null,
@@ -142,16 +142,17 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
       submittedAt: serverTimestamp(),
     };
 
-    if (data.registrationType === 'family') {
-      newEntryForFirestore.numberOfFamilyMembers = numberOfFamilyMembers;
-    }
+    const newEntryForFirestore: Omit<RegistrationEntry, 'id' | 'submittedAt'> = data.registrationType === 'family'
+      ? { ...baseEntry, numberOfFamilyMembers }
+      : { ...baseEntry };
 
     try {
-      await addDoc(collection(db, "registrations"), newEntryForFirestore);
-    } catch (e) {
+      await addDoc(collection(db, "registrations"), { ...newEntryForFirestore, submittedAt: serverTimestamp() });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Please try again.";
       toast({
         title: "Registration Firestore Error",
-        description: `Could not save your registration. ${(e as Error).message || "Please try again."}`,
+        description: `Could not save your registration. ${message}`,
         variant: "destructive",
       });
       throw e;
@@ -172,10 +173,11 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         description: "The registration details have been successfully updated.",
         variant: "default",
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Please try again.";
       toast({
         title: "Update Failed",
-        description: `Could not update the registration. ${(error as Error).message || "Please try again."}`,
+        description: `Could not update the registration. ${message}`,
         variant: "destructive",
       });
       throw error;
@@ -191,10 +193,11 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         description: "The registration has been successfully deleted.",
         variant: "default",
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Please try again.";
       toast({
         title: "Deletion Failed",
-        description: `Could not delete the registration. ${(error as Error).message || "Please try again."}`,
+        description: `Could not delete the registration. ${message}`,
         variant: "destructive",
       });
     }

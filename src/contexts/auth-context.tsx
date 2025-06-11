@@ -3,6 +3,7 @@
 
 import type React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { FirebaseError } from 'firebase/app';
 import {
   auth,
   GoogleAuthProvider,
@@ -21,6 +22,7 @@ interface AuthContextType {
   currentUser: User | null;
   isAdmin: boolean;
   loadingAuthState: boolean;
+  loading: boolean;
   isAuthDialogOpen: boolean;
   authDialogMode: 'default' | 'adminOnly';
   openAuthDialog: (mode?: 'default' | 'adminOnly') => void;
@@ -85,11 +87,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title: "Signed in with Google",
         description: "You have successfully signed in.",
       });
-    } catch (error: any) {
-      console.error("Google sign-in error:", error);
+    } catch (e: unknown) {
+      console.error("Google sign-in error:", e);
+      let description = "An unknown error occurred.";
+      if (e instanceof Error) {
+        description = e.message;
+      }
       toast({
         title: "Google Sign-In Failed",
-        description: error.message || "An unknown error occurred.",
+        description,
         variant: "destructive",
       });
     } finally {
@@ -114,11 +120,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setCurrentUser(userCredential.user);
       toast({ title: "Signed in successfully!", description: `Welcome ${userCredential.user.email}!` });
       closeAuthDialog();
-    } catch (error: any) {
-      console.error("Email Sign-In Error:", error);
-      let description = error.message;
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        description = "Sign-in failed: Invalid email or password. Please ensure your credentials are correct. If you are a new user, you must 'Sign Up' first to create an account.";
+    } catch (e: unknown) {
+      console.error("Email Sign-In Error:", e);
+      let description = "An unknown error occurred.";
+      if (e instanceof FirebaseError) {
+        description = e.message;
+        if (e.code === 'auth/invalid-credential' || e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password') {
+          description = "Sign-in failed: Invalid email or password. Please ensure your credentials are correct. If you are a new user, you must 'Sign Up' first to create an account.";
+        }
+      } else if (e instanceof Error) {
+        description = e.message;
       }
       toast({ title: "Sign-in failed", description, variant: "destructive" });
     }
@@ -134,11 +145,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: `A verification link has been sent to ${userCredential.user.email}. Please verify your email and then sign in.` 
       });
       closeAuthDialog();
-    } catch (error: any) {
-      console.error("Email Sign-Up Error:", error);
-      let description = error.message;
-      if (error.code === 'auth/email-already-in-use') {
-        description = "This email is already registered. Please try signing in or use a different email.";
+    } catch (e: unknown) {
+      console.error("Email Sign-Up Error:", e);
+      let description = "An unknown error occurred.";
+      if (e instanceof FirebaseError) {
+        description = e.message;
+        if (e.code === 'auth/email-already-in-use') {
+          description = "This email is already registered. Please try signing in or use a different email.";
+        }
+      } else if (e instanceof Error) {
+        description = e.message;
       }
       toast({ title: "Sign-up failed", description, variant: "destructive" });
     }
@@ -165,11 +181,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: "You are now securely logged in as an admin.",
       });
       setAuthDialogOpen(false);
-    } catch (error: any) {
-      console.error("Admin sign-in error:", error);
+    } catch (e: unknown) {
+      console.error("Admin sign-in error:", e);
+      let description = "An unknown error occurred.";
+      if (e instanceof Error) {
+        description = e.message;
+      }
       toast({
         title: "Admin login failed",
-        description: error.message || "An unknown error occurred.",
+        description,
         variant: "destructive",
       });
     }
@@ -181,9 +201,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setCurrentUser(null);
       setIsAdmin(false);
       toast({ title: "Signed out successfully."});
-    } catch (error: any) {
-      console.error("Sign Out Error:", error);
-      toast({ title: "Sign-out failed", description: error.message, variant: "destructive" });
+    } catch (e: unknown) {
+      console.error("Sign Out Error:", e);
+      let description = "An unknown error occurred.";
+      if (e instanceof Error) {
+        description = e.message;
+      }
+      toast({ title: "Sign-out failed", description, variant: "destructive" });
     }
   };
 
@@ -201,6 +225,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     currentUser,
     isAdmin,
     loadingAuthState,
+    loading,
     isAuthDialogOpen,
     authDialogMode,
     openAuthDialog,

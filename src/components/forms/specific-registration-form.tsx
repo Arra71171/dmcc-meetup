@@ -369,19 +369,22 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
           <FormField
             control={form.control}
             name="paymentScreenshot"
-            render={({ field: { onChange, value: _value, ...rest } }) => ( 
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="font-subtitle text-card-foreground">Upload Payment Screenshot (Optional but Recommended)</FormLabel>
                 <FormControl>
                    <Input
-                    id="paymentScreenshotInput" 
+                    id="paymentScreenshotInput"
                     type="file"
                     accept={ACCEPTED_IMAGE_TYPES.join(",")}
+                    name={field.name}
+                    onBlur={field.onBlur}
+                    ref={field.ref}
+                    disabled={field.disabled}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      onChange(e.target.files); 
+                      field.onChange(e.target.files);
                     }}
                     className="file:text-foreground file:font-subtitle file:uppercase file:text-xs file:tracking-wider file:font-medium file:mr-3"
-                    {...rest} 
                   />
                 </FormControl>
                  <FormDescription className="text-muted-foreground">
@@ -406,7 +409,7 @@ export function SpecificRegistrationForm({ initialRegistrationType }: SpecificRe
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel htmlFor="terms" className="cursor-pointer font-subtitle text-card-foreground">
-                    I agree to the terms and conditions of the Meetei People's Convention.
+                    I agree to the terms and conditions of the Meetei People&apos;s Convention.
                   </FormLabel>
                   <FormDescription className="text-muted-foreground text-xs">
                     By registering, you acknowledge and accept our event policies. <br/>
